@@ -1,0 +1,55 @@
+docs/FEATURES.md
+  s_347d16a866ffe9::t_127060735d74ce 40
+  s_347d16a866ffe9::t_402742ca360faa 50
+  s_347d16a866ffe9::t_bf76cca5726516 1-34,36-39,41-49
+  s_347d16a866ffe9::t_27b82af3ff9d2e 35
+deploy/docker-compose.yml
+  s_347d16a866ffe9::t_631d4ea7328cff 4
+docs/DEVELOPMENT.md
+  s_347d16a866ffe9::t_c552f690bfbdfd 1-79
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_8d5fddc6ea15d2 58-77
+  s_347d16a866ffe9::t_b06c0cc70bb787 159
+  s_347d16a866ffe9::t_ba3c57dce269e5 98-108
+  s_347d16a866ffe9::t_2f4ef24ab7e6eb 1-2,4,14,16-17,20,26,28-29,31,36,44,53,56-57,78-97,109-158,160-172,174-185
+  s_347d16a866ffe9::t_8019c20af4bd16 173
+  s_347d16a866ffe9::t_79fce6a348d802 3,5,7-13,15,18-19,21-25,27,30,32-35,37-43,45-52,54-55
+  h_0a88d9aba8622a 6
+docs/LIMITATIONS.md
+  s_347d16a866ffe9::t_4003932be1bff1 11
+  s_347d16a866ffe9::t_8bad3239e9b62b 1-5,7-10,12-37
+  s_347d16a866ffe9::t_35ade18f4d76a2 6
+README.md
+  s_347d16a866ffe9::t_86c9555bbb382b 19
+  s_347d16a866ffe9::t_b18ecf0a0e2638 12-17,20
+  s_347d16a866ffe9::t_c10f5e897ef366 18
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_d332ac608ad88a 111
+  s_347d16a866ffe9::t_840217ca96ee99 58
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_95761ab83d78f9 1-77
+TESTING.md
+  s_347d16a866ffe9::t_102d883113fbab 217-218
+  s_347d16a866ffe9::t_936f7a5412c5b1 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "2bc2039c5441b38320a56091eb321e39f1cb0e01",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
