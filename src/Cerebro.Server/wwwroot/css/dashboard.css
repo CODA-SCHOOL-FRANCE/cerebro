@@ -364,31 +364,3 @@ h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: .01em; color:
 }
 
 .login-submit { margin-top: 22px; align-self: flex-start; }
-
-.login-thumbprint {
-  margin-top: 28px;
-  padding: 12px 14px;
-  background: var(--hud-bg);
-  border: 2px solid var(--panel-border);
-}
-
-.login-thumbprint-label {
-  font-size: 11px;
-  letter-spacing: .1em;
-  color: var(--teal);
-}
-
-.login-thumbprint-value {
-  display: block;
-  margin-top: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text);
-  word-break: break-all;
-}
-
-.login-thumbprint-hint {
-  margin: 8px 0 0;
-  font-size: 11px;
-  color: var(--text-muted);
-}

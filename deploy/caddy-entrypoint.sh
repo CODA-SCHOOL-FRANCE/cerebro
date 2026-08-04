@@ -1,9 +1,9 @@
 #!/bin/sh
 # Démarre Caddy normalement, puis lit son propre certificat (auto-signé, "tls internal") une fois
 # prêt pour en afficher l'empreinte SHA-256 en clair dans les logs du conteneur — plutôt que
-# d'obliger le surveillant à lancer la commande openssl à la main à chaque démarrage. Écrit aussi
-# l'empreinte dans un fichier partagé (volume cert-info) pour que cerebro-server puisse l'afficher
-# sur la page de connexion (voir Program.cs, /account/server-thumbprint).
+# d'obliger le surveillant à lancer la commande openssl à la main à chaque démarrage (voir
+# docs/DEPLOYMENT.md, section Sécurisation du transport : "docker compose logs caddy" pour la
+# retrouver après coup).
 set -e
 
 CADDY_ADDRESS="${CEREBRO_SERVER_ADDRESS:-localhost}"
@@ -27,11 +27,6 @@ if [ -n "$THUMBPRINT" ]; then
     echo " $THUMBPRINT"
     echo " À communiquer aux agents candidats en même temps que l'URL et le code de session."
     echo "=================================================================="
-
-    if [ -n "$THUMBPRINT_OUTPUT_PATH" ]; then
-        mkdir -p "$(dirname "$THUMBPRINT_OUTPUT_PATH")"
-        echo "$THUMBPRINT" > "$THUMBPRINT_OUTPUT_PATH"
-    fi
 else
     echo "Avertissement : impossible de récupérer l'empreinte du certificat après 30s." >&2
 fi

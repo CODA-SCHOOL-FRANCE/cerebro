@@ -1,8 +1,6 @@
 const form = document.getElementById("loginForm") as HTMLFormElement;
 const errorEl = document.getElementById("loginError") as HTMLElement;
 const footerYear = document.getElementById("footerYear") as HTMLElement;
-const thumbprintBox = document.getElementById("thumbprintBox") as HTMLElement;
-const thumbprintValue = document.getElementById("thumbprintValue") as HTMLElement;
 
 footerYear.textContent = String(new Date().getFullYear());
 
@@ -13,27 +11,6 @@ form.addEventListener("submit", (event) => {
     showError("Connexion au serveur impossible.");
   });
 });
-
-loadServerThumbprint().catch((err: unknown) => {
-  // Non bloquant : absent en dehors d'un déploiement Docker + Caddy (voir Program.cs), la page de
-  // connexion doit rester utilisable sans cette information.
-  console.warn("Empreinte du certificat indisponible", err);
-});
-
-async function loadServerThumbprint(): Promise<void> {
-  const response = await fetch("/account/server-thumbprint");
-  if (!response.ok) {
-    return;
-  }
-
-  const data = (await response.json()) as { thumbprint: string | null };
-  if (!data.thumbprint) {
-    return;
-  }
-
-  thumbprintValue.textContent = data.thumbprint;
-  thumbprintBox.hidden = false;
-}
 
 async function submitLogin(): Promise<void> {
   errorEl.hidden = true;

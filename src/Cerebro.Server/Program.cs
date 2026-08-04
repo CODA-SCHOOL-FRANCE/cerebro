@@ -127,19 +127,6 @@ app.MapPost("/account/logout", async (HttpContext http) =>
     return Results.Ok();
 });
 
-// Affiche l'empreinte du certificat TLS sur la page de connexion pour éviter au surveillant de la
-// récupérer à la main (openssl s_client...). N'existe que derrière un reverse proxy Caddy conteneurisé
-// qui l'écrit dans ce fichier partagé au démarrage (voir deploy/caddy-entrypoint.sh) ; absent dans
-// tout autre mode de déploiement (dotnet run, binaire publié, Caddy natif sur l'hôte), auquel cas cet
-// endpoint répond simplement qu'aucune empreinte n'est disponible. Pas d'authentification nécessaire :
-// l'empreinte est une donnée publique, destinée à être communiquée aux candidats.
-app.MapGet("/account/server-thumbprint", (IWebHostEnvironment env) =>
-{
-    var path = Path.Combine(env.ContentRootPath, "cert-info", "thumbprint.txt");
-    var thumbprint = File.Exists(path) ? File.ReadAllText(path).Trim() : null;
-    return Results.Ok(new { thumbprint });
-});
-
 // index.html vit hors de wwwroot (Dashboard/) précisément pour ne jamais être servi par
 // UseStaticFiles sans passer par cette route protégée.
 app.MapGet("/", ServeDashboardAsync).RequireAuthorization();

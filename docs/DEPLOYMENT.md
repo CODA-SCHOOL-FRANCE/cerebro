@@ -47,6 +47,33 @@ démarrage.
   à recommuniquer aux agents (à ne surtout pas perdre en cours d'examen, donc éviter
   `docker compose down -v` une fois une session commencée).
 
+### Récupérer les screenshots depuis le conteneur
+
+Les screenshots vivent dans le volume nommé `cerebro-screenshots`, monté sur `/app/screenshots`
+dans le conteneur `cerebro-server`. Les copier vers l'hôte avec
+`docker compose cp` (référence le service par son nom, pas besoin de connaître le nom réel du
+conteneur ni du volume — ni l'un ni l'autre ne sont fixes, ils dépendent du nom du projet compose) :
+
+```bash
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
+  cp cerebro-server:/app/screenshots ./screenshots-export
+```
+
+Organisés par session puis par candidat : `screenshots-export/{session}/{candidat}/*.png`. Cette
+commande fonctionne conteneur démarré ou arrêté (tant qu'il n'a pas été supprimé) ; en cas de
+suppression du conteneur (`docker compose down` sans `-v`), le volume et son contenu survivent —
+seul `docker compose down -v` les détruit.
+
+**Pas dans le dossier du dépôt ?** `docker compose cp` a besoin des fichiers compose pour retrouver
+le service. Sans y retourner, utiliser `docker cp` directement sur le conteneur, sans passer par
+compose ni connaître le chemin du dépôt — seulement le nom du conteneur, à retrouver avec
+`docker ps` :
+
+```bash
+docker ps --filter "ancestor=ghcr.io/coda-school-france/cerebro-server" --format "{{.Names}}"
+docker cp <nom-du-conteneur>:/app/screenshots ./screenshots-export
+```
+
 ### Mettre à jour le serveur (nouvelle image)
 
 Le `db/` (SQLite) et les `screenshots/` vivent dans des volumes nommés, indépendants du conteneur :
@@ -86,7 +113,18 @@ Sur un réseau d'examen isolé, il n'y a pas de CA publique disponible pour obte
 classique (type Let's Encrypt) : Caddy génère et sert automatiquement un certificat auto-signé via
 sa CA interne — rien à configurer manuellement, c'est déjà réglé par `deploy/Caddyfile`.
 
-**Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants :
+**Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants. Caddy
+l'affiche en clair dans ses propres logs au démarrage (voir `deploy/caddy-entrypoint.sh`) — pas
+besoin d'appeler `openssl` à la main :
+
+```bash
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml logs caddy | grep -A2 "Empreinte SHA-256"
+```
+
+Elle n'est affichée nulle part ailleurs (plus sur la page de connexion du dashboard, retirée : une
+donnée destinée aux candidats n'avait pas sa place sur un écran d'authentification). En dehors de
+ce mode de déploiement (Caddy natif sur l'hôte, ou pour la retrouver après une purge des logs), la
+récupérer directement sur le certificat :
 
 ```bash
 openssl s_client -connect 192.168.1.10:8443 </dev/null 2>/dev/null \
