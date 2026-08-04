@@ -1,0 +1,151 @@
+using System.Text;
+using System.Text.Json;
+using Cerebro.Server.Data;
+using ConsoleAppFramework;
+using static System.Environment;
+
+namespace Cerebro.Server.Admin;
+
+public static class AdminCli
+{
+    public static async Task<int> RunAsync(string[] args)
+    {
+        ExitCode = 0;
+
+        var app = ConsoleApp.Create();
+        app.UseFilter<QuietErrorFilter>();
+        app.Add<AdminCommands>();
+        await app.RunAsync(args);
+
+        return ExitCode;
+    }
+}
+
+internal sealed class QuietErrorFilter(ConsoleAppFilter next) : ConsoleAppFilter(next)
+{
+    public override async Task InvokeAsync(ConsoleAppContext context, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Next.InvokeAsync(context, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            ExitCode = 1;
+            ConsoleApp.LogError(ex.Message);
+        }
+    }
+}
+
+internal sealed class AdminCommands
+{
+    private static readonly JsonSerializerOptions RosterJsonOptions = new() {PropertyNameCaseInsensitive = true};
+
+    /// <summary>Provisionne une session d'examen à partir d'un roster JSON.</summary>
+    /// <param name="session">Code de la session à créer.</param>
+    /// <param name="input">Chemin vers le fichier roster JSON.</param>
+    /// <param name="db">Chemin vers le fichier de base SQLite.</param>
+    public async Task Provision(string session, string input, string db = "db/cerebro.db")
+    {
+        if (!File.Exists(input))
+        {
+            throw new InvalidOperationException($"Fichier d'entrée introuvable : '{input}'.");
+        }
+
+        IExamRepository repository = new SqliteExamRepository($"Data Source={db}");
+
+        if (await repository.SessionExistsAsync(session, CancellationToken.None))
+        {
+            throw new InvalidOperationException(
+                $"La session '{session}' existe déjà dans la base. Choisissez un autre code.");
+        }
+
+        var rosterJson = await File.ReadAllTextAsync(input);
+        var roster = JsonSerializer.Deserialize<ExamRosterFile>(rosterJson, RosterJsonOptions);
+        if (roster is null || roster.Etudiants.Count == 0)
+        {
+            throw new InvalidOperationException($"Le fichier '{input}' ne contient aucun étudiant exploitable.");
+        }
+
+        var sessionId = await repository.CreateSessionAsync(session, CancellationToken.None);
+
+        foreach (var (email, student) in roster.Etudiants)
+        {
+            await repository.AddCandidateAsync(sessionId, student.Id, student.Nom, CancellationToken.None);
+            Console.WriteLine($"  {student.Nom} <{email}> ({student.Id})");
+        }
+
+        Console.WriteLine($"Session '{session}' provisionnée avec {roster.Etudiants.Count} candidat(s).");
+    }
+
+    /// <summary>Démarre une session d'examen déjà provisionnée.</summary>
+    /// <param name="session">Code de la session à démarrer.</param>
+    /// <param name="db">Chemin vers le fichier de base SQLite.</param>
+    public async Task Start(string session, string db = "db/cerebro.db")
+    {
+        IExamRepository repository = new SqliteExamRepository($"Data Source={db}");
+
+        if (!await repository.SessionExistsAsync(session, CancellationToken.None))
+        {
+            throw new InvalidOperationException($"Session '{session}' introuvable dans la base.");
+        }
+
+        await repository.MarkStartedAsync(session, CancellationToken.None);
+        Console.WriteLine($"Session '{session}' démarrée.");
+    }
+
+    /// <summary>Définit (ou change) le mot de passe d'accès au dashboard.</summary>
+    /// <param name="username">Nom d'utilisateur du surveillant.</param>
+    /// <param name="db">Chemin vers le fichier de base SQLite.</param>
+    public async Task SetPassword(string username, string db = "db/cerebro.db")
+    {
+        var password = ReadPasswordMasked("Mot de passe : ");
+        var confirmation = ReadPasswordMasked("Confirmer le mot de passe : ");
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            throw new InvalidOperationException("Le mot de passe ne peut pas être vide.");
+        }
+
+        if (password != confirmation)
+        {
+            throw new InvalidOperationException("Les mots de passe ne correspondent pas.");
+        }
+
+        IDashboardCredentialsStore credentials = new SqliteDashboardCredentialsStore($"Data Source={db}");
+        await credentials.SetCredentialsAsync(username, password, CancellationToken.None);
+
+        Console.WriteLine($"Mot de passe défini pour '{username}'.");
+    }
+
+    // Saisie masquée (aucun echo, ni dans le terminal ni dans l'historique shell) : contrairement
+    // à Console.ReadLine, cette commande est destinée à être lancée à la main juste avant l'épreuve.
+    private static string ReadPasswordMasked(string label)
+    {
+        Console.Write(label);
+        var password = new StringBuilder();
+
+        ConsoleKeyInfo key;
+        while ((key = Console.ReadKey(intercept: true)).Key != ConsoleKey.Enter)
+        {
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (password.Length > 0)
+                {
+                    password.Length--;
+                    Console.Write("\b \b");
+                }
+                continue;
+            }
+
+            if (!char.IsControl(key.KeyChar))
+            {
+                password.Append(key.KeyChar);
+                Console.Write('*');
+            }
+        }
+
+        Console.WriteLine();
+        return password.ToString();
+    }
+}

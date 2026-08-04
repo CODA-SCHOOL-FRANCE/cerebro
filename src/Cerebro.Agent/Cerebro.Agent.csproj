@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cerebro.Shared\Cerebro.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.10" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
+    <PackageReference Include="ConsoleAppFramework" Version="5.7.13" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Jamais activé par un `dotnet build`/`dotnet run` normal : bruit inutile en développement,
+         et Obfuscar n'est pas installé sur un poste de dev standard. Le pipeline de release
+         (.github/workflows/agent-release.yml) l'active explicitement via -p:ObfuscateAgent=true,
+         après avoir installé l'outil (voir "dotnet tool install" dans ce workflow). -->
+    <ObfuscateAgent Condition="'$(ObfuscateAgent)' == ''">false</ObfuscateAgent>
+  </PropertyGroup>
+
+  <!--
+    Un candidat qui décompile l'agent (dnSpy/ILSpy) ne doit pas retrouver directement les noms de
+    types/méthodes/le flux du code. Renomme l'API (y compris publique, voir obfuscar.xml) et
+    masque les chaînes littérales. Ne protège pas contre un reverse engineer déterminé (aucun
+    binaire distribué au client ne le peut jamais complètement) — ça relève le niveau nécessaire
+    au-delà d'un simple survol dans un décompilateur.
+  -->
+  <Target Name="ObfuscateAgent" AfterTargets="Build"
+          Condition="'$(ObfuscateAgent)' == 'true' AND '$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <_ObfuscarOutDir>$(OutDir)_obfuscated\</_ObfuscarOutDir>
+    </PropertyGroup>
+
+    <Exec Command="obfuscar.console &quot;$(MSBuildProjectDirectory)/obfuscar.xml&quot;" WorkingDirectory="$(OutDir)"/>
+
+    <ItemGroup>
+      <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)Cerebro.Agent.dll"/>
+    </ItemGroup>
+
+    <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) — vérifier obfuscar.xml."
+           Condition="!Exists('$(_ObfuscarOutDir)Cerebro.Agent.dll')"/>
+
+    <Copy SourceFiles="@(_ObfuscatedAssembly)" DestinationFolder="$(OutDir)"/>
+    <RemoveDir Directories="$(_ObfuscarOutDir)"/>
+  </Target>
+
+</Project>

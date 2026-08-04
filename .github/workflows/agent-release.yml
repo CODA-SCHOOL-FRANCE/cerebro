@@ -1,0 +1,121 @@
+name: Release Cerebro.Agent
+
+# Un tag agent-vX.Y.Z posé sur un commit de main construit un exécutable autonome par OS (Windows,
+# macOS Intel/Apple Silicon, Linux), obfusqué en Release, et crée une Release GitHub en DRAFT (pas
+# publiée automatiquement : un humain relit/valide avant de la rendre publique — ce sont des
+# binaires exécutés directement par les candidats, contrairement à l'image Docker du backend).
+#
+# Espace de tags séparé de celui du backend (voir server-release.yml, tags vX.Y.Z) : Agent et
+# Server évoluent et se publient indépendamment l'un de l'autre.
+on:
+  push:
+    tags:
+      - "agent-v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rid: [win-x64, osx-x64, osx-arm64, linux-x64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # Obfuscation du binaire publié : un candidat qui décompile l'agent (dnSpy/ILSpy) ne doit pas
+      # retrouver directement la structure du code. Voir Cerebro.Agent.csproj (cible ObfuscateAgent,
+      # désactivée par défaut, activée ici via -p:ObfuscateAgent=true) et obfuscar.xml.
+      - name: Installer Obfuscar
+        run: dotnet tool install --global Obfuscar.GlobalTool --version 2.2.50
+
+      - name: Publier (self-contained, fichier unique, obfusqué)
+        run: >
+          dotnet publish src/Cerebro.Agent -c Release -r ${{ matrix.rid }}
+          --self-contained -p:PublishSingleFile=true -p:ObfuscateAgent=true
+          -o publish/${{ matrix.rid }}
+
+      - name: Ajouter les instructions d'installation
+        run: cp deploy/agent-install/INSTALLATION.txt publish/${{ matrix.rid }}/INSTALLATION.txt
+
+      - name: Retirer les symboles de debug (pas utiles aux candidats, inutile de les distribuer)
+        shell: bash
+        run: rm -f publish/${{ matrix.rid }}/*.pdb
+
+      - name: Empaqueter
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#agent-v}"
+          archive="Cerebro.Agent-${version}-${{ matrix.rid }}.zip"
+          (cd publish/${{ matrix.rid }} && zip -r "../../${archive}" .)
+          echo "ARCHIVE_PATH=${archive}" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cerebro-agent-${{ matrix.rid }}
+          path: ${{ env.ARCHIVE_PATH }}
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Même garde-fou que server-release.yml : refuser un tag posé ailleurs que sur main.
+      - name: Vérifier que le tag est sur main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Le tag ${GITHUB_REF_NAME} ne pointe pas vers un commit de main."
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cerebro-agent-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Créer la Release GitHub (brouillon)
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: Cerebro.Agent ${{ github.ref_name }}
+          generate_release_notes: true
+          files: artifacts/*.zip
+          body: |
+            Exécutable candidat autonome (Windows, macOS Intel/Apple Silicon, Linux) — aucune
+            installation requise, un seul fichier par OS. Instructions d'installation et d'usage
+            incluses dans chaque archive (`INSTALLATION.txt`).
+
+            **Cette release est un brouillon** : à relire puis publier manuellement une fois les
+            binaires vérifiés (voir TESTING.md pour un scénario de test complet).
+
+            | Archive | Système |
+            |---|---|
+            | `*-win-x64.zip` | Windows 64 bits |
+            | `*-osx-x64.zip` | macOS Intel |
+            | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
+            | `*-linux-x64.zip` | Linux 64 bits |

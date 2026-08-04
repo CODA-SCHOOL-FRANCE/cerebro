@@ -1,0 +1,34 @@
+# Reverse proxy TLS pour Cerebro.Server, pensé pour un réseau d'examen isolé (pas de CA publique
+# accessible : Caddy génère et sert un certificat auto-signé via sa CA interne locale).
+#
+# Trois façons de déployer, ce fichier sert dans les trois cas (seul CEREBRO_UPSTREAM change) :
+#
+#   A. Binaire publié directement, Caddy natif sur la même machine :
+#        ASPNETCORE_URLS=http://127.0.0.1:5289 dotnet Cerebro.Server.dll
+#        CEREBRO_SERVER_ADDRESS=192.168.1.10 caddy run --config Caddyfile
+#
+#   B. Conteneur Docker seul (voir src/Cerebro.Server/Dockerfile), Caddy natif sur l'hôte :
+#        docker run -d -p 127.0.0.1:8080:8080 \
+#          -v cerebro-db:/app/db -v cerebro-screenshots:/app/screenshots \
+#          --name cerebro-server ghcr.io/<owner>/cerebro-server:<version>
+#        CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_UPSTREAM=localhost:8080 caddy run --config Caddyfile
+#
+#   C. Tout conteneurisé via deploy/docker-compose.yml (recommandé — voir README, section Docker) :
+#        CEREBRO_SERVER_ADDRESS=192.168.1.10 docker compose -f deploy/docker-compose.yml up -d --build
+#        (CEREBRO_UPSTREAM y est déjà réglé sur cerebro-server:8080, résolu par le DNS interne
+#        de Docker — rien à faire de plus)
+#
+# Dans tous les cas, récupérer ensuite l'empreinte du certificat à communiquer aux agents étudiants :
+#   openssl s_client -connect 192.168.1.10:8443 </dev/null 2>/dev/null \
+#     | openssl x509 -noout -fingerprint -sha256
+#
+# Les étudiants se connectent alors sur https://192.168.1.10:8443 (le certificat sera signalé
+# comme non approuvé par leur navigateur/OS — c'est attendu pour un certificat auto-signé ;
+# l'agent, lui, valide le certificat par épingle d'empreinte plutôt que par la chaîne de confiance
+# du système, voir CEREBRO_SERVER_CERT_THUMBPRINT dans le README).
+
+{$CEREBRO_SERVER_ADDRESS:localhost}:8443 {
+    tls internal
+
+    reverse_proxy {$CEREBRO_UPSTREAM:localhost:5289}
+}

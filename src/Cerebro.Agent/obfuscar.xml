@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Obfuscator>
+  <!-- Chemins relatifs au répertoire de build courant : la cible ObfuscateAgent (voir
+       Cerebro.Agent.csproj) exécute obfuscar.console avec $(OutDir) comme répertoire de travail,
+       pour que ce fichier reste valable quel que soit le runtime/la configuration ciblés. -->
+  <Var name="InPath" value="." />
+  <Var name="OutPath" value="./_obfuscated" />
+  <Var name="AssemblySearchPath" value="." />
+
+  <!-- Renomme aussi l'API publique (types/méthodes publics de Cerebro.Agent) : ce binaire n'est
+       jamais référencé par un autre projet, seulement exécuté, donc rien ne dépend des noms
+       d'origine à l'exécution (à la différence d'une bibliothèque consommée par réflexion). -->
+  <Var name="KeepPublicApi" value="false" />
+  <Var name="HidePrivateApi" value="true" />
+  <Var name="OptimizeMethods" value="true" />
+  <Var name="SuppressIldasm" value="true" />
+
+  <Module file="Cerebro.Agent.dll" />
+</Obfuscator>

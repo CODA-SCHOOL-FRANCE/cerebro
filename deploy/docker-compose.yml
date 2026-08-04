@@ -1,0 +1,57 @@
+# Pile complète pour un poste d'examen : cerebro-server (application) + Caddy (TLS, reverse
+# proxy) dans deux conteneurs séparés sur le réseau Docker interne créé par compose. Seul Caddy
+# publie un port vers l'extérieur — cerebro-server n'est jamais exposé directement, il n'est
+# joignable que par Caddy via le nom de service (voir README, section Docker).
+#
+# Utilisation, depuis la racine du dépôt :
+#   CEREBRO_SERVER_ADDRESS=192.168.1.10 docker compose -f deploy/docker-compose.yml up -d --build
+#
+# (remplacer 192.168.1.10 par l'IP/hostname réel du poste serveur sur le réseau d'examen ;
+# CEREBRO_SERVER_ADDRESS n'est utilisée que par Caddy, voir deploy/Caddyfile)
+
+services:
+  cerebro-server:
+    build:
+      context: ..
+      dockerfile: src/Cerebro.Server/Dockerfile
+    # En prod, remplacer "build:" par l'image publiée par la Release GitHub Actions
+    # (.github/workflows/server-release.yml) pour ne pas avoir à reconstruire sur la machine
+    # d'examen :
+    #   image: ghcr.io/<owner>/cerebro-server:<version>
+    restart: unless-stopped
+    volumes:
+      - cerebro-db:/app/db
+      - cerebro-screenshots:/app/screenshots
+      # Lecture seule : Caddy y écrit l'empreinte de son certificat au démarrage (voir
+      # deploy/caddy-entrypoint.sh), affichée sur /login.html si présente (voir Program.cs).
+      - cert-info:/app/cert-info:ro
+
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    restart: unless-stopped
+    depends_on:
+      - cerebro-server
+    environment:
+      CEREBRO_SERVER_ADDRESS: ${CEREBRO_SERVER_ADDRESS:-localhost}
+      CEREBRO_UPSTREAM: cerebro-server:8080
+      THUMBPRINT_OUTPUT_PATH: /cert-info/thumbprint.txt
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # CA interne + certificats générés par "tls internal" : sans ce volume, ils sont régénérés
+      # à chaque recréation du conteneur, ce qui change l'empreinte SHA-256 à communiquer aux
+      # agents candidats (CEREBRO_SERVER_CERT_THUMBPRINT) — à ne surtout pas perdre en cours
+      # d'examen (éviter tout "docker compose down -v" une fois une session commencée).
+      - caddy_data:/data
+      - caddy_config:/config
+      - cert-info:/cert-info
+
+volumes:
+  cerebro-db:
+  cerebro-screenshots:
+  caddy_data:
+  caddy_config:
+  cert-info:

@@ -1,0 +1,46 @@
+Cerebro — Agent candidat
+=========================
+
+Un seul fichier exécutable, rien à installer. Le runtime .NET est intégré dedans.
+
+Ce que le système d'exploitation va afficher au premier lancement
+-------------------------------------------------------------------
+
+Cet exécutable n'est pas signé par un éditeur reconnu (outil interne à l'école). Windows et macOS
+vont afficher un avertissement la première fois — c'est normal, suivez les instructions ci-dessous
+selon votre système.
+
+WINDOWS
+  Double-cliquer sur Cerebro.Agent.exe déclenche "Windows a protégé votre ordinateur"
+  (SmartScreen). Cliquer sur "Informations complémentaires", puis "Exécuter quand même".
+
+MACOS
+  Un double-clic affiche "Cerebro.Agent ne peut pas être ouvert car il provient d'un développeur
+  non identifié". Deux façons de contourner :
+    - Clic droit (ou Ctrl+clic) sur Cerebro.Agent > Ouvrir > confirmer "Ouvrir" dans la boîte de
+      dialogue (à ne faire qu'une fois).
+    - Ou, dans un Terminal, depuis le dossier où se trouve l'exécutable :
+        chmod +x ./Cerebro.Agent
+        xattr -d com.apple.quarantine ./Cerebro.Agent
+        ./Cerebro.Agent
+
+LINUX
+  Rendre l'exécutable lançable puis le lancer, depuis un terminal :
+        chmod +x ./Cerebro.Agent
+        ./Cerebro.Agent
+
+Utilisation
+-----------
+
+Lancer l'exécutable sans argument : il demande successivement :
+  1. l'URL du serveur (communiquée par le surveillant, ex: https://192.168.1.10:8443)
+  2. le code de session (communiqué par le surveillant)
+  3. votre identifiant candidat (le vôtre, communiqué par le surveillant)
+  4. si l'URL est en HTTPS, l'empreinte du certificat du serveur (communiquée par le surveillant —
+     laisser vide si non applicable)
+
+Une fois connecté, l'agent tourne en arrière-plan pendant toute la durée de l'épreuve : ne pas le
+fermer avant la fin annoncée par le surveillant.
+
+En cas de problème (message d'erreur, refus de connexion), contactez immédiatement le surveillant
+avant de continuer l'épreuve.

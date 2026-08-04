@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <ItemGroup>
+        <ProjectReference Include="..\Cerebro.Shared\Cerebro.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.1.79"/>
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.10"/>
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.17.0"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0"/>
+        <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12"/>
+        <PackageReference Include="ConsoleAppFramework" Version="5.7.13"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="db\"/>
+    </ItemGroup>
+
+    <!-- Dashboard/index.html vit hors de wwwroot (voir Program.cs, ServeDashboardAsync) précisément
+         pour ne jamais être servi par UseStaticFiles sans passer par la route authentifiée. Mais
+         wwwroot bénéficie d'un pipeline de publication dédié (staticwebassets) qui copie son contenu
+         automatiquement ; un fichier en dehors, lui, n'est PAS copié par `dotnet publish` sans cette
+         déclaration explicite (repro : `dotnet publish` puis chercher index.html dans la sortie —
+         absent sans la ligne ci-dessous, d'où le 500 FileNotFoundException observé en conteneur). -->
+    <ItemGroup>
+        <Content Include="Dashboard\**" CopyToPublishDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <!--
+      Recompile le dashboard TypeScript (wwwroot/ts -> wwwroot/js) avant chaque build, mais
+      seulement si des sources .ts ont changé (Inputs/Outputs) et si `npm install` a déjà été
+      lancé une fois (node_modules présent). Sans Node/npm installés (ex: machine d'examen hors
+      ligne), cette étape est silencieusement ignorée et le JS déjà committé dans wwwroot/js est
+      utilisé tel quel — dotnet run/build ne dépend jamais de Node pour fonctionner.
+    -->
+    <!-- Doit être déclaré hors de la cible : Inputs/Outputs sont évalués avant que le corps de la
+         cible (ci-dessous) ne s'exécute, donc un ItemGroup interne à la cible serait toujours vide
+         au moment de la vérification d'incrémentalité. -->
+    <ItemGroup>
+        <TypeScriptSource Include="$(MSBuildProjectDirectory)/wwwroot/ts/**/*.ts"/>
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\activity-log.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\avatar.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\candidate-list.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\dom.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\hub-client.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\main.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\session-detail.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\session-list.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\state.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\status-badges.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\js\types.js" />
+    </ItemGroup>
+
+    <Target Name="BuildDashboardTypeScript" BeforeTargets="Build"
+            Inputs="@(TypeScriptSource)"
+            Outputs="$(MSBuildProjectDirectory)/wwwroot/js/main.js">
+        <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)"
+              Condition="Exists('$(MSBuildProjectDirectory)/node_modules')"/>
+
+        <Warning
+                Text="node_modules introuvable dans src/Cerebro.Server : le dashboard TypeScript n'a pas été recompilé. Lancez 'npm install' une fois (nécessite Node.js) pour activer la recompilation automatique ; en attendant, le JS déjà committé dans wwwroot/js est utilisé tel quel."
+                Condition="!Exists('$(MSBuildProjectDirectory)/node_modules')"/>
+    </Target>
+
+</Project>

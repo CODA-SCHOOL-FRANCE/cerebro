@@ -1,0 +1,15 @@
+{
+  "name": "cerebro-dashboard",
+  "private": true,
+  "description": "Source TypeScript du dashboard surveillant (compilé vers wwwroot/js, servi tel quel par le serveur).",
+  "scripts": {
+    "build": "node scripts/copy-signalr.mjs && tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^10.0.11"
+  }
+}

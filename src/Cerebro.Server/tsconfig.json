@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "wwwroot/js",
+    "rootDir": "wwwroot/ts",
+    "sourceMap": false
+  },
+  "include": ["wwwroot/ts/**/*.ts"]
+}

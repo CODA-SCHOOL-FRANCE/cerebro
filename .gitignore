@@ -1,0 +1,39 @@
+# Build artifacts
+bin/
+obj/
+publish/
+node_modules/
+
+# Dashboard TypeScript compilé (régénéré automatiquement au build, voir
+# BuildDashboardTypeScript dans Cerebro.Server.csproj)
+src/Cerebro.Server/wwwroot/js/
+
+# Client SignalR : copié depuis le paquet npm @microsoft/signalr au build (voir
+# package.json "build" / scripts/copy-signalr.mjs), plus vendoré à la main.
+src/Cerebro.Server/wwwroot/lib/signalr/
+
+# Résultats de tests
+[Tt]est[Rr]esult*/
+*.trx
+
+# Données d'exécution générées localement (screenshots candidats, base d'examen)
+# -> ne doivent jamais être commitées : données personnelles en clair.
+screenshots/
+*.db
+*.db-shm
+*.db-wal
+
+# Certificats/clés générés localement pour du test TLS
+*.pfx
+*.pem
+
+# IDE
+.idea/
+.vs/
+*.user
+*.suo
+*.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db

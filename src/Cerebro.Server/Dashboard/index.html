@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cerebro — Dashboard surveillant</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="frame">
+    <div class="crt-overlay" aria-hidden="true"></div>
+
+    <header class="hud">
+      <div class="hud-brand">
+        <span class="brand-title">CEREBRO<span class="brand-cursor"></span></span>
+        <span class="brand-sub">Surveillance</span>
+      </div>
+      <div class="hud-stats">
+        <span class="stat-sessions">SESSIONS <strong id="hudSessionCount">0</strong></span>
+        <span class="stat-online">EN LIGNE <strong id="hudOnlineCount">—</strong></span>
+        <button id="logoutButton" class="btn btn-ghost hud-logout">⏻ DÉCONNEXION</button>
+      </div>
+    </header>
+
+    <section id="sessionPicker" class="view">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">▚ SÉLECTIONNE UNE ÉPREUVE</div>
+          <h1>Épreuves planifiées</h1>
+        </div>
+        <button id="refreshButton" class="btn btn-lime">↻ ACTUALISER</button>
+      </div>
+      <div id="refreshFlash" class="refresh-flash" hidden>✓ liste synchronisée à <span id="refreshFlashTime"></span></div>
+
+      <div id="sessionList" class="session-list"></div>
+    </section>
+
+    <section id="sessionDetail" class="view" hidden>
+      <div class="detail-toolbar">
+        <button id="backButton" class="btn btn-ghost">← LISTE DES ÉPREUVES</button>
+        <span class="sep">|</span>
+        <span id="currentSessionStatus" class="session-live-status"></span>
+      </div>
+      <h1 id="currentSessionTitle" class="session-title"></h1>
+      <div class="detail-actions">
+        <button id="startButton" class="btn btn-lime">▶ DÉMARRER L'ÉPREUVE</button>
+        <button id="stopButton" class="btn btn-coral">■ ARRÊTER L'ÉPREUVE</button>
+        <button id="toggleActivityButton" class="btn btn-outline">☰ JOURNAL D'ACTIVITÉ</button>
+      </div>
+
+      <div class="candidate-table">
+        <div class="candidate-head">
+          <div>Candidat</div><div>Connexion</div><div>Statut</div><div>Dernier vu</div><div>Dernier screenshot</div>
+        </div>
+        <div id="candidateList"></div>
+      </div>
+    </section>
+
+    <div id="activityOverlay" class="activity-overlay" hidden>
+      <aside class="activity-drawer">
+        <div class="drawer-head">
+          <span class="eyebrow">▚ JOURNAL D'ACTIVITÉ</span>
+          <button id="closeActivityButton" class="drawer-close">✕</button>
+        </div>
+        <div id="activityList"></div>
+      </aside>
+    </div>
+
+    <footer class="page-footer">
+      <span>© <span id="footerYear"></span> Cerebro — Surveillance des épreuves</span>
+      <span class="footer-status">SYSTÈME OPÉRATIONNEL</span>
+    </footer>
+  </div>
+
+  <script src="lib/signalr/signalr.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

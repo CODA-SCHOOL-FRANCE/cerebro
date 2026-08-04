@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cerebro — Connexion</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="frame login-frame">
+    <div class="crt-overlay" aria-hidden="true"></div>
+
+    <header class="hud">
+      <div class="hud-brand">
+        <span class="brand-title">CEREBRO<span class="brand-cursor"></span></span>
+        <span class="brand-sub">Surveillance</span>
+      </div>
+    </header>
+
+    <section class="view login-view">
+      <div class="eyebrow">▚ ACCÈS RESTREINT</div>
+      <h1>Connexion surveillant</h1>
+
+      <form id="loginForm" class="login-form">
+        <label class="login-label" for="username">Identifiant</label>
+        <input class="login-input" type="text" id="username" name="username" autocomplete="username" required autofocus />
+
+        <label class="login-label" for="password">Mot de passe</label>
+        <input class="login-input" type="password" id="password" name="password" autocomplete="current-password" required />
+
+        <div id="loginError" class="login-error" hidden></div>
+
+        <button type="submit" class="btn btn-lime login-submit">▶ SE CONNECTER</button>
+      </form>
+
+      <div id="thumbprintBox" class="login-thumbprint" hidden>
+        <div class="login-thumbprint-label">▚ EMPREINTE CERTIFICAT SERVEUR</div>
+        <code id="thumbprintValue" class="login-thumbprint-value"></code>
+        <p class="login-thumbprint-hint">À communiquer aux candidats avec l'URL et le code de session.</p>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>© <span id="footerYear"></span> Cerebro — Surveillance des épreuves</span>
+      <span class="footer-status">ACCÈS PROTÉGÉ</span>
+    </footer>
+  </div>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>
