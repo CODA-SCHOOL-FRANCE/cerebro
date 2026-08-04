@@ -3,7 +3,7 @@
 Ce document décrit un scénario de test manuel de bout en bout pour valider une session d'examen
 complète sur une seule machine (un serveur + deux agents simulant des candidats), ainsi que les
 principaux scénarios d'erreur attendus. Il complète les tests automatisés (`dotnet test`, voir
-[README — Tests](README.md#tests)) : ceux-ci valident chaque composant isolément, ce document valide
+[Tests](docs/DEVELOPMENT.md#tests)) : ceux-ci valident chaque composant isolément, ce document valide
 le parcours complet tel que le vivrait un surveillant le jour J.
 
 ## Prérequis
@@ -214,7 +214,7 @@ laisser traîner les données de ce test sur le disque.)
 ## Ce que ce scénario ne couvre pas
 
 - Capture d'écran réelle sur Windows et Linux (à rejouer sur du matériel réel — voir
-  [README — Limites connues](README.md#limites-connues--à-faire-avant-un-examen-réel))
-- Le TLS/reverse proxy Caddy (voir [README — Sécurisation du transport](README.md#3-sécurisation-du-transport-tls)
+  [Limites connues](docs/LIMITATIONS.md))
+- Le TLS/reverse proxy Caddy (voir [Sécurisation du transport](docs/DEPLOYMENT.md#sécurisation-du-transport-tls)
   pour un scénario dédié avec certificat auto-signé et épinglage d'empreinte)
 - La montée en charge avec un grand nombre de candidats simultanés

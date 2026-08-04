@@ -55,7 +55,7 @@ jobs:
           -o publish/${{ matrix.rid }}
 
       - name: Ajouter les instructions d'installation
-        run: cp deploy/agent-install/INSTALLATION.txt publish/${{ matrix.rid }}/INSTALLATION.txt
+        run: cp docs/USER-DOC.txt publish/${{ matrix.rid }}/USER-DOC.txt
 
       - name: Retirer les symboles de debug (pas utiles aux candidats, inutile de les distribuer)
         shell: bash
@@ -108,7 +108,7 @@ jobs:
           body: |
             Exécutable candidat autonome (Windows, macOS Intel/Apple Silicon, Linux) — aucune
             installation requise, un seul fichier par OS. Instructions d'installation et d'usage
-            incluses dans chaque archive (`INSTALLATION.txt`).
+            incluses dans chaque archive (`USER-DOC.txt`).
 
             **Cette release est un brouillon** : à relire puis publier manuellement une fois les
             binaires vérifiés (voir TESTING.md pour un scénario de test complet).

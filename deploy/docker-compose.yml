@@ -1,7 +1,7 @@
 # Pile complète pour un poste d'examen : cerebro-server (application) + Caddy (TLS, reverse
 # proxy) dans deux conteneurs séparés sur le réseau Docker interne créé par compose. Seul Caddy
 # publie un port vers l'extérieur — cerebro-server n'est jamais exposé directement, il n'est
-# joignable que par Caddy via le nom de service (voir README, section Docker).
+# joignable que par Caddy via le nom de service (voir docs/DEPLOYMENT.md, section Serveur).
 #
 # Utilisation, depuis la racine du dépôt :
 #   CEREBRO_SERVER_ADDRESS=192.168.1.10 docker compose -f deploy/docker-compose.yml up -d --build
