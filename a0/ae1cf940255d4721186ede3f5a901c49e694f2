@@ -1,0 +1,31 @@
+deploy/docker-compose.yml
+  s_347d16a866ffe9::t_f1b8267f12d631 43-44
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_258f85071ffdd7 67-76
+  h_0a88d9aba8622a 53
+  s_347d16a866ffe9::t_90d609ba76ba7a 116-127
+  s_347d16a866ffe9::t_5257bc9c8d787c 50-52,54-66
+deploy/caddy-entrypoint.sh
+  s_347d16a866ffe9::t_e669b5fc5398dd 4-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "a0ae1cf940255d4721186ede3f5a901c49e694f2",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
