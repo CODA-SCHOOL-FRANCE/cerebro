@@ -1,0 +1,29 @@
+Cerebro.sln
+  s_4219012a15634a::t_519e65085fface 1-86
+src/Cerebro.Server/Properties/launchSettings.json
+  s_4219012a15634a::t_bd0a5d94ce2ca3 1-23
+src/Cerebro.Server/appsettings.json
+  s_4219012a15634a::t_67c2ca8fe5378f 1-9
+src/Cerebro.Server/package-lock.json
+  s_4219012a15634a::t_47a14b476fb1ce 1-219
+src/Cerebro.Shared/Cerebro.Shared.csproj
+  s_4219012a15634a::t_5b685a5d28517b 1-13
+tests/Cerebro.Tests/Cerebro.Tests.csproj
+  s_4219012a15634a::t_938ad9d676a905 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "940e34be8726239ccc179b1b477b7cdcb26c4c32",
+  "prompts": {},
+  "sessions": {
+    "s_4219012a15634a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8d710bac-7e99-4fa5-b6bb-3afd3406adb0",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
