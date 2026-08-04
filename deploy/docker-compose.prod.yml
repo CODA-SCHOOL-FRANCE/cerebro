@@ -1,0 +1,23 @@
+# Override "prod" de docker-compose.yml : utilise l'image cerebro-server publiée sur GHCR au lieu
+# de la reconstruire localement sur la machine d'examen. À combiner avec le fichier de base,
+# depuis la racine du dépôt :
+#
+#   echo "$GHCR_PAT" | docker login ghcr.io -u <user> --password-stdin
+#   docker pull ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}
+#   CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_SERVER_VERSION=0.0.1 \
+#     docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+#
+# Le package GHCR hérite de la visibilité du dépôt : tant que celui-ci reste privé, "docker login"
+# est requis avant le pull (voir docs/DEPLOYMENT.md, section Serveur). Pré-tirer l'image la veille
+# de l'examen : le réseau d'examen est volontairement isolé (pas d'accès internet le jour J), donc
+# ce fichier ne force jamais un re-pull au démarrage (pas de "pull_policy: always") — sans image
+# déjà présente localement, "docker compose up" échouerait le jour J.
+#
+# Nécessite Docker Compose >= 2.24 pour le tag YAML "!reset" ci-dessous, qui retire le "build:" du
+# fichier de base — sans lui, "docker compose up --build" reconstruirait l'image localement au
+# lieu d'utiliser celle publiée.
+
+services:
+  cerebro-server:
+    build: !reset null
+    image: ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}

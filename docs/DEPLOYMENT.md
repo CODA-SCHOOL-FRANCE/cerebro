@@ -8,31 +8,36 @@ tournent dans deux conteneurs séparés sur un réseau Docker interne : `cerebro
 aucun port (joignable uniquement par Caddy, via le nom de service `cerebro-server:8080` résolu par
 le DNS interne de Docker), seul Caddy expose `8443` vers l'extérieur.
 
-**1. Récupérer l'image**, publiée sur GHCR à chaque tag `vX.Y.Z` poussé sur un commit de `main`
+**1. Se logger sur GHCR**, requis tant que le dépôt reste privé (le package en hérite la
+visibilité — `docker pull` échoue sinon avec `unauthorized`), avec un
+[Personal Access Token](https://github.com/settings/tokens) portant le scope `read:packages` :
+
+```bash
+echo "$GHCR_PAT" | docker login ghcr.io -u <user> --password-stdin
+```
+
+**2. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main`
 (`.github/workflows/server-release.yml`, qui fait tourner les tests avant de publier) :
 
 ```bash
-docker pull ghcr.io/<owner>/cerebro-server:<version>
+docker pull ghcr.io/coda-school-france/cerebro-server:<version>
 ```
 
-**2. Référencer cette image dans `deploy/docker-compose.yml`**, en remplaçant le bloc `build:` du
-service `cerebro-server` par la ligne `image:` déjà indiquée en commentaire dans ce fichier :
-
-```yaml
-services:
-  cerebro-server:
-    image: ghcr.io/<owner>/cerebro-server:<version>
-```
-
-**3. Lancer la pile**, depuis la racine du dépôt :
+**3. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:`
+local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
 
 ```bash
-CEREBRO_SERVER_ADDRESS=192.168.1.10 docker compose -f deploy/docker-compose.yml up -d
+CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_SERVER_VERSION=<version> \
+  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 
 (remplacer `192.168.1.10` par l'IP ou le nom d'hôte réel du poste serveur sur le réseau d'examen —
 utilisée uniquement par Caddy pour générer son certificat auto-signé, voir `deploy/Caddyfile`). Les
 candidats et le surveillant se connectent alors sur `https://192.168.1.10:8443`.
+
+Pré-tirer l'image (étapes 1-2) la veille de l'examen : le réseau d'examen est volontairement isolé
+(pas d'accès internet le jour J), et `docker-compose.prod.yml` ne force jamais un re-pull au
+démarrage.
 
 - `db/` et `screenshots/` sont persistés dans des volumes nommés (`cerebro-db`,
   `cerebro-screenshots`) : ils survivent à un redéploiement, tant qu'on ne fait pas
@@ -41,6 +46,39 @@ candidats et le surveillant se connectent alors sur `https://192.168.1.10:8443`.
   lui, ils sont régénérés à chaque recréation du conteneur Caddy, ce qui change l'empreinte SHA-256
   à recommuniquer aux agents (à ne surtout pas perdre en cours d'examen, donc éviter
   `docker compose down -v` une fois une session commencée).
+
+### Mettre à jour le serveur (nouvelle image)
+
+Le `db/` (SQLite) et les `screenshots/` vivent dans des volumes nommés, indépendants du conteneur :
+recréer `cerebro-server` sur une nouvelle image ne perd donc ni les sessions provisionnées ni les
+screenshots déjà reçus.
+
+**1. Tirer la nouvelle version** (répéter le login GHCR si le token a expiré) :
+
+```bash
+docker pull ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>
+```
+
+**2. Relancer la pile avec ce tag** — seul `cerebro-server` est recréé, Caddy continue de tourner
+sans interruption (même certificat, même empreinte, rien à recommuniquer aux agents) :
+
+```bash
+CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_SERVER_VERSION=<nouvelle-version> \
+  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+```
+
+**3. Vérifier la version effectivement lancée** :
+
+```bash
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml images cerebro-server
+```
+
+**Rollback** : même procédure en repointant `CEREBRO_SERVER_VERSION` sur le tag précédent (déjà
+présent localement s'il a été pull une fois, pas besoin de réseau pour revenir en arrière).
+
+À faire la veille d'un examen, jamais le jour J (réseau isolé, voir plus haut) — et jamais pendant
+qu'une session est en cours (les candidats connectés perdraient leur connexion SignalR le temps que
+`cerebro-server` redémarre, même bref).
 
 ### Sécurisation du transport (TLS)
 
