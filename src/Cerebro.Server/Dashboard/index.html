@@ -1,106 +1,115 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
+    <meta charset="utf-8"/>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cerebro - Dashboard surveillant</title>
-  <link rel="stylesheet" href="css/dashboard.css" />
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Cerebro - Dashboard surveillant</title>
+    <link href="css/dashboard.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="frame">
-    <div class="crt-overlay" aria-hidden="true"></div>
+<div class="frame">
+    <div aria-hidden="true" class="crt-overlay"></div>
 
     <header class="hud">
-      <div class="hud-brand">
-        <span class="brand-title">CEREBRO<span class="brand-cursor"></span></span>
-        <span class="brand-sub">Surveillance</span>
-      </div>
-      <div class="hud-stats">
-        <span class="stat-sessions">SESSIONS <strong id="hudSessionCount">0</strong></span>
-        <span class="stat-online">EN LIGNE <strong id="hudOnlineCount">-</strong></span>
-        <button id="logoutButton" class="btn btn-ghost hud-logout">⏻ DÉCONNEXION</button>
-      </div>
+        <div class="hud-brand">
+            <span class="brand-title">CEREBRO<span class="brand-cursor"></span></span>
+            <span class="brand-sub">Surveillance</span>
+        </div>
+        <div class="hud-stats">
+            <span class="stat-sessions">SESSIONS <strong id="hudSessionCount">0</strong></span>
+            <span class="stat-online">EN LIGNE <strong id="hudOnlineCount">-</strong></span>
+            <button class="btn btn-ghost hud-logout" id="logoutButton">⏻ DÉCONNEXION</button>
+        </div>
     </header>
 
-    <section id="sessionPicker" class="view">
-      <div class="view-head">
-        <div>
-          <div class="eyebrow">▚ SÉLECTIONNE UNE ÉPREUVE</div>
-          <h1>Épreuves planifiées</h1>
+    <section class="view" id="sessionPicker">
+        <div class="view-head">
+            <div>
+                <div class="eyebrow">▚ SÉLECTIONNE UNE ÉPREUVE</div>
+                <h1>Épreuves planifiées</h1>
+            </div>
+            <div class="view-head-actions">
+                <button class="btn btn-outline" id="createSessionButton">+ NOUVELLE SESSION</button>
+                <button class="btn btn-lime" id="refreshButton">↻ ACTUALISER</button>
+            </div>
         </div>
-        <div class="view-head-actions">
-          <button id="createSessionButton" class="btn btn-outline">+ NOUVELLE SESSION</button>
-          <button id="refreshButton" class="btn btn-lime">↻ ACTUALISER</button>
+        <div class="refresh-flash" hidden id="refreshFlash">✓ liste synchronisée à <span id="refreshFlashTime"></span>
         </div>
-      </div>
-      <div id="refreshFlash" class="refresh-flash" hidden>✓ liste synchronisée à <span id="refreshFlashTime"></span></div>
 
-      <div id="sessionList" class="session-list"></div>
+        <div class="session-list" id="sessionList"></div>
     </section>
 
-    <div id="createSessionOverlay" class="activity-overlay" hidden>
-      <aside class="activity-drawer create-session-drawer" aria-labelledby="createSessionDrawerLabel">
-        <div class="drawer-head">
-          <span id="createSessionDrawerLabel" class="eyebrow">▚ NOUVELLE SESSION</span>
-          <button id="closeCreateSessionButton" class="drawer-close" aria-label="Fermer">✕</button>
-        </div>
+    <div class="activity-overlay" hidden id="createSessionOverlay">
+        <aside aria-labelledby="createSessionDrawerLabel" class="activity-drawer create-session-drawer">
+            <div class="drawer-head">
+                <span class="eyebrow" id="createSessionDrawerLabel">▚ NOUVELLE SESSION</span>
+                <button aria-label="Fermer" class="drawer-close" id="closeCreateSessionButton">✕</button>
+            </div>
 
-        <form id="createSessionForm" class="login-form">
-          <label class="login-label" for="createSessionCode">Code de session</label>
-          <input class="login-input" type="text" id="createSessionCode" name="sessionCode" autocomplete="off" required autofocus />
+            <form class="login-form" id="createSessionForm">
+                <label class="login-label" for="createSessionCode">Code de session</label>
+                <input autocomplete="off" autofocus class="login-input" id="createSessionCode" name="sessionCode"
+                       required type="text"/>
 
-          <label class="login-label" for="createSessionRosterFile">Roster (fichier JSON de l'école)</label>
-          <input class="login-input" type="file" id="createSessionRosterFile" name="rosterFile" accept="application/json,.json" />
+                <label class="login-label" for="createSessionRosterFile">Roster (fichier JSON de l'école)</label>
+                <input accept="application/json,.json" class="login-input" id="createSessionRosterFile" name="rosterFile"
+                       type="file"/>
 
-          <label class="login-label" for="createSessionRosterJson">Ou coller le JSON directement</label>
-          <textarea class="login-input create-session-roster" id="createSessionRosterJson" name="rosterJson" rows="8" placeholder='{"ec": "E01", "date": "2026-10-09", "rattrapage": false, "etudiants": {"...": {"nom": "...", "id": "..."}}}'></textarea>
+                <label class="login-label" for="createSessionRosterJson">Ou coller le JSON directement</label>
+                <textarea class="login-input create-session-roster" id="createSessionRosterJson" name="rosterJson"
+                          placeholder='{"ec": "E01", "date": "2026-10-09", "rattrapage": false, "etudiants": {"...": {"nom": "...", "id": "..."}}}'
+                          rows="8"></textarea>
 
-          <div id="createSessionError" class="login-error" hidden></div>
+                <div class="login-error" hidden id="createSessionError"></div>
 
-          <button type="submit" class="btn btn-lime login-submit">▶ CRÉER LA SESSION</button>
-        </form>
-      </aside>
+                <button class="btn btn-lime login-submit" type="submit">▶ CRÉER LA SESSION</button>
+            </form>
+        </aside>
     </div>
 
-    <section id="sessionDetail" class="view" hidden>
-      <div class="detail-toolbar">
-        <button id="backButton" class="btn btn-ghost">← LISTE DES ÉPREUVES</button>
-        <span class="sep">|</span>
-        <span id="currentSessionStatus" class="session-live-status"></span>
-      </div>
-      <h1 id="currentSessionTitle" class="session-title">Détail de l'épreuve</h1>
-      <div class="detail-actions">
-        <button id="startButton" class="btn btn-lime">▶ DÉMARRER L'ÉPREUVE</button>
-        <button id="stopButton" class="btn btn-coral">■ ARRÊTER L'ÉPREUVE</button>
-        <button id="toggleActivityButton" class="btn btn-outline">☰ JOURNAL D'ACTIVITÉ</button>
-      </div>
-
-      <div class="candidate-table">
-        <div class="candidate-head">
-          <div>Candidat</div><div>Connexion</div><div>Statut</div><div>Dernier vu</div><div>Dernier screenshot</div>
+    <section class="view" hidden id="sessionDetail">
+        <div class="detail-toolbar">
+            <button class="btn btn-ghost" id="backButton">← LISTE DES ÉPREUVES</button>
+            <span class="sep">|</span>
+            <span class="session-live-status" id="currentSessionStatus"></span>
         </div>
-        <div id="candidateList"></div>
-      </div>
+        <h1 class="session-title" id="currentSessionTitle">Détail de l'épreuve</h1>
+        <div class="detail-actions">
+            <button class="btn btn-lime" id="startButton">▶ DÉMARRER L'ÉPREUVE</button>
+            <button class="btn btn-coral" id="stopButton">■ ARRÊTER L'ÉPREUVE</button>
+            <button class="btn btn-outline" id="toggleActivityButton">☰ JOURNAL D'ACTIVITÉ</button>
+        </div>
+
+        <div class="candidate-table">
+            <div class="candidate-head">
+                <div>Candidat</div>
+                <div>Connexion</div>
+                <div>Statut</div>
+                <div>Dernier ping</div>
+                <div>Dernier screenshot</div>
+            </div>
+            <div id="candidateList"></div>
+        </div>
     </section>
 
-    <div id="activityOverlay" class="activity-overlay" hidden>
-      <aside class="activity-drawer" aria-labelledby="activityDrawerLabel">
-        <div class="drawer-head">
-          <span id="activityDrawerLabel" class="eyebrow">▚ JOURNAL D'ACTIVITÉ</span>
-          <button id="closeActivityButton" class="drawer-close" aria-label="Fermer">✕</button>
-        </div>
-        <div id="activityList"></div>
-      </aside>
+    <div class="activity-overlay" hidden id="activityOverlay">
+        <aside aria-labelledby="activityDrawerLabel" class="activity-drawer">
+            <div class="drawer-head">
+                <span class="eyebrow" id="activityDrawerLabel">▚ JOURNAL D'ACTIVITÉ</span>
+                <button aria-label="Fermer" class="drawer-close" id="closeActivityButton">✕</button>
+            </div>
+            <div id="activityList"></div>
+        </aside>
     </div>
 
     <footer class="page-footer">
-      <span>© <span id="footerYear"></span> Cerebro - Surveillance des épreuves</span>
-      <span class="footer-status">SYSTÈME OPÉRATIONNEL</span>
+        <span>© <span id="footerYear"></span> Cerebro - Surveillance des épreuves</span>
+        <span class="footer-status">SYSTÈME OPÉRATIONNEL</span>
     </footer>
-  </div>
+</div>
 
-  <script src="lib/signalr/signalr.min.js"></script>
-  <script type="module" src="js/main.js"></script>
+<script src="lib/signalr/signalr.min.js"></script>
+<script src="js/main.js" type="module"></script>
 </body>
 </html>
