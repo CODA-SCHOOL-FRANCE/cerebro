@@ -1,10 +1,10 @@
-# Développement local
+# Développement
 
 ## Prérequis
 
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
-- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication
-  self-contained, voir [Déploiement pour un examen](DEPLOYMENT.md))
+- `Node.js` / `npm`
+- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour un examen](DEPLOYMENT.md))
 
 ## Structure du dépôt
 
@@ -70,10 +70,4 @@ dotnet test --filter "Category=Unit"        # logique pure, rapide
 dotnet test --filter "Category=Integration"  # capture réelle, disque réel, SignalR réel
 ```
 
-Les tests d'intégration de capture d'écran ne valident que l'OS sur lequel ils s'exécutent — à
-rejouer sur une vraie machine Windows et Linux avant d'y faire confiance. En environnement CI
-headless (sans session d'affichage), ils échoueront probablement et devront être exclus du
-pipeline.
-
-Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scénarios d'erreur),
-voir [TESTING.md](../TESTING.md).
+Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scénarios d'erreur), voir [TESTING.md](../TESTING.md).
