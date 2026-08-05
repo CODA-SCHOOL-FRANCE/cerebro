@@ -21,3 +21,12 @@ services:
   cerebro-server:
     build: !reset null
     image: ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}
+
+  caddy:
+    environment:
+      # Le fichier de base retombe silencieusement sur "localhost" si la variable n'est pas
+      # fournie (pratique pour un essai en local) — en prod, cet oubli produit un certificat TLS
+      # valide uniquement pour "localhost", donc injoignable depuis l'IP réelle du poste serveur :
+      # un échec silencieux et confus le jour d'un examen. On la rend obligatoire ici : Compose
+      # refuse de démarrer avec un message clair plutôt que ce piège.
+      CEREBRO_SERVER_ADDRESS: ${CEREBRO_SERVER_ADDRESS:?Définir CEREBRO_SERVER_ADDRESS=<ip-ou-hostname-du-poste-serveur> avant de lancer docker-compose.prod.yml (voir docs/DEPLOYMENT.md, section Serveur)}

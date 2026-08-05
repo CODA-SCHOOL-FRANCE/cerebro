@@ -27,6 +27,16 @@
 # l'agent, lui, valide le certificat par épingle d'empreinte plutôt que par la chaîne de confiance
 # du système, voir CEREBRO_SERVER_CERT_THUMBPRINT dans le README).
 
+# Un navigateur/curl connecté directement sur une IP littérale (pas un nom d'hôte) n'envoie
+# généralement aucun SNI dans le ClientHello TLS (RFC 6066) : sans "default_sni", Caddy ne sait
+# alors pas quel certificat servir (un seul site est pourtant configuré) et répond par une alerte
+# TLS "internal_error" avant même l'envoi du certificat. CEREBRO_SERVER_ADDRESS étant justement une
+# IP dans ce déploiement (le poste serveur sur le réseau d'examen), on force explicitement le
+# certificat à utiliser quand aucun SNI n'est présenté.
+{
+    default_sni {$CEREBRO_SERVER_ADDRESS:localhost}
+}
+
 {$CEREBRO_SERVER_ADDRESS:localhost}:8443 {
     tls internal
 
