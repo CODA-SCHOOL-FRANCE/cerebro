@@ -1,0 +1,71 @@
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_c7592059c553ad 2
+  s_347d16a866ffe9::t_97903d62ece36d 85
+  s_347d16a866ffe9::t_a127feb5c9fca3 73-84,86-99
+  s_347d16a866ffe9::t_c51340fa658f24 100
+src/Cerebro.Server/Admin/ExamProvisioner.cs
+  s_347d16a866ffe9::t_5f5b73e98e34b7 24
+  s_347d16a866ffe9::t_1bd3f962a79d27 1-23,25-52
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_3adaaffa3111c5 35-36
+  s_347d16a866ffe9::t_bd8eb8f36e88ef 53,55-56
+  s_347d16a866ffe9::t_1ebd7b94ee53b1 67-68
+src/Cerebro.Server/Services/SessionRegistry.cs
+  h_0a88d9aba8622a 129-131
+  h_0a88d9aba8622a 128
+docs/FEATURES.md
+  s_347d16a866ffe9::t_1b13a5299caf31 16
+  h_0a88d9aba8622a 17-19
+src/Cerebro.Server/Telemetry/CerebroTelemetry.cs
+  s_347d16a866ffe9::t_74d1302bf8b05f 25-27
+src/Cerebro.Server/wwwroot/ts/hub-client.ts
+  s_347d16a866ffe9::t_c3e143b5f06211 49-50
+  s_347d16a866ffe9::t_2f03f237defb6f 18
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_083658cb407fad 32-35,42-64
+  s_347d16a866ffe9::t_559700a6fd5d79 65
+src/Cerebro.Server/Telemetry/SessionActivityEventType.cs
+  s_347d16a866ffe9::t_8ee317f7d6a6dd 9
+src/Cerebro.Shared/FunctionalExtensions.cs
+  h_0a88d9aba8622a 1-9
+TESTING.md
+  s_347d16a866ffe9::t_f370a487af7faf 209-211
+tests/Cerebro.Tests/Unit/SessionRegistryTests.cs
+  h_0a88d9aba8622a 10-11,15,25,27,39,47,50,59,61,67,75-76,78,81,87,90,99,107,115-116,118-119,128
+src/Cerebro.Server/Admin/AdminCli.cs
+  s_347d16a866ffe9::t_191e2722855403 55-57,59
+src/Cerebro.Server/wwwroot/ts/dom.ts
+  s_347d16a866ffe9::t_8d59a68488fd8a 18-26
+src/Cerebro.Server/wwwroot/ts/create-session.ts
+  s_347d16a866ffe9::t_232fb83ddd9c65 1-57,59-63,78-87
+  s_347d16a866ffe9::t_3b2ac311b3e3c3 58,64-76
+  s_347d16a866ffe9::t_81a7564b264a84 77
+src/Cerebro.Server/wwwroot/css/dashboard.css
+  s_347d16a866ffe9::t_302e5f57408d08 180-181
+  s_347d16a866ffe9::t_7ad89c79b28966 369-378
+src/Cerebro.Server/wwwroot/ts/main.ts
+  s_347d16a866ffe9::t_9a84b2e15c6e7a 3,8-10
+  s_347d16a866ffe9::t_862c3e0ae03145 118-132
+  s_347d16a866ffe9::t_7b9e27a30229b3 133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "7c840de58d39fb527f0259ab2ffcbe58b7bcbf78",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
