@@ -7,6 +7,7 @@ const EVENT_LABELS: Record<string, string> = {
   CandidateDisconnected: "Déconnexion",
   ReadinessReported: "Statut de préparation",
   ScreenshotReceived: "Screenshot reçu",
+  SessionCreated: "Session créée",
   SessionStarted: "Épreuve démarrée",
   SessionEnded: "Épreuve arrêtée"
 };
