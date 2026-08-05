@@ -40,10 +40,10 @@
     </section>
 
     <div id="createSessionOverlay" class="activity-overlay" hidden>
-      <aside class="activity-drawer create-session-drawer">
+      <aside class="activity-drawer create-session-drawer" aria-labelledby="createSessionDrawerLabel">
         <div class="drawer-head">
-          <span class="eyebrow">▚ NOUVELLE SESSION</span>
-          <button id="closeCreateSessionButton" class="drawer-close">✕</button>
+          <span id="createSessionDrawerLabel" class="eyebrow">▚ NOUVELLE SESSION</span>
+          <button id="closeCreateSessionButton" class="drawer-close" aria-label="Fermer">✕</button>
         </div>
 
         <form id="createSessionForm" class="login-form">
@@ -69,7 +69,7 @@
         <span class="sep">|</span>
         <span id="currentSessionStatus" class="session-live-status"></span>
       </div>
-      <h1 id="currentSessionTitle" class="session-title"></h1>
+      <h1 id="currentSessionTitle" class="session-title">Détail de l'épreuve</h1>
       <div class="detail-actions">
         <button id="startButton" class="btn btn-lime">▶ DÉMARRER L'ÉPREUVE</button>
         <button id="stopButton" class="btn btn-coral">■ ARRÊTER L'ÉPREUVE</button>
@@ -85,10 +85,10 @@
     </section>
 
     <div id="activityOverlay" class="activity-overlay" hidden>
-      <aside class="activity-drawer">
+      <aside class="activity-drawer" aria-labelledby="activityDrawerLabel">
         <div class="drawer-head">
-          <span class="eyebrow">▚ JOURNAL D'ACTIVITÉ</span>
-          <button id="closeActivityButton" class="drawer-close">✕</button>
+          <span id="activityDrawerLabel" class="eyebrow">▚ JOURNAL D'ACTIVITÉ</span>
+          <button id="closeActivityButton" class="drawer-close" aria-label="Fermer">✕</button>
         </div>
         <div id="activityList"></div>
       </aside>
