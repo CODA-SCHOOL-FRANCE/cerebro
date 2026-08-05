@@ -1,0 +1,45 @@
+src/Cerebro.Server/wwwroot/ts/session-detail.ts
+  s_347d16a866ffe9::t_b2c5b6dc1bde84 6
+  s_347d16a866ffe9::t_f74a5aa66e956b 47
+src/Cerebro.Server/wwwroot/ts/dom.ts
+  s_347d16a866ffe9::t_073b11f7df4675 35
+src/Cerebro.Server/wwwroot/css/dashboard.css
+  s_347d16a866ffe9::t_9c932022542893 120
+docs/FEATURES.md
+  s_347d16a866ffe9::t_2bbfd40d25883f 24
+src/Cerebro.Server/Services/IScreenshotStore.cs
+  s_347d16a866ffe9::t_8b9c4882a4b73a 6-7
+src/Cerebro.Server/Services/ScreenshotStore.cs
+  h_0a88d9aba8622a 45,51-54,62
+  s_347d16a866ffe9::t_ba695835e92b1d 1-2,25-33,42-44,46,48,57,61,67,74-75
+  s_347d16a866ffe9::t_05dc41511aaf58 34-41,47,49-50,55-56,58-60,63-66,68-73
+  s_347d16a866ffe9::t_16686c01ecce88 76
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_1f13b68dd23cd4 82
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_1e19afdeaf45a9 45-50
+src/Cerebro.Server/Program.cs
+  s_347d16a866ffe9::t_9fef5a3b613165 133-157
+  s_347d16a866ffe9::t_f1ccbef5b3ac1a 64-67,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "c47443a880421de2c08b94111e07abe59dc0202c",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
