@@ -1,0 +1,48 @@
+src/Cerebro.Server/Program.cs
+  h_0a88d9aba8622a 36,50,81
+src/Cerebro.Server/wwwroot/login.html
+  h_0a88d9aba8622a 6,38
+src/Cerebro.Server/scripts/copy-signalr.mjs
+  h_0a88d9aba8622a 2
+src/Cerebro.Server/wwwroot/ts/candidate-list.ts
+  h_0a88d9aba8622a 107
+tests/Cerebro.Tests/Integration/CerebroHubIntegrationTests.cs
+  h_0a88d9aba8622a 20,107,200
+src/Cerebro.Server/Dockerfile
+  h_0a88d9aba8622a 50,58
+src/Cerebro.Server/Data/SqliteSessionActivityStore.cs
+  h_0a88d9aba8622a 8
+docs/ARCHITECTURE.md
+  h_0a88d9aba8622a 63-67,69
+  s_347d16a866ffe9::t_24ee62f60da9a5 24,61-62,68
+src/Cerebro.Server/Cerebro.Server.csproj
+  h_0a88d9aba8622a 25,42
+src/Cerebro.Server/Dashboard/index.html
+  h_0a88d9aba8622a 7,21,71
+src/Cerebro.Agent/Cerebro.Agent.csproj
+  h_0a88d9aba8622a 32,47
+docs/USER-DOC.txt
+  h_0a88d9aba8622a 9,12-13,16,39
+  h_0a88d9aba8622a 17-18,36,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "57946db42d037a075ff8cddcd6834cec12afc39b",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "unknown"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
