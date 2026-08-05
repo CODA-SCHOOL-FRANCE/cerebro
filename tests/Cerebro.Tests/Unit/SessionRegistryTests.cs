@@ -24,22 +24,21 @@ public class SessionRegistryTests
     {
         _registry.Join("SESSION-A", "alice", "conn-1");
 
-        var result = _registry.UpdateReadiness("conn-1", isReady: false, CaptureFailureReason.PermissionDenied, "détail");
+        var result =
+            _registry.UpdateReadiness("conn-1", isReady: false, CaptureFailureReason.PermissionDenied, "détail");
 
-        Check.That(result).IsNotNull();
-        Check.That(result!.Value.SessionCode).IsEqualTo("SESSION-A");
+        Check.That(result.HasValue).IsTrue();
+        Check.That(result.Value.SessionCode).IsEqualTo("SESSION-A");
         Check.That(result.Value.Candidate.IsReady).IsEqualTo(false);
         Check.That(result.Value.Candidate.FailureReason).IsEqualTo(CaptureFailureReason.PermissionDenied);
         Check.That(result.Value.Candidate.FailureDetail).IsEqualTo("détail");
     }
 
     [Fact]
-    public void UpdateReadiness_ForUnknownConnection_ShouldReturnNull()
-    {
-        var result = _registry.UpdateReadiness("unknown-conn", isReady: true, null, null);
-
-        Check.That(result).IsNull();
-    }
+    public void UpdateReadiness_ForUnknownConnection_ShouldReturnNone()
+        => Check.That(
+                _registry.UpdateReadiness("unknown-conn", isReady: true, null, null).HasNoValue)
+            .IsTrue();
 
     [Fact]
     public void RecordScreenshot_ShouldUpdateLastScreenshotTimestamp()
@@ -49,8 +48,7 @@ public class SessionRegistryTests
 
         var result = _registry.RecordScreenshot("conn-1", timestamp);
 
-        Check.That(result).IsNotNull();
-        Check.That(result!.Value.Candidate.LastScreenshotAt).IsEqualTo(timestamp);
+        Check.That(result.Value.Candidate.LastScreenshotAt).IsEqualTo(timestamp);
     }
 
     [Fact]
@@ -60,8 +58,7 @@ public class SessionRegistryTests
 
         var result = _registry.Disconnect("conn-1");
 
-        Check.That(result).IsNotNull();
-        Check.That(result!.Value.Candidate.CandidateId).IsEqualTo("alice");
+        Check.That(result.Value.Candidate.CandidateId).IsEqualTo("alice");
         Check.That(result.Value.Candidate.IsConnected).IsFalse();
 
         var snapshot = _registry.GetSnapshot("SESSION-A");
@@ -77,7 +74,7 @@ public class SessionRegistryTests
 
         var result = _registry.Disconnect("conn-1");
 
-        Check.That(result).IsNull();
+        Check.That(result.HasValue).IsFalse();
         Check.That(_registry.GetSnapshot("SESSION-A").Single().IsConnected).IsTrue();
     }
 
@@ -89,25 +86,17 @@ public class SessionRegistryTests
 
         var result = _registry.Heartbeat("conn-1");
 
-        Check.That(result).IsNotNull();
-        Check.That(result!.Value.Candidate.LastSeenAt >= before).IsTrue();
+        Check.That(result.Value.Candidate.LastSeenAt >= before).IsTrue();
     }
 
     [Fact]
     public void Heartbeat_ForUnknownConnection_ShouldReturnNull()
-    {
-        var result = _registry.Heartbeat("unknown-conn");
-
-        Check.That(result).IsNull();
-    }
+        => Check.That(_registry.Heartbeat("unknown-conn").HasValue)
+            .IsFalse();
 
     [Fact]
     public void Disconnect_ForUnknownConnection_ShouldReturnNull()
-    {
-        var result = _registry.Disconnect("unknown-conn");
-
-        Check.That(result).IsNull();
-    }
+        => Check.That(_registry.Disconnect("unknown-conn").HasNoValue).IsTrue();
 
     [Fact]
     public void GetSnapshot_ShouldOnlyReturnCandidatesFromRequestedSession()
