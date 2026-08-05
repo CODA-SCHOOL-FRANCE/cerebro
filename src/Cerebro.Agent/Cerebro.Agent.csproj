@@ -29,7 +29,7 @@
     Un candidat qui décompile l'agent (dnSpy/ILSpy) ne doit pas retrouver directement les noms de
     types/méthodes/le flux du code. Renomme l'API (y compris publique, voir obfuscar.xml) et
     masque les chaînes littérales. Ne protège pas contre un reverse engineer déterminé (aucun
-    binaire distribué au client ne le peut jamais complètement) — ça relève le niveau nécessaire
+    binaire distribué au client ne le peut jamais complètement) - ça relève le niveau nécessaire
     au-delà d'un simple survol dans un décompilateur.
   -->
   <Target Name="ObfuscateAgent" AfterTargets="Build"
@@ -44,7 +44,7 @@
       <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)Cerebro.Agent.dll"/>
     </ItemGroup>
 
-    <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) — vérifier obfuscar.xml."
+    <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) - vérifier obfuscar.xml."
            Condition="!Exists('$(_ObfuscarOutDir)Cerebro.Agent.dll')"/>
 
     <Copy SourceFiles="@(_ObfuscatedAssembly)" DestinationFolder="$(OutDir)"/>

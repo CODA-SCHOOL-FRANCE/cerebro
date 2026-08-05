@@ -17,7 +17,7 @@ namespace Cerebro.Tests.Integration;
 
 /// <summary>
 /// Ces tests parlent uniquement au hub via de vraies connexions SignalR (HubConnection),
-/// exactement comme le feraient l'agent et le dashboard — aucune dépendance aux classes internes du serveur,
+/// exactement comme le feraient l'agent et le dashboard - aucune dépendance aux classes internes du serveur,
 /// à l'exception d'IExamRepository utilisé pour provisionner les candidats de test (équivalent du CLI `provision`)
 /// et d'IDashboardCredentialsStore pour définir les identifiants de test (équivalent du CLI `set-password`).
 /// </summary>
@@ -104,7 +104,7 @@ public sealed class CerebroHubIntegrationTests : IAsyncLifetime
             .WithUrl(new Uri(_factory.Server.BaseAddress, "hubs/cerebro"), options =>
             {
                 // options.Cookies seul ne suffit pas ici : SignalR ne l'applique qu'au HttpClientHandler
-                // qu'il construit lui-même et passe en paramètre à HttpMessageHandlerFactory — un
+                // qu'il construit lui-même et passe en paramètre à HttpMessageHandlerFactory - un
                 // paramètre qu'on ignore volontairement pour rediriger vers le TestServer en mémoire.
                 // Il faut donc rattacher le cookie à la main sur chaque requête.
                 options.HttpMessageHandlerFactory = _ => new CookieDelegatingHandler(_factory.Server.CreateHandler(), cookies);
@@ -197,7 +197,7 @@ public sealed class CerebroHubIntegrationTests : IAsyncLifetime
         // Une connexion qui n'est jamais passée par /account/login (donc sans cookie de session) :
         // les méthodes réservées au dashboard doivent rejeter l'appel, même si la connexion
         // SignalR elle-même s'établit sans problème ([Authorize] est posé méthode par méthode,
-        // pas sur le hub entier, pour ne pas bloquer les agents candidats — voir CerebroHub.cs).
+        // pas sur le hub entier, pour ne pas bloquer les agents candidats - voir CerebroHub.cs).
         await using var unauthenticated = CreateConnection();
         await unauthenticated.StartAsync();
 

@@ -5,7 +5,7 @@ using Microsoft.Data.Sqlite;
 namespace Cerebro.Server.Data;
 
 // Journal d'activité persisté (mêmes fichier/connexion que SqliteExamRepository) : la source de vérité
-// "qui a fait quoi, quand" côté OpenTelemetry — voir Telemetry/CerebroTelemetry.cs pour les traces/métriques
+// "qui a fait quoi, quand" côté OpenTelemetry - voir Telemetry/CerebroTelemetry.cs pour les traces/métriques
 // émises en parallèle (console par défaut, exportables ailleurs sans toucher au code d'instrumentation).
 public sealed class SqliteSessionActivityStore : ISessionActivityStore
 {

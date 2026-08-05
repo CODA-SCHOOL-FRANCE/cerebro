@@ -33,7 +33,7 @@ builder.Services.AddSingleton<ISessionRegistry, SessionRegistry>();
 builder.Services.AddSingleton<IScreenshotStore, ScreenshotStore>();
 
 // Résolution paresseuse (via IServiceProvider, pas builder.Configuration lu ici) : WebApplicationFactory
-// (tests d'intégration) injecte sa propre chaîne de connexion après ce point du top-level Program.cs —
+// (tests d'intégration) injecte sa propre chaîne de connexion après ce point du top-level Program.cs -
 // la lire trop tôt fait retomber les tests sur la config par défaut au lieu de leur base temporaire isolée.
 builder.Services.AddSingleton<IExamRepository>(sp =>
     new SqliteExamRepository(GetConnectionString(sp.GetRequiredService<IConfiguration>())));
@@ -47,7 +47,7 @@ static string GetConnectionString(IConfiguration configuration) =>
 
 // Accès au dashboard protégé par identifiant/mot de passe (cookie de session) : voir
 // Admin/AdminCommands.SetPassword pour définir les identifiants. Les agents candidats ne
-// s'authentifient jamais ici — ils restent validés par code de session + id candidat (voir
+// s'authentifient jamais ici - ils restent validés par code de session + id candidat (voir
 // CerebroHub.JoinAsCandidate), seules les méthodes du hub réservées au dashboard portent [Authorize].
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -78,7 +78,7 @@ builder.Services.AddAuthorization();
 
 // Traces/métriques Cerebro exportées en console par défaut (visibles sur le terminal du serveur) ;
 // le journal persisté en base (ISessionActivityStore, exposé au dashboard via GetSessionActivity)
-// reste la source principale pour consulter "qui a fait quoi" — voir Telemetry/CerebroTelemetry.cs.
+// reste la source principale pour consulter "qui a fait quoi" - voir Telemetry/CerebroTelemetry.cs.
 // Pour brancher un vrai backend (Seq, Grafana/Tempo...), remplacer AddConsoleExporter() par
 // AddOtlpExporter() sans toucher au code d'instrumentation (Hub, spans, compteurs).
 builder.Services.AddOpenTelemetry()

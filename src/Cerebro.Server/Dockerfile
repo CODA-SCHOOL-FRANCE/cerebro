@@ -47,7 +47,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # Utilisateur non-root : le conteneur ne tourne jamais en root en prod. L'image de base fournit
-# déjà un utilisateur "app" (UID/GID 1654) prévu pour cet usage — pas besoin d'en recréer un.
+# déjà un utilisateur "app" (UID/GID 1654) prévu pour cet usage - pas besoin d'en recréer un.
 RUN mkdir -p /app/db /app/screenshots \
     && chown -R app:app /app
 
@@ -55,7 +55,7 @@ COPY --from=dotnet-build --chown=app:app /app/publish .
 
 USER app
 
-# db/ (SQLite) et screenshots/ (captures candidats) doivent survivre aux redéploiements —
+# db/ (SQLite) et screenshots/ (captures candidats) doivent survivre aux redéploiements -
 # à monter en volume nommé ou bind mount en prod.
 VOLUME ["/app/db", "/app/screenshots"]
 

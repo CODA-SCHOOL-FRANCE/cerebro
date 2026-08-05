@@ -104,5 +104,5 @@ export function renderCandidates(): void {
     candidateListEl.append(row);
   }
 
-  hudOnlineCount.textContent = currentSession ? String(onlineCount) : "—";
+  hudOnlineCount.textContent = currentSession ? String(onlineCount) : "-";
 }

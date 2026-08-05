@@ -22,7 +22,7 @@
          pour ne jamais être servi par UseStaticFiles sans passer par la route authentifiée. Mais
          wwwroot bénéficie d'un pipeline de publication dédié (staticwebassets) qui copie son contenu
          automatiquement ; un fichier en dehors, lui, n'est PAS copié par `dotnet publish` sans cette
-         déclaration explicite (repro : `dotnet publish` puis chercher index.html dans la sortie —
+         déclaration explicite (repro : `dotnet publish` puis chercher index.html dans la sortie -
          absent sans la ligne ci-dessous, d'où le 500 FileNotFoundException observé en conteneur). -->
     <ItemGroup>
         <Content Include="Dashboard\**" CopyToPublishDirectory="PreserveNewest"/>
@@ -39,7 +39,7 @@
       seulement si des sources .ts ont changé (Inputs/Outputs) et si `npm install` a déjà été
       lancé une fois (node_modules présent). Sans Node/npm installés (ex: machine d'examen hors
       ligne), cette étape est silencieusement ignorée et le JS déjà committé dans wwwroot/js est
-      utilisé tel quel — dotnet run/build ne dépend jamais de Node pour fonctionner.
+      utilisé tel quel - dotnet run/build ne dépend jamais de Node pour fonctionner.
     -->
     <!-- Doit être déclaré hors de la cible : Inputs/Outputs sont évalués avant que le corps de la
          cible (ci-dessous) ne s'exécute, donc un ItemGroup interne à la cible serait toujours vide
