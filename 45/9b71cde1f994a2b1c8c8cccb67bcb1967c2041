@@ -1,0 +1,24 @@
+tests/Cerebro.Tests/Unit/SessionRegistryTests.cs
+  h_0a88d9aba8622a 30,38-41,77,94-95,99
+  h_0a88d9aba8622a 27-28,31,51,61,89,121
+src/Cerebro.Server/Services/SessionRegistry.cs
+  h_0a88d9aba8622a 4-5,9-10,60,65-66,68-72,74-75,77-79,84-86,88-90,92-93,95-96,98,100,104,111,116,124,128,137
+  h_0a88d9aba8622a 61-64,67,73,76,80-83,87,91,94,97,101,119-121,139
+src/Cerebro.Server/Services/ISessionRegistry.cs
+  h_0a88d9aba8622a 3,11,14,16,18
+  h_0a88d9aba8622a 12,21
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  h_0a88d9aba8622a 8,14,18,20-21,26-27,29,34,44-45,48,66,75,81,93,102,106,112,114,119-120,123,134,136,141,144,153,159-165,169-170,172,175-176,179,183-184,189-193,197-198,200-201,204,209,214-220,222-226,228-235
+  h_0a88d9aba8622a 15-17,35-37,49-52,82-85,171,174,178,180-181,195,202-203,205-206,208,221,227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "459b71cde1f994a2b1c8c8cccb67bcb1967c2041",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
