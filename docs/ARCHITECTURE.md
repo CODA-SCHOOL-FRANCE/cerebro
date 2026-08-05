@@ -32,7 +32,8 @@ C4Component
 
     Container_Boundary(server, "Cerebro.Server") {
         Component(adminCli, "AdminCli", "Mode CLI (ConsoleAppFramework)", "Parse le roster JSON de l'école, enregistre chaque candidat en base")
-        Component(hub, "CerebroHub", "SignalR Hub", "JoinAsCandidate, JoinAsDashboard, GetPlannedSessions, StartSession, StopSession, Ping, ReportReadiness, UploadScreenshot, GetSnapshot")
+        Component(provisioner, "ExamProvisioner", "Classe statique partagée", "Crée une session + ses candidats à partir d'un roster JSON ; utilisée par AdminCli ET CerebroHub")
+        Component(hub, "CerebroHub", "SignalR Hub", "JoinAsCandidate, JoinAsDashboard, GetPlannedSessions, CreateSession, StartSession, StopSession, Ping, ReportReadiness, UploadScreenshot, GetSnapshot")
         Component(registry, "SessionRegistry", "Service singleton (ConcurrentDictionary)", "État en mémoire des candidats par session : statut, dernière capture, connexion")
         Component(screenshotStore, "ScreenshotStore", "Service singleton", "Persiste les screenshots, assainit les identifiants contre le path traversal")
         Component(examRepository, "SqliteExamRepository", "Service singleton (Dapper)", "Sessions/candidats enregistrés persistés")
@@ -49,8 +50,10 @@ C4Component
     Rel(hub, screenshotStore, "Sauvegarde chaque screenshot reçu")
     Rel(hub, examRepository, "Vérifie que le candidat est enregistré")
     Rel(hub, activityStore, "Journalise chaque évènement métier")
+    Rel(hub, provisioner, "CreateSession : roster JSON collé/chargé depuis le dashboard")
     Rel(dashboard, credentialsStore, "/account/login, /account/logout (cookie de session)", "HTTP")
-    Rel(adminCli, examRepository, "Crée la session, enregistre chaque candidat du roster")
+    Rel(adminCli, provisioner, "provision : roster JSON lu depuis un fichier local")
+    Rel(provisioner, examRepository, "Crée la session, enregistre chaque candidat du roster")
     Rel(adminCli, credentialsStore, "set-password : définit le mot de passe du dashboard")
     Rel(screenshotStore, disk, "Écrit les fichiers PNG")
     Rel(examRepository, sqlite, "Lit/écrit")
@@ -61,7 +64,8 @@ C4Component
 - **`Cerebro.Agent`** — console app .NET, un binaire par OS. Capture l'écran, s'auto-teste à la connexion, puis boucle à intervalle aléatoire.
 - **`Cerebro.Server`** — ASP.NET Core + SignalR Hub. 
   - Reçoit les screenshots, maintient l'état des candidats par session, sert le dashboard temps réel. 
-  - Inclut aussi un mode admin en CLI (`provision`/`start`, via [ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework)) et la persistance des sessions/candidats en SQLite. 
+  - Inclut aussi un mode admin en CLI (`provision`/`start`, via [ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework)) et la persistance des sessions/candidats en SQLite.
+  - Provisionner une session (créer une session + y enregistrer les candidats depuis un roster JSON) est possible aussi bien depuis la CLI (`provision --input fichier.json`) que depuis le dashboard (bouton "+ NOUVELLE SESSION", roster collé ou chargé depuis un fichier côté navigateur) — les deux passent par la même logique partagée, `Admin/ExamProvisioner.cs`, pour rester rigoureusement équivalents.
   - Le dashboard (`wwwroot/ts/*.ts`) est écrit en TypeScript et compilé en JavaScript brut (`wwwroot/js/`, non committé, servi tel quel sans bundler). 
     - La compilation est automatique : `dotnet build`/`dotnet run` recompile les `.ts` modifiés avant chaque build (cible MSBuild `BuildDashboardTypeScript`). 
     - **Prérequis unique** : lancer `npm install` une fois depuis `src/Cerebro.Server/` (nécessite Node.js) — sans ça, `wwwroot/js/` n'existe pas et le dashboard ne se charge pas dans le navigateur.

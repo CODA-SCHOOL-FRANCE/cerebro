@@ -22,6 +22,9 @@ public static class CerebroTelemetry
     public static readonly Counter<long> ScreenshotsReceived =
         Meter.CreateCounter<long>("cerebro.screenshots.received", description: "Screenshots reçus.");
 
+    public static readonly Counter<long> SessionsCreated =
+        Meter.CreateCounter<long>("cerebro.sessions.created", description: "Sessions provisionnées (CLI ou dashboard).");
+
     public static readonly Counter<long> SessionsStarted =
         Meter.CreateCounter<long>("cerebro.sessions.started", description: "Sessions démarrées depuis le dashboard.");
 

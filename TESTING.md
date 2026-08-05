@@ -206,6 +206,9 @@ laisser traîner les données de ce test sur le disque.)
 | Code de session inconnu | `dotnet run --project src/Cerebro.Agent -- http://127.0.0.1:5289 SESSION-INCONNUE AAAA1111` | Rejet avec `Session ou identifiant candidat invalide.` |
 | Provisioning d'une session déjà existante | Relancer la commande `provision` de l'étape 3 à l'identique | Échec, code de sortie `1`, message `La session 'TEST-2026' existe déjà dans la base.` |
 | Provisioning avec un fichier roster manquant | `provision --session X --input /chemin/inexistant.json` | Échec, code de sortie `1`, message `Fichier d'entrée introuvable`. |
+| Création de session (dashboard) sur un code déjà existant | Bouton "+ NOUVELLE SESSION", coller le roster de l'étape 2, code de session `TEST-2026` | Erreur affichée dans le formulaire : `La session 'TEST-2026' existe déjà dans la base. Choisissez un autre code.` (même message que la CLI, voir `Admin/ExamProvisioner.cs`) |
+| Création de session (dashboard) avec un JSON invalide | Coller un texte qui n'est pas du JSON valide | Erreur affichée dans le formulaire : `Roster JSON invalide : ...` |
+| Création de session (dashboard) avec un roster sans étudiant | Coller `{"ec":"X","date":"2026-01-01","rattrapage":false,"etudiants":{}}` | Erreur affichée dans le formulaire : `Le roster ne contient aucun étudiant exploitable.` |
 | `start` (CLI) sur une session inconnue | `dotnet run --project src/Cerebro.Server -- start --session INCONNUE` | Échec, code de sortie `1`, message `Session 'INCONNUE' introuvable dans la base.` |
 | `StartSession`/`StopSession` (dashboard) sur une session inconnue | Appel hub direct avec un code de session inexistant | Rejet avec `HubException: Session introuvable.` (pas de commande CLI `stop` équivalente — l'arrêt se fait uniquement depuis le dashboard) |
 | Mauvais mot de passe sur `/login.html` | Se connecter avec un mauvais mot de passe | Message `Identifiant ou mot de passe incorrect.`, pas de redirection |

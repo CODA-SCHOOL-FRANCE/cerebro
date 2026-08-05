@@ -15,6 +15,15 @@ export const refreshButton = required<HTMLButtonElement>("refreshButton");
 export const refreshFlash = required<HTMLElement>("refreshFlash");
 export const refreshFlashTime = required<HTMLElement>("refreshFlashTime");
 
+export const createSessionButton = required<HTMLButtonElement>("createSessionButton");
+export const createSessionOverlay = required<HTMLElement>("createSessionOverlay");
+export const closeCreateSessionButton = required<HTMLButtonElement>("closeCreateSessionButton");
+export const createSessionForm = required<HTMLFormElement>("createSessionForm");
+export const createSessionCodeInput = required<HTMLInputElement>("createSessionCode");
+export const createSessionRosterFileInput = required<HTMLInputElement>("createSessionRosterFile");
+export const createSessionRosterJsonInput = required<HTMLTextAreaElement>("createSessionRosterJson");
+export const createSessionError = required<HTMLElement>("createSessionError");
+
 export const sessionDetailSection = required<HTMLElement>("sessionDetail");
 export const currentSessionTitle = required<HTMLHeadingElement>("currentSessionTitle");
 export const currentSessionStatus = required<HTMLElement>("currentSessionStatus");

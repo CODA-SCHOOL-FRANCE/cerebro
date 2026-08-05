@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using Cerebro.Server.Data;
 using ConsoleAppFramework;
 using static System.Environment;
@@ -39,8 +38,6 @@ internal sealed class QuietErrorFilter(ConsoleAppFilter next) : ConsoleAppFilter
 
 internal sealed class AdminCommands
 {
-    private static readonly JsonSerializerOptions RosterJsonOptions = new() {PropertyNameCaseInsensitive = true};
-
     /// <summary>Provisionne une session d'examen à partir d'un roster JSON.</summary>
     /// <param name="session">Code de la session à créer.</param>
     /// <param name="input">Chemin vers le fichier roster JSON.</param>
@@ -53,29 +50,13 @@ internal sealed class AdminCommands
         }
 
         IExamRepository repository = new SqliteExamRepository($"Data Source={db}");
-
-        if (await repository.SessionExistsAsync(session, CancellationToken.None))
-        {
-            throw new InvalidOperationException(
-                $"La session '{session}' existe déjà dans la base. Choisissez un autre code.");
-        }
-
         var rosterJson = await File.ReadAllTextAsync(input);
-        var roster = JsonSerializer.Deserialize<ExamRosterFile>(rosterJson, RosterJsonOptions);
-        if (roster is null || roster.Etudiants.Count == 0)
-        {
-            throw new InvalidOperationException($"Le fichier '{input}' ne contient aucun étudiant exploitable.");
-        }
 
-        var sessionId = await repository.CreateSessionAsync(session, CancellationToken.None);
+        var count = await ExamProvisioner.ProvisionAsync(
+            repository, session, rosterJson, CancellationToken.None,
+            onCandidateAdded: (email, student) => Console.WriteLine($"  {student.Nom} <{email}> ({student.Id})"));
 
-        foreach (var (email, student) in roster.Etudiants)
-        {
-            await repository.AddCandidateAsync(sessionId, student.Id, student.Nom, CancellationToken.None);
-            Console.WriteLine($"  {student.Nom} <{email}> ({student.Id})");
-        }
-
-        Console.WriteLine($"Session '{session}' provisionnée avec {roster.Etudiants.Count} candidat(s).");
+        Console.WriteLine($"Session '{session}' provisionnée avec {count} candidat(s).");
     }
 
     /// <summary>Démarre une session d'examen déjà provisionnée.</summary>

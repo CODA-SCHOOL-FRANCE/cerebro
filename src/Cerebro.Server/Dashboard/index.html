@@ -29,12 +29,39 @@
           <div class="eyebrow">▚ SÉLECTIONNE UNE ÉPREUVE</div>
           <h1>Épreuves planifiées</h1>
         </div>
-        <button id="refreshButton" class="btn btn-lime">↻ ACTUALISER</button>
+        <div class="view-head-actions">
+          <button id="createSessionButton" class="btn btn-outline">+ NOUVELLE SESSION</button>
+          <button id="refreshButton" class="btn btn-lime">↻ ACTUALISER</button>
+        </div>
       </div>
       <div id="refreshFlash" class="refresh-flash" hidden>✓ liste synchronisée à <span id="refreshFlashTime"></span></div>
 
       <div id="sessionList" class="session-list"></div>
     </section>
+
+    <div id="createSessionOverlay" class="activity-overlay" hidden>
+      <aside class="activity-drawer create-session-drawer">
+        <div class="drawer-head">
+          <span class="eyebrow">▚ NOUVELLE SESSION</span>
+          <button id="closeCreateSessionButton" class="drawer-close">✕</button>
+        </div>
+
+        <form id="createSessionForm" class="login-form">
+          <label class="login-label" for="createSessionCode">Code de session</label>
+          <input class="login-input" type="text" id="createSessionCode" name="sessionCode" autocomplete="off" required autofocus />
+
+          <label class="login-label" for="createSessionRosterFile">Roster (fichier JSON de l'école)</label>
+          <input class="login-input" type="file" id="createSessionRosterFile" name="rosterFile" accept="application/json,.json" />
+
+          <label class="login-label" for="createSessionRosterJson">Ou coller le JSON directement</label>
+          <textarea class="login-input create-session-roster" id="createSessionRosterJson" name="rosterJson" rows="8" placeholder='{"ec": "E01", "date": "2026-10-09", "rattrapage": false, "etudiants": {"...": {"nom": "...", "id": "..."}}}'></textarea>
+
+          <div id="createSessionError" class="login-error" hidden></div>
+
+          <button type="submit" class="btn btn-lime login-submit">▶ CRÉER LA SESSION</button>
+        </form>
+      </aside>
+    </div>
 
     <section id="sessionDetail" class="view" hidden>
       <div class="detail-toolbar">

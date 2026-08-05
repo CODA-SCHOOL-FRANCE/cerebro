@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cerebro.Server.Admin;
 using Cerebro.Server.Data;
 using Cerebro.Server.Services;
 using Cerebro.Server.Telemetry;
@@ -68,6 +69,34 @@ public sealed class CerebroHub : Hub<ICerebroDashboardClient>
     [Authorize]
     public Task<IReadOnlyList<ExamSessionSummaryDto>> GetPlannedSessions()
         => _examRepository.GetSessionsAsync(Context.ConnectionAborted);
+
+    // Même logique de provisioning que AdminCli.Provision (voir Admin/ExamProvisioner.cs) : le
+    // dashboard accepte le même roster JSON que celui passé à `--input`, collé ou chargé depuis un
+    // fichier côté navigateur, plutôt que d'exiger un accès CLI/SSH au serveur le jour de l'examen.
+    [Authorize]
+    public async Task<int> CreateSession(string sessionCode, string rosterJson)
+    {
+        using var activity = CerebroTelemetry.ActivitySource.StartActivity("Session.Create");
+        activity?.SetTag("cerebro.session_code", sessionCode);
+
+        int candidateCount;
+        try
+        {
+            candidateCount = await ExamProvisioner.ProvisionAsync(
+                _examRepository, sessionCode, rosterJson, Context.ConnectionAborted);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new HubException(ex.Message);
+        }
+
+        CerebroTelemetry.SessionsCreated.Add(1);
+        await _activityStore.RecordAsync(
+            sessionCode, candidateId: null, SessionActivityEventType.SessionCreated,
+            detail: $"{{\"candidateCount\":{candidateCount}}}", Context.ConnectionAborted);
+
+        return candidateCount;
+    }
 
     [Authorize]
     public Task<IReadOnlyList<CandidateRosterEntryDto>> GetCandidateRoster(string sessionCode)

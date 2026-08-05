@@ -125,15 +125,10 @@ public sealed class SessionRegistry : ISessionRegistry
         return (key.SessionCode, state.ToDto());
     }
 
-    public IReadOnlyList<CandidateStatusDto> GetSnapshot(string sessionCode)
-    {
-        if (!_sessions.TryGetValue(sessionCode, out var candidates))
-        {
-            return [];
-        }
-
-        return candidates.Values.Select(c => c.ToDto()).ToList();
-    }
+    public IReadOnlyList<CandidateStatusDto> GetSnapshot(string sessionCode) 
+        => _sessions.TryGetValue(sessionCode, out var candidates) 
+            ? candidates.Values.Select(c => c.ToDto()).ToList() 
+            : [];
 
     private (string SessionCode, CandidateState State)? FindState(string connectionId)
     {

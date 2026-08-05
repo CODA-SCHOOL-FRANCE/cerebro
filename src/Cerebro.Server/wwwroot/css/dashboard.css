@@ -177,6 +177,8 @@ h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: .01em; color:
   margin-bottom: 24px;
 }
 
+.view-head-actions { display: flex; align-items: center; gap: 10px; }
+
 .refresh-flash { font-size: 11px; color: var(--lime); letter-spacing: .08em; margin: -14px 0 18px; }
 
 .session-list { display: flex; flex-direction: column; gap: 14px; }
@@ -364,3 +366,13 @@ h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: .01em; color:
 }
 
 .login-submit { margin-top: 22px; align-self: flex-start; }
+
+.create-session-drawer { border-left-color: var(--lime); }
+
+.create-session-roster {
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+input[type="file"].login-input { padding: 8px 12px; box-shadow: none; }

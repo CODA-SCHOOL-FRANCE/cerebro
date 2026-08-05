@@ -1,9 +1,13 @@
 import { loadActivity, refreshActivityIfVisible } from "./activity-log.js";
 import { setCandidateScreenshotTimestamp, upsertCandidate } from "./candidate-list.js";
+import { closeCreateSessionForm, initCreateSessionForm, openCreateSessionForm } from "./create-session.js";
 import {
   activityOverlay,
   backButton,
   closeActivityButton,
+  closeCreateSessionButton,
+  createSessionButton,
+  createSessionOverlay,
   footerYear,
   hudOnlineCount,
   logoutButton,
@@ -109,6 +113,22 @@ refreshButton.addEventListener("click", () => {
   loadSessions()
     .then(() => flashRefreshConfirmation())
     .catch((err: unknown) => console.error("Chargement des sessions échoué", err));
+});
+
+initCreateSessionForm(hub, () => {
+  loadSessions()
+    .then(() => flashRefreshConfirmation())
+    .catch((err: unknown) => console.error("Chargement des sessions échoué", err));
+});
+
+createSessionButton.addEventListener("click", () => openCreateSessionForm());
+
+closeCreateSessionButton.addEventListener("click", () => closeCreateSessionForm());
+
+createSessionOverlay.addEventListener("click", (event) => {
+  if (event.target === createSessionOverlay) {
+    closeCreateSessionForm();
+  }
 });
 
 logoutButton.addEventListener("click", () => {
