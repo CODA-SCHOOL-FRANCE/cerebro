@@ -1,4 +1,4 @@
-# Déploiement pour un examen
+# Déploiement
 
 ## 1. Serveur (`Docker` + `Caddy`)
 
