@@ -1,0 +1,26 @@
+deploy/Caddyfile
+  s_347d16a866ffe9::t_2d8bc9751ed87e 30-39
+deploy/docker-compose.prod.yml
+  s_347d16a866ffe9::t_7bfe364811cf6b 24-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "d60704f34eba15f3bf74de3004d28db4bb5aed4d",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
