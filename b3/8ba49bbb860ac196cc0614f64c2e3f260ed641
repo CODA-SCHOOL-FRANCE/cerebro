@@ -1,0 +1,28 @@
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_f1313a2da3f70c 72
+  s_347d16a866ffe9::t_50efaf196cd464 88,90
+  s_347d16a866ffe9::t_2d4890e0065701 43,45
+  s_347d16a866ffe9::t_a49bc8cc92c85a 46
+  s_347d16a866ffe9::t_00da228404cad8 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "b38ba49bbb860ac196cc0614f64c2e3f260ed641",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
