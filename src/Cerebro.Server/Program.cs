@@ -61,10 +61,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
         options.Events.OnRedirectToLogin = context =>
         {
-            // La négociation SignalR et l'API de login sont des appels "API" : une redirection
-            // HTML n'a pas de sens pour eux, un 401 est ce qu'attend le client.
+            // La négociation SignalR, l'API de login et les téléchargements (zip de screenshots)
+            // sont des appels "API" : une redirection HTML n'a pas de sens pour eux (on ne veut
+            // surtout pas qu'un clic non authentifié télécharge une page de connexion nommée
+            // "*.zip"), un 401 est ce qu'attend le client.
             if (context.Request.Path.StartsWithSegments("/hubs") ||
-                context.Request.Path.StartsWithSegments("/account"))
+                context.Request.Path.StartsWithSegments("/account") ||
+                context.Request.Path.StartsWithSegments("/api"))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return Task.CompletedTask;
@@ -126,6 +129,31 @@ app.MapPost("/account/logout", async (HttpContext http) =>
     await http.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     return Results.Ok();
 });
+
+// Navigation directe du navigateur (<a href>, pas un appel SignalR) : le zip est streamé
+// directement dans la réponse HTTP, sans être bufferisé en mémoire côté serveur (voir
+// ScreenshotStore.WriteZipAsync). RequireAuthorization() suffit à protéger l'accès ; voir
+// OnRedirectToLogin plus haut pour le 401 (au lieu d'une redirection HTML) si la session cookie a
+// expiré entre-temps.
+app.MapGet("/api/sessions/{sessionCode}/screenshots.zip",
+    async (string sessionCode, IExamRepository examRepository, IScreenshotStore screenshotStore,
+        CancellationToken ct) =>
+    {
+        if (!await examRepository.SessionExistsAsync(sessionCode, ct))
+        {
+            return Results.NotFound();
+        }
+
+        if (!screenshotStore.HasScreenshots(sessionCode))
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Stream(
+            stream => screenshotStore.WriteZipAsync(sessionCode, stream, ct),
+            contentType: "application/zip",
+            fileDownloadName: $"{sessionCode}-screenshots.zip");
+    }).RequireAuthorization();
 
 // index.html vit hors de wwwroot (Dashboard/) précisément pour ne jamais être servi par
 // UseStaticFiles sans passer par cette route protégée.

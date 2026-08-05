@@ -21,6 +21,7 @@
 - **Reconnexion automatique** : coupure réseau ponctuelle gérée par l'agent, qui rejoint automatiquement la session et renvoie son dernier statut connu
 - **Capture à intervalle aléatoire**, configurable (8–12 minutes par défaut, soit ~10 minutes en moyenne) — volontairement aléatoire pour ne pas être prévisible.
 - **Stockage des screenshots côté serveur**, organisé par session/candidat, avec assainissement strict des identifiants pour empêcher toute traversée de répertoire.
+- **Téléchargement des screenshots en zip depuis le dashboard** : bouton "⬇ SCREENSHOTS (ZIP)" sur l'écran de détail d'une épreuve, génère à la volée un zip de tous les screenshots de la session (organisé par candidat), sans avoir besoin d'un accès au disque du serveur (`docker cp`/SSH) — voir [Récupérer les screenshots](DEPLOYMENT.md#récupérer-les-screenshots-depuis-le-conteneur).
 - **Chiffrement en transit par épinglage de certificat** : l'agent peut valider le certificat du serveur par empreinte SHA-256 plutôt que par la chaîne de confiance du système — utile derrière un reverse proxy TLS auto-signé sans avoir à installer une CA sur chaque machine étudiante (voir [Sécurisation du transport](DEPLOYMENT.md#sécurisation-du-transport-tls)).
 - **Authentification par identifiant candidat enregistré** : le provisioning charge le roster officiel de l'épreuve (export existant de l'école) en base SQLite, et le hub vérifie que l'identifiant fourni par l'agent y est bien enregistré pour cette session avant d'accepter la connexion.
 - **Dashboard protégé par identifiant/mot de passe** 

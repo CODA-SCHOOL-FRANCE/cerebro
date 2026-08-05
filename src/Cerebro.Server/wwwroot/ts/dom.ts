@@ -32,6 +32,7 @@ export const startButton = required<HTMLButtonElement>("startButton");
 export const stopButton = required<HTMLButtonElement>("stopButton");
 export const candidateListEl = required<HTMLDivElement>("candidateList");
 export const toggleActivityButton = required<HTMLButtonElement>("toggleActivityButton");
+export const downloadScreenshotsButton = required<HTMLAnchorElement>("downloadScreenshotsButton");
 export const activityOverlay = required<HTMLElement>("activityOverlay");
 export const closeActivityButton = required<HTMLButtonElement>("closeActivityButton");
 export const activityListEl = required<HTMLDivElement>("activityList");
