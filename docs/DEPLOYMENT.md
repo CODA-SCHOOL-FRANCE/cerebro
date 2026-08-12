@@ -127,6 +127,26 @@ L'agent valide alors le certificat du serveur par **épinglage d'empreinte** plu
 
 Le **navigateur du surveillant**, lui, affichera un avertissement pour ce certificat auto-signé : à accepter une fois manuellement sur ce seul poste (bouton "Continuer quand même" / "Avancé...").
 
+### Compte du dashboard (surveillant)
+
+Le dashboard n'a qu'un seul compte, protégé par cookie de session (`/login.html`, `/account/login`) — les identifiants sont définis via la commande admin `set-password`, jamais en clair dans un fichier de config.
+
+Le conteneur `cerebro-server` tourne par défaut en mode serveur web (pas en mode admin) : la commande s'exécute donc dans le conteneur déjà démarré, avec `docker compose exec` :
+
+```bash
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
+  exec -it cerebro-server dotnet Cerebro.Server.dll set-password --username surveillant
+```
+
+- `-it` est indispensable : la saisie du mot de passe est masquée (aucun echo, ni terminal ni historique shell), ce qui a besoin d'un vrai terminal interactif.
+- `surveillant` est un nom d'utilisateur libre (un seul compte supporté pour l'instant).
+- Pas besoin de préciser `--db` : le chemin par défaut (`db/cerebro.db`, relatif au `WORKDIR /app` du conteneur) correspond déjà au volume nommé `cerebro-db` monté par `docker-compose.yml`.
+- Le mot de passe est demandé deux fois (saisie + confirmation).
+
+À faire une seule fois (la base SQLite étant dans un volume nommé, les identifiants survivent aux redéploiements — voir plus haut) ; à refaire uniquement après un `docker compose down -v` ou un changement de mot de passe voulu.
+
+Le surveillant se connecte ensuite sur `https://<server-ip>:8443/login.html` avec ce couple identifiant/mot de passe.
+
 ## 2. Agent, un exécutable autonome par OS
 
 `dotnet publish` en mode self-contained + fichier unique : l'étudiant n'a pas besoin du runtime .NET installé.

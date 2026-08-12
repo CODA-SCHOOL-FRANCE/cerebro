@@ -5,16 +5,10 @@ using Cerebro.Agent.Realtime;
 using ConsoleAppFramework;
 using Microsoft.AspNetCore.SignalR;
 
-if (args.Length == 0)
-{
-    args =
-    [
-        Prompt("URL du serveur (ex: https://192.168.1.10:8443) : "),
-        Prompt("Code de session : "),
-        Prompt("Identifiant candidat (votre id) : "),
-    ];
-}
-
+// Pas de gestion spéciale pour args.Length == 0 : RunAgentAsync a déjà tous ses paramètres
+// optionnels et gère elle-même le repli (fichier de config, variable d'env, prompt) — un bloc
+// séparé ici forcerait un prompt pour serverUrl/sessionCode/candidateId avant même que
+// RunAgentAsync ne s'exécute, court-circuitant cerebro-agent.config.json.
 await ConsoleApp.RunAsync(args, RunAgentAsync);
 
 /// <summary>Lance l'agent Cerebro : capture d'écran et signal de présence envoyés au serveur pour la durée de l'épreuve.</summary>
