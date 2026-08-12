@@ -1,0 +1,14 @@
+.github/workflows/server-release.yml
+  h_0a88d9aba8622a 21,56,58,60,84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c5688712e5affafb522deff3bfb1b2a704ff8b9a",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
