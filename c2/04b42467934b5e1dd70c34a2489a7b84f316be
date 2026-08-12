@@ -1,0 +1,25 @@
+.github/workflows/server-release.yml
+  s_81532ec70e1f55::t_cfd4f1b0cf0ceb 72
+  s_81532ec70e1f55::t_9c8503896b929b 54-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c204b42467934b5e1dd70c34a2489a7b84f316be",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_81532ec70e1f55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6454539c-9df4-4903-bc47-4bb68e5fc473",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
