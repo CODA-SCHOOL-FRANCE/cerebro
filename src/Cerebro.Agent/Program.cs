@@ -18,10 +18,10 @@ if (args.Length == 0)
 await ConsoleApp.RunAsync(args, RunAgentAsync);
 
 /// <summary>Lance l'agent Cerebro : capture d'écran et signal de présence envoyés au serveur pour la durée de l'épreuve.</summary>
-/// <param name="serverUrl">URL du serveur (ex: https://192.168.1.10:8443).</param>
+/// <param name="serverUrl">URL du serveur (ex: https://192.168.1.10:8443). Par défaut : fichier cerebro-agent.config.json à côté de l'exécutable, sinon demandée interactivement.</param>
 /// <param name="sessionCode">Code de session.</param>
 /// <param name="candidateId">Identifiant candidat (votre id).</param>
-/// <param name="certThumbprint">Empreinte du certificat serveur (HTTPS auto-signé). Par défaut : variable d'environnement CEREBRO_SERVER_CERT_THUMBPRINT, sinon demandée interactivement si l'URL est en HTTPS.</param>
+/// <param name="certThumbprint">Empreinte du certificat serveur (HTTPS auto-signé). Par défaut : fichier cerebro-agent.config.json, sinon variable d'environnement CEREBRO_SERVER_CERT_THUMBPRINT, sinon demandée interactivement si l'URL est en HTTPS.</param>
 static async Task<int> RunAgentAsync(
     [Argument] string? serverUrl = null,
     [Argument] string? sessionCode = null,
@@ -29,9 +29,13 @@ static async Task<int> RunAgentAsync(
     [Argument] string? certThumbprint = null,
     CancellationToken cancellationToken = default)
 {
+    var configFile = AgentConfigFile.Load(AppContext.BaseDirectory);
+
+    serverUrl ??= configFile?.ServerUrl;
     serverUrl ??= Prompt("URL du serveur (ex: https://192.168.1.10:8443) : ");
     sessionCode ??= Prompt("Code de session : ");
     candidateId ??= Prompt("Identifiant candidat (votre id) : ");
+    certThumbprint ??= configFile?.CertThumbprint;
     certThumbprint ??= Environment.GetEnvironmentVariable("CEREBRO_SERVER_CERT_THUMBPRINT");
 
     // Uniquement pertinent en HTTPS (certificat auto-signé épinglé par empreinte, voir

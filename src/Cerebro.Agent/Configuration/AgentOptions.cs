@@ -4,6 +4,6 @@ public sealed record AgentOptions(
     string ServerUrl,
     string SessionCode,
     string CandidateId,
-    int MinIntervalSeconds = 480,
-    int MaxIntervalSeconds = 720,
+    int MinIntervalSeconds = 60,
+    int MaxIntervalSeconds = 600,
     int PingIntervalSeconds = 60);

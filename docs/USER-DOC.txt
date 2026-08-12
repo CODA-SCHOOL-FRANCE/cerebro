@@ -26,14 +26,34 @@ LINUX
         chmod +x ./Cerebro.Agent
         ./Cerebro.Agent
 
+Configuration (pour le surveillant)
+------------------------------------
+
+L'URL du serveur et l'empreinte du certificat sont les mêmes pour tous les candidats d'une session
+— les faire saisir à la main est source d'erreurs (l'empreinte est un long code hexadécimal).
+
+Pour les pré-remplir : renommer cerebro-agent.config.example.json en cerebro-agent.config.json
+(dans le même dossier que l'exécutable), et y indiquer l'URL et l'empreinte réelles du serveur pour
+la session du jour :
+
+  {
+    "serverUrl": "https://192.168.1.10:8443",
+    "certThumbprint": "A1B2C3D4E5F60718293A4B5C6D7E8F901234567"
+  }
+
+Distribuer ensuite l'exécutable accompagné de ce fichier cerebro-agent.config.json aux candidats.
+Si le fichier est absent, l'agent redemande ces informations comme avant (rien de cassé pour un
+usage sans configuration préalable).
+
 Utilisation
 -----------
 
 Lancer l'exécutable sans argument : il demande successivement :
-  1. l'URL du serveur (communiquée par le surveillant, ex: https://192.168.1.10:8443)
+  1. l'URL du serveur (ignoré si déjà présent dans cerebro-agent.config.json — voir ci-dessus)
   2. le code de session (communiqué par le surveillant)
   3. votre identifiant candidat (le vôtre, communiqué par le surveillant)
-  4. si l'URL est en HTTPS, l'empreinte du certificat du serveur (communiquée par le surveillant — laisser vide si non applicable)
+  4. si l'URL est en HTTPS, l'empreinte du certificat du serveur (ignoré si déjà présent dans
+     cerebro-agent.config.json — laisser vide si demandée et non applicable)
 
 Une fois connecté, l'agent tourne en arrière-plan pendant toute la durée de l'épreuve : ne pas le fermer avant la fin annoncée par le surveillant.
 En cas de problème (message d'erreur, refus de connexion), contactez immédiatement le surveillant avant de continuer l'épreuve.
