@@ -1,0 +1,25 @@
+deploy/Caddyfile
+  s_347d16a866ffe9::t_664087326aeb89 49-50,55-56,58,62-71,73
+  s_347d16a866ffe9::t_6f89ecdb0c8259 41-45
+  s_347d16a866ffe9::t_5d6fffc9854af6 36-40,57
+  s_347d16a866ffe9::t_3db8ad6a3aad2b 51-53
+  s_347d16a866ffe9::t_194d5b9f43c11c 46-47,54
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_4de34a9a0f0126 103-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "341edacdc7146c01fe97df561ba59500e346a582",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
