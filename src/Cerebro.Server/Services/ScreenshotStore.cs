@@ -19,16 +19,16 @@ public sealed class ScreenshotStore(IWebHostEnvironment environment) : IScreensh
         return fullPath;
     }
 
-    public bool HasScreenshots(string sessionCode)
+    public bool HasExportableContent(string sessionCode)
     {
         var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode));
         return Directory.Exists(directory) &&
-               Directory.EnumerateFiles(directory, "*.webp", SearchOption.AllDirectories).Any();
+               Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories).Any();
     }
 
-    // Un fichier par candidat/screenshot, réunis dans un seul zip organisé par candidat
-    // (CAND0001/20260101_...webp) : le surveillant récupère tout d'un coup pour une session donnée,
-    // sans avoir à fouiller le disque du serveur.
+    // Tout le dossier de la session (screenshots par candidat *.webp + activity.log à la racine,
+    // voir FileSessionActivityStore) réuni dans un seul zip : le surveillant récupère les preuves
+    // d'une session en un clic, sans avoir à fouiller le disque du serveur.
     //
     // `destination` est la réponse HTTP en streaming (voir Program.cs) : Kestrel y interdit les
     // I/O synchrones, or ZipArchive.Dispose() écrit la table centrale du zip via des appels Write
@@ -48,7 +48,7 @@ public sealed class ScreenshotStore(IWebHostEnvironment environment) : IScreensh
                 await using var tempFileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
                 await using var archive = new ZipArchive(tempFileStream, ZipArchiveMode.Create);
 
-                foreach (var filePath in Directory.EnumerateFiles(directory, "*.webp", SearchOption.AllDirectories))
+                foreach (var filePath in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 

@@ -24,7 +24,7 @@ src/
     Hubs/CerebroHub.cs
     Services/          # SessionRegistry (état en mémoire), ScreenshotStore (disque)
     Data/              # IExamRepository/SqliteExamRepository (Dapper) : sessions + candidats enregistrés
-                       # ISessionActivityStore/SqliteSessionActivityStore (Dapper) : journal d'activité
+                       # ISessionActivityStore/FileSessionActivityStore : journal d'activité (texte, screenshots/{session}/activity.log)
     Admin/             # AdminCli (`provision`/`start`, ConsoleAppFramework) + ExamRoster (format du roster de l'école)
     Telemetry/         # CerebroTelemetry (ActivitySource + Meter OpenTelemetry), SessionActivityEventType
     wwwroot/           # dashboard (index.html + app.js + client SignalR vendoré)

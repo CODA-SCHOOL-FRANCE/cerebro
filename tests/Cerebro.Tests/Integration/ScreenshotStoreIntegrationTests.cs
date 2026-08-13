@@ -1,6 +1,5 @@
+using System.IO.Compression;
 using Cerebro.Server.Services;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using NFluent;
 
 namespace Cerebro.Tests.Integration;
@@ -8,16 +7,6 @@ namespace Cerebro.Tests.Integration;
 [Trait("Category", "Integration")]
 public sealed class ScreenshotStoreIntegrationTests : IDisposable
 {
-    private sealed class FakeWebHostEnvironment : IWebHostEnvironment
-    {
-        public string EnvironmentName { get; set; } = "Test";
-        public string ApplicationName { get; set; } = "Cerebro.Tests";
-        public string WebRootPath { get; set; } = string.Empty;
-        public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
-        public string ContentRootPath { get; set; } = string.Empty;
-        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
-    }
-
     private readonly string _contentRoot;
     private readonly ScreenshotStore _store;
 
@@ -75,4 +64,39 @@ public sealed class ScreenshotStoreIntegrationTests : IDisposable
         Check.That(fullSavedPath).StartsWith(fullContentRoot);
         Check.That(path).Not.Contains("..");
     }
+
+    [Fact]
+    public async Task WriteZipAsync_ShouldIncludeActivityLog_AlongsideCandidateScreenshots()
+    {
+        await _store.SaveAsync("SESSION-A", "alice", [1, 2, 3], DateTimeOffset.UtcNow);
+
+        // Écrit là où FileSessionActivityStore place le journal : à la racine du dossier de
+        // session, en sibling des sous-dossiers candidats.
+        var sessionDirectory = Path.Combine(_contentRoot, "screenshots", "SESSION-A");
+        await File.WriteAllTextAsync(Path.Combine(sessionDirectory, "activity.log"), "2026-01-01T00:00:00Z | CandidateJoined | alice | ");
+
+        using var destination = new MemoryStream();
+        await _store.WriteZipAsync("SESSION-A", destination, CancellationToken.None);
+
+        destination.Position = 0;
+        using var archive = new ZipArchive(destination, ZipArchiveMode.Read);
+        var entryNames = archive.Entries.Select(e => e.FullName).ToList();
+
+        Check.That(entryNames).Contains("activity.log");
+        Check.That(entryNames.Any(name => name.StartsWith("alice/") && name.EndsWith(".webp"))).IsTrue();
+    }
+
+    [Fact]
+    public void HasExportableContent_ShouldReturnTrue_WhenOnlyActivityLogExists_NoScreenshots()
+    {
+        var sessionDirectory = Path.Combine(_contentRoot, "screenshots", "SESSION-A");
+        Directory.CreateDirectory(sessionDirectory);
+        File.WriteAllText(Path.Combine(sessionDirectory, "activity.log"), "2026-01-01T00:00:00Z | SessionCreated |  | 1 candidat(s)");
+
+        Check.That(_store.HasExportableContent("SESSION-A")).IsTrue();
+    }
+
+    [Fact]
+    public void HasExportableContent_ShouldReturnFalse_WhenSessionDirectoryDoesNotExist()
+        => Check.That(_store.HasExportableContent("UNKNOWN-SESSION")).IsFalse();
 }

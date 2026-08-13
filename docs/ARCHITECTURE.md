@@ -37,12 +37,12 @@ C4Component
         Component(registry, "SessionRegistry", "Service singleton (ConcurrentDictionary)", "État en mémoire des candidats par session : statut, dernière capture, connexion")
         Component(screenshotStore, "ScreenshotStore", "Service singleton", "Persiste les screenshots, assainit les identifiants contre le path traversal")
         Component(examRepository, "SqliteExamRepository", "Service singleton (Dapper)", "Sessions/candidats enregistrés persistés")
-        Component(activityStore, "SqliteSessionActivityStore", "Service singleton (Dapper)", "Journal d'activité par session (OpenTelemetry)")
+        Component(activityStore, "FileSessionActivityStore", "Service singleton", "Journal d'activité par session, texte brut (OpenTelemetry)")
         Component(credentialsStore, "SqliteDashboardCredentialsStore", "Service singleton (Dapper)", "Identifiants du dashboard (cookie auth), alimentés par 'set-password'")
     }
 
-    ContainerDb(disk, "Disque", "Système de fichiers", "screenshots/{session}/{candidat}/*.webp")
-    ContainerDb(sqlite, "cerebro.db", "SQLite", "ExamSessions, Candidates (id du roster), SessionActivityEvents, DashboardCredentials")
+    ContainerDb(disk, "Disque", "Système de fichiers", "screenshots/{session}/{candidat}/*.webp, screenshots/{session}/activity.log")
+    ContainerDb(sqlite, "cerebro.db", "SQLite", "ExamSessions, Candidates (id du roster), DashboardCredentials")
 
     Rel(agent, hub, "Invoque les méthodes du hub (sans authentification, validé par code de session + id candidat)", "SignalR")
     Rel(dashboard, hub, "Invoque / reçoit les évènements (méthodes réservées au dashboard protégées par [Authorize])", "SignalR")
@@ -55,9 +55,9 @@ C4Component
     Rel(adminCli, provisioner, "provision : roster JSON lu depuis un fichier local")
     Rel(provisioner, examRepository, "Crée la session, enregistre chaque candidat du roster")
     Rel(adminCli, credentialsStore, "set-password : définit le mot de passe du dashboard")
-    Rel(screenshotStore, disk, "Écrit les fichiers PNG")
+    Rel(screenshotStore, disk, "Écrit les fichiers WebP")
+    Rel(activityStore, disk, "Lit/écrit activity.log (texte brut, une ligne par évènement)")
     Rel(examRepository, sqlite, "Lit/écrit")
-    Rel(activityStore, sqlite, "Lit/écrit")
     Rel(credentialsStore, sqlite, "Lit/écrit")
 ```
 

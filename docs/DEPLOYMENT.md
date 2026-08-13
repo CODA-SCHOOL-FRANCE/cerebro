@@ -43,10 +43,11 @@ Pré-pull l'image (étapes 1-2) la veille de l'examen : le réseau d'examen est 
 ### Récupérer les screenshots depuis le conteneur
 
 **Le plus simple : depuis le dashboard**, sur l'écran de détail d'une épreuve, bouton
-"⬇ SCREENSHOTS (ZIP)" — télécharge un zip de tous les screenshots de la session (organisé par
-candidat), généré à la volée par le serveur. Ne nécessite aucun accès au disque du serveur. Ce qui
-suit (`docker cp`) n'est utile que pour un accès direct au disque (script, sauvegarde de plusieurs
-sessions d'un coup, session dont la base a été perdue mais dont les fichiers survivent encore).
+"⬇ Télécharger Session (ZIP)" — télécharge un zip de la session complète (tous les screenshots,
+organisés par candidat, plus le journal d'activité `activity.log`), généré à la volée par le
+serveur. Ne nécessite aucun accès au disque du serveur. Ce qui suit (`docker cp`) n'est utile que
+pour un accès direct au disque (script, sauvegarde de plusieurs sessions d'un coup, session dont la
+base a été perdue mais dont les fichiers survivent encore).
 
 Les screenshots vivent dans le volume nommé `cerebro-screenshots`, monté sur `/app/screenshots` dans le conteneur `cerebro-server`
 - Les copier vers l'hôte avec `docker compose cp` (référence le service par son nom, pas besoin de connaître le nom réel du conteneur ni du volume — ni l'un ni l'autre ne sont fixes, ils dépendent du nom du projet compose) :

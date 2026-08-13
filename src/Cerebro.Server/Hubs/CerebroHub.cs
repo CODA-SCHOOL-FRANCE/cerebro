@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Cerebro.Server.Admin;
 using Cerebro.Server.Data;
 using Cerebro.Server.Services;
@@ -92,7 +91,7 @@ public sealed class CerebroHub(
         CerebroTelemetry.SessionsCreated.Add(1);
         await activityStore.RecordAsync(
             sessionCode, candidateId: null, SessionActivityEventType.SessionCreated,
-            detail: $"{{\"candidateCount\":{candidateCount}}}", Context.ConnectionAborted);
+            detail: $"{candidateCount} candidat(s)", Context.ConnectionAborted);
 
         return candidateCount;
     }
@@ -175,7 +174,9 @@ public sealed class CerebroHub(
                 activity?.SetTag(CerebroSessionCodeTag, sessionCode);
                 activity?.SetTag(CerebroCandidateIdTag, candidate.CandidateId);
 
-                var detail = JsonSerializer.Serialize(new {isReady, failureReason, failureDetail});
+                var detail = isReady
+                    ? "prêt"
+                    : $"échec ({failureReason})" + (string.IsNullOrWhiteSpace(failureDetail) ? "" : $" — {failureDetail}");
                 await activityStore.RecordAsync(
                     sessionCode, candidate.CandidateId, SessionActivityEventType.ReadinessReported, detail,
                     Context.ConnectionAborted);
@@ -200,7 +201,7 @@ public sealed class CerebroHub(
                 await screenshotStore.SaveAsync(sessionCode, candidate.CandidateId, imageBytes, timestamp);
 
                 CerebroTelemetry.ScreenshotsReceived.Add(1);
-                var detail = JsonSerializer.Serialize(new {bytes = imageBytes.Length});
+                var detail = $"{imageBytes.Length:N0} octets";
                 await activityStore.RecordAsync(
                     sessionCode, candidate.CandidateId, SessionActivityEventType.ScreenshotReceived, detail,
                     Context.ConnectionAborted);

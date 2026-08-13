@@ -464,6 +464,6 @@ public sealed class CerebroHubIntegrationTests : IAsyncLifetime
 
         Check.That(activity.Select(e => e.EventType)).ContainsExactly(
             "SessionStarted", "CandidateJoined", "ReadinessReported", "ScreenshotReceived", "SessionEnded");
-        Check.That(activity.Single(e => e.EventType == "ScreenshotReceived").Detail).Contains("\"bytes\":3");
+        Check.That(activity.Single(e => e.EventType == "ScreenshotReceived").Detail).IsEqualTo("3 octets");
     }
 }

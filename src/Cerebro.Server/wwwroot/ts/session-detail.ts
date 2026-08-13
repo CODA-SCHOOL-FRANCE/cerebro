@@ -3,7 +3,7 @@ import {
   activityOverlay,
   currentSessionStatus,
   currentSessionTitle,
-  downloadScreenshotsButton,
+  downloadSessionButton,
   sessionDetailSection,
   sessionPickerSection,
   startButton,
@@ -44,7 +44,7 @@ export async function selectSession(hub: CerebroHubClient, session: ExamSessionS
   }
 
   currentSessionTitle.textContent = `Session ${session.sessionCode}`;
-  downloadScreenshotsButton.href = `/api/sessions/${encodeURIComponent(session.sessionCode)}/screenshots.zip`;
+  downloadSessionButton.href = `/api/sessions/${encodeURIComponent(session.sessionCode)}/export.zip`;
   renderCandidates();
   renderSessionDetail();
 

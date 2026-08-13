@@ -37,8 +37,7 @@ builder.Services.AddSingleton<IScreenshotStore, ScreenshotStore>();
 // la lire trop tôt fait retomber les tests sur la config par défaut au lieu de leur base temporaire isolée.
 builder.Services.AddSingleton<IExamRepository>(sp =>
     new SqliteExamRepository(GetConnectionString(sp.GetRequiredService<IConfiguration>())));
-builder.Services.AddSingleton<ISessionActivityStore>(sp =>
-    new SqliteSessionActivityStore(GetConnectionString(sp.GetRequiredService<IConfiguration>())));
+builder.Services.AddSingleton<ISessionActivityStore, FileSessionActivityStore>();
 builder.Services.AddSingleton<IDashboardCredentialsStore>(sp =>
     new SqliteDashboardCredentialsStore(GetConnectionString(sp.GetRequiredService<IConfiguration>())));
 
@@ -80,8 +79,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 // Traces/métriques Cerebro exportées en console par défaut (visibles sur le terminal du serveur) ;
-// le journal persisté en base (ISessionActivityStore, exposé au dashboard via GetSessionActivity)
-// reste la source principale pour consulter "qui a fait quoi" - voir Telemetry/CerebroTelemetry.cs.
+// le journal persisté en fichier texte (ISessionActivityStore, screenshots/{session}/activity.log,
+// exposé au dashboard via GetSessionActivity) reste la source principale pour consulter "qui a fait
+// quoi" - voir Telemetry/CerebroTelemetry.cs.
 // Pour brancher un vrai backend (Seq, Grafana/Tempo...), remplacer AddConsoleExporter() par
 // AddOtlpExporter() sans toucher au code d'instrumentation (Hub, spans, compteurs).
 builder.Services.AddOpenTelemetry()
@@ -132,10 +132,11 @@ app.MapPost("/account/logout", async (HttpContext http) =>
 
 // Navigation directe du navigateur (<a href>, pas un appel SignalR) : le zip est streamé
 // directement dans la réponse HTTP, sans être bufferisé en mémoire côté serveur (voir
-// ScreenshotStore.WriteZipAsync). RequireAuthorization() suffit à protéger l'accès ; voir
-// OnRedirectToLogin plus haut pour le 401 (au lieu d'une redirection HTML) si la session cookie a
-// expiré entre-temps.
-app.MapGet("/api/sessions/{sessionCode}/screenshots.zip",
+// ScreenshotStore.WriteZipAsync). Contient les screenshots ET le journal d'activité de la session
+// (screenshots/{session}/activity.log, voir FileSessionActivityStore) - export complet en un clic.
+// RequireAuthorization() suffit à protéger l'accès ; voir OnRedirectToLogin plus haut pour le 401
+// (au lieu d'une redirection HTML) si la session cookie a expiré entre-temps.
+app.MapGet("/api/sessions/{sessionCode}/export.zip",
     async (string sessionCode, IExamRepository examRepository, IScreenshotStore screenshotStore,
         CancellationToken ct) =>
     {
@@ -144,7 +145,7 @@ app.MapGet("/api/sessions/{sessionCode}/screenshots.zip",
             return Results.NotFound();
         }
 
-        if (!screenshotStore.HasScreenshots(sessionCode))
+        if (!screenshotStore.HasExportableContent(sessionCode))
         {
             return Results.NotFound();
         }
@@ -152,7 +153,7 @@ app.MapGet("/api/sessions/{sessionCode}/screenshots.zip",
         return Results.Stream(
             stream => screenshotStore.WriteZipAsync(sessionCode, stream, ct),
             contentType: "application/zip",
-            fileDownloadName: $"{sessionCode}-screenshots.zip");
+            fileDownloadName: $"{sessionCode}.zip");
     }).RequireAuthorization();
 
 // index.html vit hors de wwwroot (Dashboard/) précisément pour ne jamais être servi par
