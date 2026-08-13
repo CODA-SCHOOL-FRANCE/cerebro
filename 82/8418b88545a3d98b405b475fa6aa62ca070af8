@@ -1,0 +1,15 @@
+src/Cerebro.Server/Data/FileSessionActivityStore.cs
+  h_0a88d9aba8622a 74
+  h_0a88d9aba8622a 101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "828418b88545a3d98b405b475fa6aa62ca070af8",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
