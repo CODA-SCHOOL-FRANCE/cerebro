@@ -96,12 +96,25 @@ builder.Services.AddOpenTelemetry()
 
 var app = builder.Build();
 
-// Le serveur tourne en HTTP derrière un reverse proxy TLS (Caddy/nginx) sur le même hôte ;
-// ces en-têtes restaurent le schéma/l'IP d'origine transmis par le proxy.
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+// Le serveur tourne en HTTP derrière un reverse proxy TLS (Caddy) ; ces en-têtes restaurent le
+// schéma/l'IP d'origine transmis par le proxy (sans ça, les redirections générées par l'auth par
+// cookie, ex. vers /login.html, gardent le schéma "http" vu par Kestrel - symptôme observé :
+// redirection vers http://<ip>:8443/login.html au lieu de https://).
+//
+// KnownNetworks/KnownProxies vidés (défaut : loopback uniquement) car en déploiement
+// docker-compose.yml, Caddy tourne dans un conteneur séparé sur le réseau Docker interne, avec
+// une IP qui n'est PAS loopback - ForwardedHeadersMiddleware ignore alors silencieusement les
+// en-têtes X-Forwarded-* d'un expéditeur hors de sa liste de confiance (défaut restreint à
+// 127.0.0.0/8 et ::1, pensé pour un proxy natif sur le même hôte, voir Caddyfile modes A/B, où
+// le bug ne se produit pas). Sûr ici : cerebro-server ne publie aucun port, seul Caddy peut
+// l'atteindre (voir docker-compose.yml), donc rien d'autre ne peut usurper ces en-têtes.
+var forwardedHeadersOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+};
+forwardedHeadersOptions.KnownIPNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
