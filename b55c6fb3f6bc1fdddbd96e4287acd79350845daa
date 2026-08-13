@@ -1,0 +1,41 @@
+src/Cerebro.Agent/Program.cs
+  s_81532ec70e1f55::t_27ed98b593fe7c 21,24,32-34,38
+src/Cerebro.Agent/Configuration/AgentOptions.cs
+  h_0a88d9aba8622a 7-8
+  h_0a88d9aba8622a 9
+docs/cerebro-agent.config.example.json
+  s_81532ec70e1f55::t_87da45d11946da 1-2,4
+  s_81532ec70e1f55::t_b80b6374356058 3
+src/Cerebro.Agent/Configuration/AgentConfigFile.cs
+  s_81532ec70e1f55::t_07e83bc40fb084 1,3-22,24-33
+  h_0a88d9aba8622a 2,23
+.github/workflows/agent-release.yml
+  h_0a88d9aba8622a 60
+  s_81532ec70e1f55::t_952fd1f5283bd1 61-63
+tests/Cerebro.Tests/Unit/AgentConfigFileTests.cs
+  h_0a88d9aba8622a 3,10-11,14,20,28,38,40-43
+  s_81532ec70e1f55::t_2d8dab85fbcb0e 1-2,4-9,12-13,15-19,21-27,29-37,39,44-52
+docs/USER-DOC.txt
+  s_81532ec70e1f55::t_52fd3f28e8d24b 29-47,52,55-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b55c6fb3f6bc1fdddbd96e4287acd79350845daa",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_81532ec70e1f55": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6454539c-9df4-4903-bc47-4bb68e5fc473",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
