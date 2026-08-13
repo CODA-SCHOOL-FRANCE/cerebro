@@ -1,0 +1,59 @@
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_b7a760afa79deb 82
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_e77a91f878cc28 46-50
+src/Cerebro.Server/Data/DapperTypeHandlers.cs
+  s_347d16a866ffe9::t_e473e51f2ce15e 6-8
+tests/Cerebro.Tests/Integration/ScreenshotStoreIntegrationTests.cs
+  s_347d16a866ffe9::t_f0c36c8ceeedf0 67-101
+  s_347d16a866ffe9::t_b583977e78954b 1
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_3247f05f2b5f5e 94
+  s_347d16a866ffe9::t_eb5d7cf636105e 177-179
+  s_347d16a866ffe9::t_93c33b26343a3e 204
+tests/Cerebro.Tests/Integration/FakeWebHostEnvironment.cs
+  s_347d16a866ffe9::t_568fc64615e0c5 1-17
+docs/FEATURES.md
+  s_347d16a866ffe9::t_3489c1c2104c00 28-29
+  s_347d16a866ffe9::t_4c895ae1bb9900 24
+src/Cerebro.Server/Program.cs
+  s_347d16a866ffe9::t_4b2d4dc7c16840 40
+  s_347d16a866ffe9::t_8c2cf7292f322e 135-139,148,156
+  s_347d16a866ffe9::t_f9b6e2171c4d91 82-84
+tests/Cerebro.Tests/Integration/FileSessionActivityStoreIntegrationTests.cs
+  s_347d16a866ffe9::t_bed84d7b10367f 1-95
+tests/Cerebro.Tests/Integration/CerebroHubIntegrationTests.cs
+  s_347d16a866ffe9::t_d87bb79f480ee6 467
+src/Cerebro.Server/wwwroot/ts/session-detail.ts
+  s_347d16a866ffe9::t_aa3ea07d55e872 6
+  s_347d16a866ffe9::t_854af5c29333ee 47
+src/Cerebro.Server/Services/IScreenshotStore.cs
+  s_347d16a866ffe9::t_9d926c15cae8c9 6
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_4db0db913a1d9c 40,44-45
+  s_347d16a866ffe9::t_821194f28f902e 58-59
+src/Cerebro.Server/wwwroot/ts/dom.ts
+  s_347d16a866ffe9::t_39b0f4a48c5744 35
+src/Cerebro.Server/Data/FileSessionActivityStore.cs
+  s_347d16a866ffe9::t_4ef8db601c3797 1-100
+README.md
+  s_347d16a866ffe9::t_bc339d02180546 27
+src/Cerebro.Server/Services/ScreenshotStore.cs
+  s_347d16a866ffe9::t_8381536c84b927 22,26,29-31,51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "9813185c2b50fcdb18b814a6cf392b6fbe01984a",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
