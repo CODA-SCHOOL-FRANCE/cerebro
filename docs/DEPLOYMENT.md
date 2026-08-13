@@ -100,6 +100,8 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml im
 Sur un réseau d'examen isolé, il n'y a pas de CA publique disponible pour obtenir un certificat classique (type Let's Encrypt) : 
 - Caddy génère et sert automatiquement un certificat auto-signé via sa CA interne
 - rien à configurer manuellement, c'est déjà réglé par `deploy/Caddyfile`
+- la CA interne est personnalisée (`pki` global option) : le champ **Issuer** du certificat affiche "CODA Cerebro Intermediate CA" (Caddy ne permet pas de renseigner un champ Organization sur le certificat serveur lui-même)
+- le certificat serveur est valide **5 ans** (`lifetime 43800h`, au lieu des 12h par défaut) : le renouvellement automatique n'a donc quasiment jamais lieu, ce qui évite qu'une empreinte déjà distribuée aux candidats change silencieusement entre deux sessions
 
 **Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants. 
 Caddy l'affiche en clair dans ses propres logs au démarrage (voir `deploy/caddy-entrypoint.sh`) — pas besoin d'appeler `openssl` à la main :
