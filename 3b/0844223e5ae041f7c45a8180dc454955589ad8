@@ -1,0 +1,60 @@
+docs/FEATURES.md
+  s_347d16a866ffe9::t_2fa1078a888fdd 21
+src/Cerebro.Server/Data/IExamRepository.cs
+  s_347d16a866ffe9::t_781c32bbc887cd 29-30
+src/Cerebro.Server/Data/SqliteExamRepository.cs
+  s_347d16a866ffe9::t_12099ca208114e 210-236
+src/Cerebro.Server/Services/IScreenshotStore.cs
+  s_347d16a866ffe9::t_05bb1cca733776 8
+src/Cerebro.Server/Services/ScreenshotStore.cs
+  s_347d16a866ffe9::t_12dd3ed1622756 74-85
+src/Cerebro.Server/wwwroot/ts/dom.ts
+  s_347d16a866ffe9::t_6bc76e403bc800 33
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_fc16c6404598ca 36
+src/Cerebro.Server/wwwroot/ts/hub-client.ts
+  s_347d16a866ffe9::t_bb0dec7ba93476 55
+  s_347d16a866ffe9::t_0022e2cab9a69e 22
+src/Cerebro.Server/Telemetry/CerebroTelemetry.cs
+  s_347d16a866ffe9::t_9d1b0cac581977 33-35
+TESTING.md
+  s_347d16a866ffe9::t_6414c0714a3504 214-215
+tests/Cerebro.Tests/Integration/FileSessionActivityStoreIntegrationTests.cs
+  s_347d16a866ffe9::t_ab884290b24fa6 28,36,39
+tests/Cerebro.Tests/Integration/CerebroHubIntegrationTests.cs
+  s_347d16a866ffe9::t_6c1ea0fc5f3885 469-542
+  s_347d16a866ffe9::t_aef0b1b20dffbd 466
+src/Cerebro.Server/wwwroot/ts/create-session.ts
+  s_347d16a866ffe9::t_0c0b0f08713251 73
+  s_347d16a866ffe9::t_ce35469a1e3868 66-72
+src/Cerebro.Server/Dashboard/index.html
+  h_0a88d9aba8622a 84
+  h_0a88d9aba8622a 56-57
+src/Cerebro.Server/wwwroot/ts/main.ts
+  s_347d16a866ffe9::t_ba14638f88abc4 4-8,16
+  s_347d16a866ffe9::t_bcb0d79b341247 118-145
+  s_347d16a866ffe9::t_78f12836073441 3
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_43cd8ee79cf13a 150-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3b0844223e5ae041f7c45a8180dc454955589ad8",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
