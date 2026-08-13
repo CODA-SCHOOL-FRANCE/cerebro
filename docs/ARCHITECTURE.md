@@ -11,12 +11,12 @@ C4Container
         Container(agent, "Xavier", ".NET, exécutable self-contained", "Capture l'écran à intervalles aléatoires, s'auto-teste à la connexion")
         Container(server, "Cerebro.Server", "ASP.NET Core + SignalR Hub", "Maintient l'état des sessions et diffuse les mises à jour en temps réel")
         Container(dashboard, "Dashboard", "HTML/TypeScript + client SignalR", "Interface temps réel consultée par le surveillant")
-        ContainerDb(storage, "Stockage screenshots", "Système de fichiers", "Screenshots persistés par session/candidat")
+        ContainerDb(storage, "Stockage screenshots", "Système de fichiers", "Screenshots + journal d'activité, persistés par session/candidat")
     }
 
     Rel(candidat, agent, "Lance et exécute")
     Rel(agent, server, "JoinAsCandidate, Ping, ReportReadiness, UploadScreenshot", "SignalR / WebSocket")
-    Rel(server, storage, "Écrit chaque screenshot reçu")
+    Rel(server, storage, "Écrit chaque screenshot reçu + journalise chaque évènement")
     Rel(server, dashboard, "CandidateJoined, CandidateHeartbeat, CandidateReadinessUpdated, ScreenshotReceived, CandidateDisconnected", "SignalR / WebSocket")
     Rel(surveillant, dashboard, "Sélectionne une épreuve planifiée, démarre/arrête la session", "Navigateur")
 ```

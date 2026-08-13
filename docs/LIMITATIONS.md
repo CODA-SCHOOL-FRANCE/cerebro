@@ -7,25 +7,27 @@ Ce projet est fonctionnel mais **pas encore prêt pour un examen certificatif r�
   certificat côté agent). Reste un point d'attention : le navigateur du surveillant affichera un
   avertissement "connexion non sécurisée" pour le certificat auto-signé (à accepter une fois,
   humainement, sur ce seul poste — ce n'est pas automatisable sans CA publique).
-- ✅ ~~Aucune authentification sur le hub~~ — traité côté candidat : voir
-  [Provisionner une épreuve](DEPLOYMENT.md#3-provisionner-une-épreuve) (l'agent doit fournir un identifiant
-  candidat réellement enregistré en base pour cette session, via le roster officiel de l'épreuve).
-  Limites résiduelles : le **dashboard n'a toujours aucune authentification** — quiconque atteint
-  l'URL du serveur voit la liste de toutes les épreuves planifiées (`GetPlannedSessions`) et peut
-  démarrer/arrêter n'importe laquelle (`StartSession`/`StopSession`), sans distinction de rôle ; il
-  n'y a pas de limitation de débit sur les tentatives de connexion candidat (un identifiant inconnu
-  peut être retenté indéfiniment, sans blocage après N échecs) ; et l'identifiant candidat n'est pas
-  un secret cryptographique généré pour l'occasion — sa robustesse dépend entièrement de la façon
-  dont l'école génère et distribue ces id dans son propre outillage. **À sécuriser avant tout accès
-  réseau non maîtrisé au dashboard** (typiquement : réseau d'examen isolé + accès physique
-  restreint au poste surveillant, en attendant une authentification dédiée).
+- ✅ ~~Aucune authentification sur le hub~~ — traité des deux côtés : côté candidat, l'agent doit
+  fournir un identifiant candidat réellement enregistré en base pour cette session, via le roster
+  officiel de l'épreuve (voir [Provisionner une épreuve](DEPLOYMENT.md#3-provisionner-une-épreuve)) ;
+  côté dashboard, l'accès est protégé par identifiant/mot de passe (cookie de session, voir
+  [Compte du dashboard](DEPLOYMENT.md#compte-du-dashboard-surveillant)) — toutes les méthodes du hub
+  réservées au surveillant (`GetPlannedSessions`, `CreateSession`, `StartSession`, `StopSession`,
+  `DeleteSession`...) exigent cette session, plus une redirection vers `/login.html` pour toute page
+  non authentifiée. Limites résiduelles : un seul compte dashboard partagé (pas de comptes/rôles
+  distincts par surveillant) ; pas de limitation de débit sur les tentatives de connexion candidat
+  (un identifiant inconnu peut être retenté indéfiniment, sans blocage après N échecs) ; et
+  l'identifiant candidat n'est pas un secret cryptographique généré pour l'occasion — sa robustesse
+  dépend entièrement de la façon dont l'école génère et distribue ces id dans son propre outillage.
 - ⚠️ **Pas de signature de code.** macOS bloquera l'agent via Gatekeeper (pas de compte Apple
   Developer) ; Windows affichera un avertissement SmartScreen. Voir les instructions étudiants
   plus bas.
 - ⚠️ **Linux dépend d'outils externes non embarqués** (`grim`/`scrot`/`import`/`gnome-screenshot`) :
   à vérifier/installer sur les machines Linux avant l'examen.
 - ⚠️ **Pas de politique de rétention/suppression automatique** des screenshots après correction
-  (recommandé pour la conformité RGPD).
+  (recommandé pour la conformité RGPD) — une suppression manuelle par session est possible depuis
+  le dashboard (bouton "🗑 SUPPRIMER LA SESSION", voir [Fonctionnalités](FEATURES.md)), mais rien
+  d'automatique/planifié n'existe encore.
 - ✅ ~~Pas de "top départ"~~ — partiellement traité : le surveillant démarre/arrête désormais
   l'épreuve depuis le dashboard (`StartSession`/`StopSession`), ce qui bloque les nouvelles
   connexions candidat après l'arrêt. Limite résiduelle : arrêter la session ne déconnecte pas de

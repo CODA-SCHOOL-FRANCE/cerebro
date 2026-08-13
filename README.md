@@ -9,7 +9,7 @@ Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur s
 
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
 - `Node.js` / `npm`
-- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour un examen](DEPLOYMENT.md))
+- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour un examen](docs/DEPLOYMENT.md))
 
 ## Structure du dépôt
 
@@ -75,7 +75,7 @@ dotnet test --filter "Category=Unit"        # logique pure, rapide
 dotnet test --filter "Category=Integration"  # capture réelle, disque réel, SignalR réel
 ```
 
-Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scénarios d'erreur), voir [TESTING.md](../TESTING.md).
+Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scénarios d'erreur), voir [TESTING.md](TESTING.md).
 
 ## Autres documentations
 - [Architecture](docs/ARCHITECTURE.md)

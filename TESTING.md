@@ -3,7 +3,7 @@
 Ce document décrit un scénario de test manuel de bout en bout pour valider une session d'examen
 complète sur une seule machine (un serveur + deux agents simulant des candidats), ainsi que les
 principaux scénarios d'erreur attendus. Il complète les tests automatisés (`dotnet test`, voir
-[Tests](docs/DEVELOPMENT.md#tests)) : ceux-ci valident chaque composant isolément, ce document valide
+[Tests](README.md#tests)) : ceux-ci valident chaque composant isolément, ce document valide
 le parcours complet tel que le vivrait un surveillant le jour J.
 
 ## Prérequis
@@ -155,9 +155,10 @@ Couper l'agent du candidat `AAAA1111` (`Ctrl+C` dans son terminal).
 
 Cliquer sur **Journal d'activité**.
 
-**Attendu** : une table chronologique apparaît avec au minimum, dans l'ordre :
-`Épreuve démarrée` → `Connexion` (× 2) → `Statut de préparation` (× 2) → `Screenshot reçu` (× 2, avec la
-taille en octets dans la colonne Détail) → `Déconnexion` (pour `AAAA1111`).
+**Attendu** : une table apparaît avec au minimum, du plus récent au plus ancien (ordre inversé,
+le plus récent événement en haut) :
+`Déconnexion` (pour `AAAA1111`) → `Screenshot reçu` (× 2, avec la taille en octets dans la colonne
+Détail) → `Statut de préparation` (× 2) → `Connexion` (× 2) → `Épreuve démarrée`.
 
 ### 11. Arrêter l'épreuve
 
