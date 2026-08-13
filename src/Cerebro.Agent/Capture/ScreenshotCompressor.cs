@@ -4,9 +4,6 @@ namespace Cerebro.Agent.Capture;
 
 public static class ScreenshotCompressor
 {
-    // Redimensionnement + qualité choisis pour rester lisibles comme preuve anti-fraude (texte à
-    // l'écran, contenu de navigateur/IDE) tout en réduisant nettement le poids d'un screenshot
-    // 4K/Retina brut.
     private const int MaxDimension = 1280;
     private const int WebpQuality = 75;
 
@@ -42,9 +39,9 @@ public static class ScreenshotCompressor
             return null;
         }
 
-        var scale = (double)MaxDimension / longestSide;
-        var targetWidth = Math.Max(1, (int)Math.Round(bitmap.Width * scale));
-        var targetHeight = Math.Max(1, (int)Math.Round(bitmap.Height * scale));
+        var scale = (double) MaxDimension / longestSide;
+        var targetWidth = Math.Max(1, (int) Math.Round(bitmap.Width * scale));
+        var targetHeight = Math.Max(1, (int) Math.Round(bitmap.Height * scale));
 
         return bitmap.Resize(new SKImageInfo(targetWidth, targetHeight), SKSamplingOptions.Default);
     }

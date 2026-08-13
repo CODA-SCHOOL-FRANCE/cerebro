@@ -56,7 +56,7 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
   cp cerebro-server:/app/screenshots ./screenshots-export
 ```
 
-Organisés par session puis par candidat : `screenshots-export/{session}/{candidat}/*.png`. 
+Organisés par session puis par candidat : `screenshots-export/{session}/{candidat}/*.webp`. 
 Cette commande fonctionne conteneur démarré ou arrêté (tant qu'il n'a pas été supprimé) ; en cas de suppression du conteneur (`docker compose down` sans `-v`), le volume et son contenu survivent — seul `docker compose down -v` les détruit.
 
 Si pas d'accès au `docker-compose.yml`, utiliser `docker cp` directement sur le conteneur :

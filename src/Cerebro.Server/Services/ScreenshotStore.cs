@@ -2,12 +2,9 @@ using System.IO.Compression;
 
 namespace Cerebro.Server.Services;
 
-public sealed class ScreenshotStore : IScreenshotStore
+public sealed class ScreenshotStore(IWebHostEnvironment environment) : IScreenshotStore
 {
-    private readonly string _rootPath;
-
-    public ScreenshotStore(IWebHostEnvironment environment)
-        => _rootPath = Path.Combine(environment.ContentRootPath, "screenshots");
+    private readonly string _rootPath = Path.Combine(environment.ContentRootPath, "screenshots");
 
     public async Task<string> SaveAsync(string sessionCode, string candidateId, byte[] imageBytes,
         DateTimeOffset timestamp)

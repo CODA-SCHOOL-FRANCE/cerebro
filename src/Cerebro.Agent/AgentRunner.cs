@@ -137,9 +137,10 @@ public sealed class AgentRunner
 
         await _connection.ReportReadinessAsync(isReady, reason, detail, cancellationToken);
 
-        Activity?.Invoke(isReady
-            ? "Statut de préparation envoyé : prêt."
-            : $"Statut de préparation envoyé : échec ({reason}).");
+        if (!isReady)
+        {
+            Activity?.Invoke($"Statut de préparation envoyé : échec ({reason}).");
+        }
     }
 
     private async Task HandleReconnectedAsync()
