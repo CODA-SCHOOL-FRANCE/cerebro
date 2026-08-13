@@ -1,0 +1,25 @@
+tests/Cerebro.Tests/Integration/DashboardAuthIntegrationTests.cs
+  s_347d16a866ffe9::t_f39a528f453917 5-6
+  s_347d16a866ffe9::t_987975e62e4400 115-116,128,130-134,148-149
+  s_347d16a866ffe9::t_f2da5ff30d5edd 117-127,129,135-147
+  s_347d16a866ffe9::t_2abe177a475e5b 114
+src/Cerebro.Server/Program.cs
+  s_347d16a866ffe9::t_7c59dcc07cab31 99-111,114,116-117
+  s_347d16a866ffe9::t_d4db1a85f3fa31 115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b5cce08539d46d552b44d2713d301adef46ba69b",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
