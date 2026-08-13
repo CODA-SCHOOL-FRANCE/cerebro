@@ -1,0 +1,51 @@
+src/Cerebro.Agent/obfuscar.xml
+  s_347d16a866ffe9::t_fd586db9e93afc 18
+src/Cerebro.Agent/Program.cs
+  s_347d16a866ffe9::t_cadee16fa22b01 11,14-15,18
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_15e58e5075677a 11,30
+  s_347d16a866ffe9::t_510f0ad9270e23 64
+README.md
+  s_347d16a866ffe9::t_64606b54f9e38d 4
+  s_347d16a866ffe9::t_d4d62f651a301b 19
+src/Cerebro.Agent/Configuration/AgentConfigFile.cs
+  s_347d16a866ffe9::t_cbfd17d8b14d46 11
+src/Cerebro.Agent/Cerebro.Agent.csproj
+  s_347d16a866ffe9::t_5cc92bbfe22818 18-20
+  s_347d16a866ffe9::t_e871c054368d0d 47,51
+docs/USER-DOC.txt
+  s_347d16a866ffe9::t_59c50c3ea4a332 12,16,18,20-22,26-27
+  s_347d16a866ffe9::t_16b2e5d52ead7b 35,44,52,56
+  s_347d16a866ffe9::t_d4ff2857967fa5 1-2
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_39bcbaa921e807 101,109
+  s_347d16a866ffe9::t_5d4408197eed24 1
+  s_347d16a866ffe9::t_f2e6d6a6dcd88d 72,78
+  s_347d16a866ffe9::t_aac1f46d761eb6 62
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_d964f56d957a31 121
+  s_347d16a866ffe9::t_2e99346add32b4 150,153
+  s_347d16a866ffe9::t_e97c30f5f08c3c 213
+  s_347d16a866ffe9::t_0c8c0998e2b1b6 164
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0b7aaa534ad1908d283d5ff4ea4c21b97a9f7bb3",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
