@@ -463,7 +463,81 @@ public sealed class CerebroHubIntegrationTests : IAsyncLifetime
         var activity = await dashboard.InvokeAsync<List<SessionActivityEventDto>>("GetSessionActivity", sessionCode);
 
         Check.That(activity.Select(e => e.EventType)).ContainsExactly(
-            "SessionStarted", "CandidateJoined", "ReadinessReported", "ScreenshotReceived", "SessionEnded");
+            "SessionEnded", "ScreenshotReceived", "ReadinessReported", "CandidateJoined", "SessionStarted");
         Check.That(activity.Single(e => e.EventType == "ScreenshotReceived").Detail).IsEqualTo("3 octets");
+    }
+
+    [Fact]
+    public async Task DeleteSession_ShouldRemoveSessionFromDbAndDeleteItsFilesRecursively()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+        const string candidateId = "FFFB5AB1";
+        await RegisterCandidateAsync(sessionCode, candidateId);
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await using var candidate = CreateConnection();
+
+        await dashboard.StartAsync();
+        await candidate.StartAsync();
+        await candidate.InvokeAsync("JoinAsCandidate", sessionCode, candidateId);
+        await candidate.InvokeAsync("UploadScreenshot", new byte[] { 1, 2, 3 });
+
+        var environment = _factory.Services.GetRequiredService<IWebHostEnvironment>();
+        var sessionDirectory = Path.Combine(environment.ContentRootPath, "screenshots", sessionCode);
+        Check.That(Directory.Exists(sessionDirectory)).IsTrue();
+
+        await dashboard.InvokeAsync("DeleteSession", sessionCode);
+
+        var sessions = await dashboard.InvokeAsync<List<ExamSessionSummaryDto>>("GetPlannedSessions");
+        Check.That(sessions.Select(s => s.SessionCode)).Not.Contains(sessionCode);
+        Check.That(Directory.Exists(sessionDirectory)).IsFalse();
+    }
+
+    [Fact]
+    public async Task DeleteSession_ForUnknownSession_ShouldThrow()
+    {
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+
+        var exception = await Assert.ThrowsAsync<HubException>(
+            () => dashboard.InvokeAsync("DeleteSession", "SESSION-INCONNUE"));
+
+        Check.That(exception.Message).Contains("introuvable");
+    }
+
+    [Fact]
+    public async Task DeleteSession_WhileSessionIsRunning_ShouldBeRejected()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+        await RegisterCandidateAsync(sessionCode, "FFFB5AB1");
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+        await dashboard.InvokeAsync("StartSession", sessionCode);
+
+        var exception = await Assert.ThrowsAsync<HubException>(
+            () => dashboard.InvokeAsync("DeleteSession", sessionCode));
+
+        Check.That(exception.Message).Contains("en cours");
+
+        var sessions = await dashboard.InvokeAsync<List<ExamSessionSummaryDto>>("GetPlannedSessions");
+        Check.That(sessions.Select(s => s.SessionCode)).Contains(sessionCode);
+    }
+
+    [Fact]
+    public async Task DeleteSession_AfterSessionEnded_ShouldSucceed()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+        await RegisterCandidateAsync(sessionCode, "FFFB5AB1");
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+        await dashboard.InvokeAsync("StartSession", sessionCode);
+        await dashboard.InvokeAsync("StopSession", sessionCode);
+
+        await dashboard.InvokeAsync("DeleteSession", sessionCode);
+
+        var sessions = await dashboard.InvokeAsync<List<ExamSessionSummaryDto>>("GetPlannedSessions");
+        Check.That(sessions.Select(s => s.SessionCode)).Not.Contains(sessionCode);
     }
 }

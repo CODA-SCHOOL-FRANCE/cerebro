@@ -30,6 +30,7 @@ export const currentSessionStatus = required<HTMLElement>("currentSessionStatus"
 export const backButton = required<HTMLButtonElement>("backButton");
 export const startButton = required<HTMLButtonElement>("startButton");
 export const stopButton = required<HTMLButtonElement>("stopButton");
+export const deleteSessionButton = required<HTMLButtonElement>("deleteSessionButton");
 export const candidateListEl = required<HTMLDivElement>("candidateList");
 export const toggleActivityButton = required<HTMLButtonElement>("toggleActivityButton");
 export const downloadSessionButton = required<HTMLAnchorElement>("downloadSessionButton");

@@ -147,6 +147,34 @@ public sealed class CerebroHub(
         await Clients.Group(DashboardGroup(sessionCode)).SessionEnded(sessionCode, DateTimeOffset.UtcNow);
     }
 
+    // Irréversible : supprime la session et ses candidats en base, ainsi que tout son dossier
+    // screenshots/{session} (screenshots + activity.log), voir ScreenshotStore.DeleteSessionData.
+    // Pas d'entrée de journal d'activité pour cette action : le fichier qui l'accueillerait est
+    // justement celui qu'on supprime.
+    [Authorize]
+    public async Task DeleteSession(string sessionCode)
+    {
+        using var activity = CerebroTelemetry.ActivitySource.StartActivity("Session.Delete");
+        activity?.SetTag(CerebroSessionCodeTag, sessionCode);
+
+        if (!await examRepository.SessionExistsAsync(sessionCode, Context.ConnectionAborted))
+        {
+            throw new HubException("Session introuvable.");
+        }
+
+        var startedAt = await examRepository.GetStartedAtAsync(sessionCode, Context.ConnectionAborted);
+        var ended = await examRepository.IsSessionEndedAsync(sessionCode, Context.ConnectionAborted);
+        if (startedAt is not null && !ended)
+        {
+            throw new HubException("Impossible de supprimer une épreuve en cours. Arrêtez-la d'abord.");
+        }
+
+        await examRepository.DeleteSessionAsync(sessionCode, Context.ConnectionAborted);
+        screenshotStore.DeleteSessionData(sessionCode);
+
+        CerebroTelemetry.SessionsDeleted.Add(1);
+    }
+
     [Authorize]
     public Task<IReadOnlyList<CandidateStatusDto>> GetSnapshot(string sessionCode)
         => Task.FromResult(registry.GetSnapshot(sessionCode));

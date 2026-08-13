@@ -71,6 +71,18 @@ public sealed class ScreenshotStore(IWebHostEnvironment environment) : IScreensh
         }
     }
 
+    // Supprime tout le dossier de la session (screenshots + activity.log), récursivement.
+    // Irréversible - voir CerebroHub.DeleteSession pour les garde-fous (session non courante,
+    // suppression aussi des lignes en base) avant d'appeler cette méthode.
+    public void DeleteSessionData(string sessionCode)
+    {
+        var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode));
+        if (Directory.Exists(directory))
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     // sessionCode/candidateId viennent des agents étudiants : on ne garde que [A-Za-z0-9-_]
     // pour empêcher toute traversée de répertoire via Path.Combine (ex: candidateId = "../../etc").
     private static string SanitizeSegment(string value)

@@ -207,4 +207,31 @@ public sealed class SqliteExamRepository : IExamRepository
         var sessions = await connection.QueryAsync<ExamSessionSummaryDto>(command);
         return sessions.AsList();
     }
+
+    public async Task DeleteSessionAsync(string sessionCode, CancellationToken cancellationToken)
+    {
+        await using var connection = OpenConnection();
+        await using var transaction = connection.BeginTransaction();
+
+        // Pas de ON DELETE CASCADE dans le schéma (voir EnsureSchema) : supprimer les candidats
+        // avant la session, dans la même transaction, pour ne jamais laisser de lignes orphelines.
+        var deleteCandidates = new CommandDefinition(
+            """
+            DELETE FROM Candidates
+            WHERE ExamSessionId = (SELECT Id FROM ExamSessions WHERE SessionCode = @sessionCode);
+            """,
+            new {sessionCode},
+            transaction,
+            cancellationToken: cancellationToken);
+        await connection.ExecuteAsync(deleteCandidates);
+
+        var deleteSession = new CommandDefinition(
+            "DELETE FROM ExamSessions WHERE SessionCode = @sessionCode;",
+            new {sessionCode},
+            transaction,
+            cancellationToken: cancellationToken);
+        await connection.ExecuteAsync(deleteSession);
+
+        await transaction.CommitAsync(cancellationToken);
+    }
 }

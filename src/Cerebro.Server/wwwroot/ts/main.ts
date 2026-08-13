@@ -1,6 +1,11 @@
 import { loadActivity, refreshActivityIfVisible } from "./activity-log.js";
 import { setCandidateScreenshotTimestamp, upsertCandidate } from "./candidate-list.js";
-import { closeCreateSessionForm, initCreateSessionForm, openCreateSessionForm } from "./create-session.js";
+import {
+  closeCreateSessionForm,
+  hubExceptionMessage,
+  initCreateSessionForm,
+  openCreateSessionForm
+} from "./create-session.js";
 import {
   activityOverlay,
   backButton,
@@ -8,6 +13,7 @@ import {
   closeCreateSessionButton,
   createSessionButton,
   createSessionOverlay,
+  deleteSessionButton,
   footerYear,
   hudOnlineCount,
   logoutButton,
@@ -107,6 +113,34 @@ stopButton.addEventListener("click", () => {
   }
   hub.stopSession(currentSession.sessionCode)
     .catch((err: unknown) => console.error("Arrêt de session échoué", err));
+});
+
+deleteSessionButton.addEventListener("click", () => {
+  if (!currentSession) {
+    return;
+  }
+  const sessionCode = currentSession.sessionCode;
+  const confirmed = window.confirm(
+    `Supprimer définitivement la session ${sessionCode} ?\n\n` +
+      "Cette action efface la session, ses candidats, tous ses screenshots et son journal " +
+      "d'activité. Impossible à annuler."
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  hub.deleteSession(sessionCode)
+    .then(() => {
+      setCurrentSession(null);
+      sessionDetailSection.hidden = true;
+      sessionPickerSection.hidden = false;
+      hudOnlineCount.textContent = "—";
+      return loadSessions();
+    })
+    .catch((err: unknown) => {
+      console.error("Suppression de session échouée", err);
+      window.alert(hubExceptionMessage(err));
+    });
 });
 
 refreshButton.addEventListener("click", () => {

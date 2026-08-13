@@ -63,13 +63,14 @@ async function submitCreateSession(hub: CerebroHubClient, onCreated: () => void)
   onCreated();
 }
 
-// Les erreurs métier (session déjà existante, JSON invalide, roster vide...) sont levées côté
-// serveur comme HubException (voir ExamProvisioner.cs / CerebroHub.CreateSession) avec un message
-// déjà destiné à un humain — mais le client SignalR l'enveloppe dans
-// "An unexpected error occurred invoking '...' on the server. HubException: <message>", vérifié
-// empiriquement (pas documenté). On extrait la partie utile ; si le format change ou qu'il s'agit
-// d'une erreur de connexion (pas de préfixe "HubException:"), on retombe sur le message complet.
-function hubExceptionMessage(err: unknown): string {
+// Les erreurs métier (session déjà existante, JSON invalide, session en cours...) sont levées
+// côté serveur comme HubException (voir ExamProvisioner.cs / CerebroHub) avec un message déjà
+// destiné à un humain — mais le client SignalR l'enveloppe dans "An unexpected error occurred
+// invoking '...' on the server. HubException: <message>", vérifié empiriquement (pas documenté).
+// On extrait la partie utile ; si le format change ou qu'il s'agit d'une erreur de connexion (pas
+// de préfixe "HubException:"), on retombe sur le message complet. Réutilisé par tout appel de hub
+// dont l'échec doit remonter un message lisible côté dashboard (voir main.ts : deleteSession).
+export function hubExceptionMessage(err: unknown): string {
   if (!(err instanceof Error)) {
     return "Erreur inconnue.";
   }

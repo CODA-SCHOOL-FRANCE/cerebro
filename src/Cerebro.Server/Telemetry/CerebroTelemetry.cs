@@ -30,4 +30,7 @@ public static class CerebroTelemetry
 
     public static readonly Counter<long> SessionsEnded =
         Meter.CreateCounter<long>("cerebro.sessions.ended", description: "Sessions arrêtées depuis le dashboard.");
+
+    public static readonly Counter<long> SessionsDeleted =
+        Meter.CreateCounter<long>("cerebro.sessions.deleted", description: "Sessions supprimées depuis le dashboard.");
 }

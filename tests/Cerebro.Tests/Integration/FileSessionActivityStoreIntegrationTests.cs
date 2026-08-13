@@ -25,7 +25,7 @@ public sealed class FileSessionActivityStoreIntegrationTests : IDisposable
     }
 
     [Fact]
-    public async Task RecordAsync_ThenGetActivity_ShouldReturnEventInOrder()
+    public async Task RecordAsync_ThenGetActivity_ShouldReturnEventsMostRecentFirst()
     {
         await _store.RecordAsync("SESSION-A", "FFFB5AB1", "CandidateJoined", null, CancellationToken.None);
         await _store.RecordAsync("SESSION-A", "FFFB5AB1", "ScreenshotReceived", "1 234 octets", CancellationToken.None);
@@ -33,10 +33,10 @@ public sealed class FileSessionActivityStoreIntegrationTests : IDisposable
 
         var events = await _store.GetActivityAsync("SESSION-A", CancellationToken.None);
 
-        Check.That(events.Select(e => e.EventType)).ContainsExactly("CandidateJoined", "ScreenshotReceived", "SessionStarted");
+        Check.That(events.Select(e => e.EventType)).ContainsExactly("SessionStarted", "ScreenshotReceived", "CandidateJoined");
         Check.That(events[1].CandidateId).IsEqualTo("FFFB5AB1");
         Check.That(events[1].Detail).IsEqualTo("1 234 octets");
-        Check.That(events[2].CandidateId).IsNull();
+        Check.That(events[0].CandidateId).IsNull();
     }
 
     [Fact]

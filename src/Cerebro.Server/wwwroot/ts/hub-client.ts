@@ -19,6 +19,7 @@ export interface CerebroHubClient {
   joinAsDashboard(sessionCode: string): Promise<void>;
   startSession(sessionCode: string): Promise<void>;
   stopSession(sessionCode: string): Promise<void>;
+  deleteSession(sessionCode: string): Promise<void>;
   onCandidateJoined(handler: CandidateEventHandler): void;
   onCandidateReadinessUpdated(handler: CandidateEventHandler): void;
   onCandidateHeartbeat(handler: CandidateEventHandler): void;
@@ -51,6 +52,7 @@ export function createHubClient(): CerebroHubClient {
     joinAsDashboard: (sessionCode) => connection.invoke("JoinAsDashboard", sessionCode),
     startSession: (sessionCode) => connection.invoke("StartSession", sessionCode),
     stopSession: (sessionCode) => connection.invoke("StopSession", sessionCode),
+    deleteSession: (sessionCode) => connection.invoke("DeleteSession", sessionCode),
     onCandidateJoined: (handler) => connection.on("CandidateJoined", handler),
     onCandidateReadinessUpdated: (handler) => connection.on("CandidateReadinessUpdated", handler),
     onCandidateHeartbeat: (handler) => connection.on("CandidateHeartbeat", handler),

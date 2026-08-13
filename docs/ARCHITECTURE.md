@@ -33,7 +33,7 @@ C4Component
     Container_Boundary(server, "Cerebro.Server") {
         Component(adminCli, "AdminCli", "Mode CLI (ConsoleAppFramework)", "Parse le roster JSON de l'école, enregistre chaque candidat en base")
         Component(provisioner, "ExamProvisioner", "Classe statique partagée", "Crée une session + ses candidats à partir d'un roster JSON ; utilisée par AdminCli ET CerebroHub")
-        Component(hub, "CerebroHub", "SignalR Hub", "JoinAsCandidate, JoinAsDashboard, GetPlannedSessions, CreateSession, StartSession, StopSession, Ping, ReportReadiness, UploadScreenshot, GetSnapshot")
+        Component(hub, "CerebroHub", "SignalR Hub", "JoinAsCandidate, JoinAsDashboard, GetPlannedSessions, CreateSession, StartSession, StopSession, DeleteSession, Ping, ReportReadiness, UploadScreenshot, GetSnapshot")
         Component(registry, "SessionRegistry", "Service singleton (ConcurrentDictionary)", "État en mémoire des candidats par session : statut, dernière capture, connexion")
         Component(screenshotStore, "ScreenshotStore", "Service singleton", "Persiste les screenshots, assainit les identifiants contre le path traversal")
         Component(examRepository, "SqliteExamRepository", "Service singleton (Dapper)", "Sessions/candidats enregistrés persistés")

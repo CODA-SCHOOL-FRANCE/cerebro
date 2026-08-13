@@ -26,4 +26,6 @@ public interface IExamRepository
     Task<bool> IsCandidateRegisteredAsync(string sessionCode, string candidateId, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<ExamSessionSummaryDto>> GetSessionsAsync(CancellationToken cancellationToken);
+
+    Task DeleteSessionAsync(string sessionCode, CancellationToken cancellationToken);
 }

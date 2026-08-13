@@ -18,6 +18,7 @@
   - "+ NOUVELLE SESSION", roster collé ou chargé depuis un fichier local
   - Même logique de validation que la CLI (`provision --input`), donc mêmes erreurs (code de session déjà pris, JSON invalide, roster sans étudiant)
 - **Démarrage/arrêt de session depuis le dashboard**
+- **Suppression de session depuis le dashboard** : bouton "🗑 SUPPRIMER LA SESSION" sur l'écran de détail d'une épreuve, avec confirmation avant l'action (irréversible). Efface la session et ses candidats en base, ainsi que tout son dossier `screenshots/{session}` (screenshots + journal d'activité), récursivement. Refusée tant que la session est en cours (démarrée, pas encore arrêtée) pour éviter de couper une épreuve en direct.
 - **Reconnexion automatique** : coupure réseau ponctuelle gérée par l'agent, qui rejoint automatiquement la session et renvoie son dernier statut connu
 - **Capture à intervalle aléatoire**, configurable (8–12 minutes par défaut, soit ~10 minutes en moyenne) — volontairement aléatoire pour ne pas être prévisible.
 - **Stockage des screenshots côté serveur**, organisé par session/candidat, avec assainissement strict des identifiants pour empêcher toute traversée de répertoire.

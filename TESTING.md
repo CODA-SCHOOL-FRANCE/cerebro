@@ -211,6 +211,8 @@ laisser traîner les données de ce test sur le disque.)
 | Création de session (dashboard) avec un roster sans étudiant | Coller `{"ec":"X","date":"2026-01-01","rattrapage":false,"etudiants":{}}` | Erreur affichée dans le formulaire : `Le roster ne contient aucun étudiant exploitable.` |
 | `start` (CLI) sur une session inconnue | `dotnet run --project src/Cerebro.Server -- start --session INCONNUE` | Échec, code de sortie `1`, message `Session 'INCONNUE' introuvable dans la base.` |
 | `StartSession`/`StopSession` (dashboard) sur une session inconnue | Appel hub direct avec un code de session inexistant | Rejet avec `HubException: Session introuvable.` (pas de commande CLI `stop` équivalente — l'arrêt se fait uniquement depuis le dashboard) |
+| Suppression (dashboard) d'une session en cours | Bouton "🗑 SUPPRIMER LA SESSION" sur une épreuve démarrée, non arrêtée | Rejet avec `HubException: Impossible de supprimer une épreuve en cours. Arrêtez-la d'abord.`, session et fichiers toujours présents |
+| Suppression (dashboard) d'une session arrêtée | Bouton "🗑 SUPPRIMER LA SESSION" après confirmation, sur une épreuve terminée (ou jamais démarrée) | Retour à la liste des épreuves ; la session disparaît de "Épreuves planifiées" ; `screenshots/{session}/` supprimé du disque (candidats + `activity.log`) |
 | Mauvais mot de passe sur `/login.html` | Se connecter avec un mauvais mot de passe | Message `Identifiant ou mot de passe incorrect.`, pas de redirection |
 | Accès direct à `/index.html` sans session ouverte | Ouvrir `http://127.0.0.1:5289/index.html` dans une fenêtre de navigation privée | Redirection automatique vers `/login.html` |
 
