@@ -1,7 +1,7 @@
 # Cerebro
 
 Outil anti-fraude pour la surveillance d'épreuves certifiantes à distance (BYOD, multi-OS).
-Chaque candidat lance un agent léger sur sa propre machine ; l'agent capture des screenshots à intervalles aléatoires et les transmet en temps réel à un serveur central, consulté par le surveillant via un dashboard web.
+Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur sa propre machine ; l'agent capture des screenshots à intervalles aléatoires et les transmet en temps réel à un serveur central, consulté par le surveillant via un dashboard web.
 
 ![Cerebro by Charles Thirion](img/cerebro.webp)
 
@@ -16,7 +16,7 @@ Chaque candidat lance un agent léger sur sa propre machine ; l'agent capture de
 ```
 Cerebro.sln
 src/
-  Cerebro.Agent/       # agent candidat (console app)
+  Cerebro.Agent/       # agent candidat (console app), publié sous le nom "xavier"
     Capture/           # IScreenCapturer + implémentations Windows/macOS/Linux
     Realtime/          # client SignalR (ICerebroConnection)
     AgentRunner.cs     # boucle métier (self-test, intervalle aléatoire, reporting)

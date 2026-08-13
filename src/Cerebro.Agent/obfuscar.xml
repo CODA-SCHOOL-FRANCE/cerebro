@@ -15,5 +15,5 @@
   <Var name="OptimizeMethods" value="true" />
   <Var name="SuppressIldasm" value="true" />
 
-  <Module file="Cerebro.Agent.dll" />
+  <Module file="xavier.dll" />
 </Obfuscator>

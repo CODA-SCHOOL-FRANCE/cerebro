@@ -118,7 +118,7 @@ openssl s_client -connect 192.168.1.10:8443 </dev/null 2>/dev/null \
 Elle se passe en 4ᵉ argument positionnel de l'agent (après l'identifiant candidat) ou via la variable d'environnement `CEREBRO_SERVER_CERT_THUMBPRINT` :
 
 ```bash
-Cerebro.Agent https://192.168.1.10:8443 F2I-20260801-A FFFB5AB1 "19D497B5...3B5E"
+xavier https://192.168.1.10:8443 F2I-20260801-A FFFB5AB1 "19D497B5...3B5E"
 ```
 
 L'agent valide alors le certificat du serveur par **épinglage d'empreinte** plutôt que par la chaîne de confiance du système : 
@@ -147,9 +147,10 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
 
 Le surveillant se connecte ensuite sur `https://<server-ip>:8443/login.html` avec ce couple identifiant/mot de passe.
 
-## 2. Agent, un exécutable autonome par OS
+## 2. Agent (Xavier), un exécutable autonome par OS
 
 `dotnet publish` en mode self-contained + fichier unique : l'étudiant n'a pas besoin du runtime .NET installé.
+Le projet source reste `src/Cerebro.Agent`, mais l'exécutable publié (`AssemblyName` dans le `.csproj`) s'appelle `xavier` (`xavier.exe` sous Windows).
 
 ```bash
 dotnet publish src/Cerebro.Agent -c Release -r win-x64   --self-contained -p:PublishSingleFile=true -o ./publish/agent-win-x64
@@ -160,7 +161,7 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 
 **Via GitHub Actions** : un tag `agent-vX.Y.Z` poussé sur un commit `main` déclenche `.github/workflows/agent-release.yml`
 - build obfusqué pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
-- création d'une **Release GitHub en brouillon** (à relire et publier manuellement, ce sont des binaires exécutés directement par les candidats)
+- création d'une **Release GitHub en brouillon**, nommée `Xavier agent-vX.Y.Z` (à relire et publier manuellement, ce sont des binaires exécutés directement par les candidats)
 
 ## 3. Provisionner une épreuve
 
@@ -209,7 +210,7 @@ Pour l'instant, cette commande se contente d'horodater le démarrage en base (ut
 ## Utilisation le jour J
 
 1. Annoncer une fois à toute la salle l'URL du serveur, le code de session et, si TLS est activé, l'empreinte du certificat (voir [provisioning](#3-provisionner-une-épreuve)).
-2. Chaque candidat lance l'agent avec ces valeurs et son propre id (déjà connu de lui), par exemple `Cerebro.Agent https://192.168.1.10:8443 F2I-20260801-A FFFB5AB1 "19D497B5...3B5E"` — ou répond simplement aux invites interactives s'il lance l'agent sans argument.
+2. Chaque candidat lance l'agent avec ces valeurs et son propre id (déjà connu de lui), par exemple `xavier https://192.168.1.10:8443 F2I-20260801-A FFFB5AB1 "19D497B5...3B5E"` — ou répond simplement aux invites interactives s'il lance l'agent sans argument.
 3. Le surveillant ouvre le dashboard : il voit la liste des épreuves planifiées et **sélectionne** celle du jour, puis attend que tous les candidats apparaissent avec le statut **Prêt** (pas juste connectés — un statut **Échec** indique un problème de permission macOS ou d'outil manquant sous Linux, à résoudre avant de démarrer).
 4. Le surveillant clique sur **Démarrer l'épreuve** dans le dashboard une fois tout le monde prêt (équivalent CLI : `dotnet Cerebro.Server.dll start --session F2I-20260801-A`).
 5. En fin d'épreuve, il clique sur **Arrêter l'épreuve** : le hub refuse alors toute nouvelle connexion candidat pour cette session (les candidats déjà connectés ne sont pas coupés de force — voir [limites connues](LIMITATIONS.md)).

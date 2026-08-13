@@ -1,4 +1,4 @@
-name: Release Cerebro.Agent
+name: Release Xavier (agent)
 
 # Un tag agent-vX.Y.Z posé sur un commit de main construit un exécutable autonome par OS (Windows,
 # macOS Intel/Apple Silicon, Linux), obfusqué en Release, et crée une Release GitHub en DRAFT (pas
@@ -59,7 +59,7 @@ jobs:
 
       # Fichier exemple, pas actif tel quel (voir AgentConfigFile.FileName)
       - name: Ajouter l'exemple de fichier de configuration
-        run: cp docs/cerebro-agent.config.example.json publish/${{ matrix.rid }}/cerebro-agent.config.example.json
+        run: cp docs/xavier.config.example.json publish/${{ matrix.rid }}/xavier.config.example.json
 
       - name: Retirer les symboles de debug (pas utiles aux candidats, inutile de les distribuer)
         shell: bash
@@ -69,13 +69,13 @@ jobs:
         shell: bash
         run: |
           version="${GITHUB_REF_NAME#agent-v}"
-          archive="Cerebro.Agent-${version}-${{ matrix.rid }}.zip"
+          archive="Xavier-${version}-${{ matrix.rid }}.zip"
           (cd publish/${{ matrix.rid }} && zip -r "../../${archive}" .)
           echo "ARCHIVE_PATH=${archive}" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cerebro-agent-${{ matrix.rid }}
+          name: xavier-${{ matrix.rid }}
           path: ${{ env.ARCHIVE_PATH }}
           retention-days: 7
 
@@ -98,7 +98,7 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          pattern: cerebro-agent-*
+          pattern: xavier-*
           path: artifacts
           merge-multiple: true
 
@@ -106,7 +106,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          name: Cerebro.Agent ${{ github.ref_name }}
+          name: Xavier ${{ github.ref_name }}
           generate_release_notes: true
           files: artifacts/*.zip
           body: |

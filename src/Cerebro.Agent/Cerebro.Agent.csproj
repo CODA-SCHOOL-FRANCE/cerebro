@@ -15,6 +15,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Nom de l'exécutable publié aux candidats (voir docs/USER-DOC.txt, docs/ARCHITECTURE.md) :
+         distinct du nom du projet/namespace (Cerebro.Agent), qui reste inchangé côté code source. -->
+    <AssemblyName>xavier</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -41,11 +44,11 @@
     <Exec Command="obfuscar.console &quot;$(MSBuildProjectDirectory)/obfuscar.xml&quot;" WorkingDirectory="$(OutDir)"/>
 
     <ItemGroup>
-      <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)Cerebro.Agent.dll"/>
+      <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)$(AssemblyName).dll"/>
     </ItemGroup>
 
     <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) - vérifier obfuscar.xml."
-           Condition="!Exists('$(_ObfuscarOutDir)Cerebro.Agent.dll')"/>
+           Condition="!Exists('$(_ObfuscarOutDir)$(AssemblyName).dll')"/>
 
     <Copy SourceFiles="@(_ObfuscatedAssembly)" DestinationFolder="$(OutDir)"/>
     <RemoveDir Directories="$(_ObfuscarOutDir)"/>

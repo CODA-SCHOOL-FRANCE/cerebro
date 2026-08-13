@@ -8,7 +8,7 @@ C4Container
     Person(surveillant, "Surveillant", "Supervise l'examen et valide le démarrage")
 
     System_Boundary(cerebro, "Cerebro") {
-        Container(agent, "Cerebro.Agent", ".NET, exécutable self-contained", "Capture l'écran à intervalles aléatoires, s'auto-teste à la connexion")
+        Container(agent, "Xavier", ".NET, exécutable self-contained", "Capture l'écran à intervalles aléatoires, s'auto-teste à la connexion")
         Container(server, "Cerebro.Server", "ASP.NET Core + SignalR Hub", "Maintient l'état des sessions et diffuse les mises à jour en temps réel")
         Container(dashboard, "Dashboard", "HTML/TypeScript + client SignalR", "Interface temps réel consultée par le surveillant")
         ContainerDb(storage, "Stockage screenshots", "Système de fichiers", "Screenshots persistés par session/candidat")
@@ -27,7 +27,7 @@ C4Container
 C4Component
     title Cerebro.Server — Diagramme de composants
 
-    Container(agent, "Cerebro.Agent", ".NET", "Agent candidat")
+    Container(agent, "Xavier", ".NET", "Agent candidat")
     Container(dashboard, "Dashboard", "HTML/TypeScript", "Interface surveillant")
 
     Container_Boundary(server, "Cerebro.Server") {
@@ -61,7 +61,7 @@ C4Component
     Rel(credentialsStore, sqlite, "Lit/écrit")
 ```
 
-- **`Cerebro.Agent`** — console app .NET, un binaire par OS. Capture l'écran, s'auto-teste à la connexion, puis boucle à intervalle aléatoire.
+- **Xavier** (projet `Cerebro.Agent`, binaire publié sous le nom `xavier`/`xavier.exe`) — console app .NET, un binaire par OS. Capture l'écran, s'auto-teste à la connexion, puis boucle à intervalle aléatoire.
 - **`Cerebro.Server`** — ASP.NET Core + SignalR Hub. 
   - Reçoit les screenshots, maintient l'état des candidats par session, sert le dashboard temps réel. 
   - Inclut aussi un mode admin en CLI (`provision`/`start`, via [ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework)) et la persistance des sessions/candidats en SQLite.

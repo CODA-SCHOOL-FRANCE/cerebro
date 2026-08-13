@@ -8,7 +8,7 @@ public sealed record AgentConfigFile(
     [property: JsonPropertyName("serverUrl")] string? ServerUrl,
     [property: JsonPropertyName("certThumbprint")] string? CertThumbprint)
 {
-    public const string FileName = "cerebro-agent.config.json";
+    public const string FileName = "xavier.config.json";
 
     // Noms de propriétés explicites ci-dessus : le build Release obfusque aussi l'API publique
     // (voir obfuscar.xml, KeepPublicApi=false) et renomme ServerUrl/CertThumbprint. Sans

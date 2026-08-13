@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.SignalR;
 // Pas de gestion spéciale pour args.Length == 0 : RunAgentAsync a déjà tous ses paramètres
 // optionnels et gère elle-même le repli (fichier de config, variable d'env, prompt) — un bloc
 // séparé ici forcerait un prompt pour serverUrl/sessionCode/candidateId avant même que
-// RunAgentAsync ne s'exécute, court-circuitant cerebro-agent.config.json.
+// RunAgentAsync ne s'exécute, court-circuitant xavier.config.json.
 await ConsoleApp.RunAsync(args, RunAgentAsync);
 
-/// <summary>Lance l'agent Cerebro : capture d'écran et signal de présence envoyés au serveur pour la durée de l'épreuve.</summary>
-/// <param name="serverUrl">URL du serveur (ex: https://192.168.1.10:8443). Par défaut : fichier cerebro-agent.config.json à côté de l'exécutable, sinon demandée interactivement.</param>
+/// <summary>Lance l'agent Cerebro (Xavier) : capture d'écran et signal de présence envoyés au serveur pour la durée de l'épreuve.</summary>
+/// <param name="serverUrl">URL du serveur (ex: https://192.168.1.10:8443). Par défaut : fichier xavier.config.json à côté de l'exécutable, sinon demandée interactivement.</param>
 /// <param name="sessionCode">Code de session.</param>
 /// <param name="candidateId">Identifiant candidat (votre id).</param>
-/// <param name="certThumbprint">Empreinte du certificat serveur (HTTPS auto-signé). Par défaut : fichier cerebro-agent.config.json, sinon variable d'environnement CEREBRO_SERVER_CERT_THUMBPRINT, sinon demandée interactivement si l'URL est en HTTPS.</param>
+/// <param name="certThumbprint">Empreinte du certificat serveur (HTTPS auto-signé). Par défaut : fichier xavier.config.json, sinon variable d'environnement CEREBRO_SERVER_CERT_THUMBPRINT, sinon demandée interactivement si l'URL est en HTTPS.</param>
 static async Task<int> RunAgentAsync(
     [Argument] string? serverUrl = null,
     [Argument] string? sessionCode = null,
