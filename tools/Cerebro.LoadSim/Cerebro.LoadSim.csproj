@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <!-- Réutilise AgentRunner/AgentOptions/ICerebroConnection/SignalRCerebroConnection tels quels :
+         simuler N candidats, c'est juste faire tourner N AgentRunner en parallèle avec un
+         IScreenCapturer factice (voir FakeScreenCapturer.cs) au lieu d'une vraie capture d'écran. -->
+    <ProjectReference Include="..\..\src\Cerebro.Agent\Cerebro.Agent.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ConsoleAppFramework" Version="5.7.13" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

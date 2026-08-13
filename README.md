@@ -33,6 +33,8 @@ tests/
   Cerebro.Tests/
     Unit/              # logique pure, sans dépendance OS
     Integration/        # capture réelle, disque réel, SignalR réel de bout en bout
+tools/
+  Cerebro.LoadSim/     # simule une session avec N candidats depuis une seule machine (voir son README)
 ```
 
 ## Développement local
