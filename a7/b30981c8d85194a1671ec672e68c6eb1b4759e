@@ -1,0 +1,49 @@
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_14764761ba03c8 64
+  s_347d16a866ffe9::t_b0f66fb519c60e 44
+src/Cerebro.Agent/Realtime/SignalRCerebroConnection.cs
+  s_347d16a866ffe9::t_d44d931916089d 61-62
+src/Cerebro.Server/Services/IScreenshotStore.cs
+  s_347d16a866ffe9::t_50a1d8b03d5627 5
+src/Cerebro.Agent/Capture/ScreenshotCompressor.cs
+  s_347d16a866ffe9::t_d3cf06a199a6a4 1-51
+src/Cerebro.Agent/Cerebro.Agent.csproj
+  s_347d16a866ffe9::t_b1908bed16d47a 9-11
+  s_347d16a866ffe9::t_df1a05e817084b 13
+  s_347d16a866ffe9::t_6071a908a20047 12,43,48,51,54,56-57
+src/Cerebro.Agent/AgentRunner.cs
+  h_0a88d9aba8622a 115
+  s_347d16a866ffe9::t_747d2f06128443 109-112,114,116-118,120,124-127,129,134-136,138,140,142
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_e2abdf68e38c13 186,193,200,203
+src/Cerebro.Agent/Realtime/ICerebroConnection.cs
+  s_347d16a866ffe9::t_e4b7481f7d94c0 18
+src/Cerebro.Server/Services/ScreenshotStore.cs
+  s_347d16a866ffe9::t_bbcb9c9a637fc8 54
+  s_347d16a866ffe9::t_6ddf399c4f4049 12,18,21,29,33
+  h_0a88d9aba8622a 45
+tests/Cerebro.Tests/Unit/ScreenshotCompressorTests.cs
+  s_347d16a866ffe9::t_55f11d48a68b34 22
+  s_347d16a866ffe9::t_707045d4a1490f 1-21,23-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a7b30981c8d85194a1671ec672e68c6eb1b4759e",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
