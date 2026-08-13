@@ -1,0 +1,24 @@
+name: CI
+
+# Build + tests à chaque push sur une branche (build/tests-agent/serveur/partagé, via Cerebro.sln).
+# Les tags de release (agent-vX.Y.Z, vX.Y.Z) ont leur propre job "test" équivalent en amont de la
+# publication (voir agent-release.yml, server-release.yml) - on exclut donc les tags ici pour ne
+# pas faire tourner la suite deux fois lors d'une release.
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
