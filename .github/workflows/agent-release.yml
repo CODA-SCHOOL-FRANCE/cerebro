@@ -57,9 +57,11 @@ jobs:
       - name: Ajouter les instructions d'installation
         run: cp docs/USER-DOC.txt publish/${{ matrix.rid }}/USER-DOC.txt
 
-      # Fichier exemple, pas actif tel quel (voir AgentConfigFile.FileName)
-      - name: Ajouter l'exemple de fichier de configuration
-        run: cp docs/xavier.config.example.json publish/${{ matrix.rid }}/xavier.config.example.json
+      # Déjà nommé xavier.config.json (voir AgentConfigFile.FileName) : chargé directement par
+      # l'agent au démarrage, à éditer par le surveillant avant distribution aux candidats (voir
+      # docs/USER-DOC.txt) plutôt qu'à renommer soi-même.
+      - name: Ajouter le fichier de configuration
+        run: cp docs/xavier.config.json publish/${{ matrix.rid }}/xavier.config.json
 
       - name: Retirer les symboles de debug (pas utiles aux candidats, inutile de les distribuer)
         shell: bash

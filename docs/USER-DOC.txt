@@ -32,9 +32,8 @@ Configuration (pour le surveillant)
 L'URL du serveur et l'empreinte du certificat sont les mêmes pour tous les candidats d'une session
 — les faire saisir à la main est source d'erreurs (l'empreinte est un long code hexadécimal).
 
-Pour les pré-remplir : renommer xavier.config.example.json en xavier.config.json
-(dans le même dossier que l'exécutable), et y indiquer l'URL et l'empreinte réelles du serveur pour
-la session du jour :
+Pour les pré-remplir : éditer xavier.config.json (déjà présent à côté de l'exécutable dans
+l'archive) et y indiquer l'URL et l'empreinte réelles du serveur pour la session du jour :
 
   {
     "serverUrl": "https://192.168.1.10:8443",
