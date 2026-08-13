@@ -1,0 +1,43 @@
+Cerebro.sln
+  s_347d16a866ffe9::t_d9cfda6352b75d 18-21,80-91,101
+tools/Cerebro.LoadSim/DashboardSessionProvisioner.cs
+  s_347d16a866ffe9::t_1ba3236d7456b6 1-5,7-52,63-95,112
+  s_347d16a866ffe9::t_b4f95cb4a48fb3 96-111
+  s_347d16a866ffe9::t_95c36739ecb3ad 59
+  s_347d16a866ffe9::t_f56d331652a9cb 6,53-58,60-62
+tools/Cerebro.LoadSim/README.md
+  s_347d16a866ffe9::t_7b55fbb40e5224 25-26
+  s_347d16a866ffe9::t_978a99ad8a0f7c 1-24,27-47
+README.md
+  s_347d16a866ffe9::t_4d40527f43ce04 36-37
+tools/Cerebro.LoadSim/RosterBuilder.cs
+  s_347d16a866ffe9::t_1d625f5843f6b9 1-32
+tools/Cerebro.LoadSim/Cerebro.LoadSim.csproj
+  s_347d16a866ffe9::t_0116d4e391561e 1-2,14-21
+  s_347d16a866ffe9::t_38f18b2c83770e 3-13
+tools/Cerebro.LoadSim/FakeScreenCapturer.cs
+  s_347d16a866ffe9::t_d9f4f94d430253 1-25
+tools/.set-cred-tool/set-cred-tool.csproj
+  s_347d16a866ffe9::t_e359d749e67dd9 1-11
+tools/.set-cred-tool/Program.cs
+  s_347d16a866ffe9::t_e359d749e67dd9 1,4
+  s_347d16a866ffe9::t_773a4807f11b1d 2-3
+tools/Cerebro.LoadSim/Program.cs
+  s_347d16a866ffe9::t_7753b73b2e5245 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c21ef862444b76e2fc17241269bd926624da94be",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
