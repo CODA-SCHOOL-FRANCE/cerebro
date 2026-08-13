@@ -106,36 +106,40 @@ public sealed class AgentRunner
     }
 
     private async Task RunCaptureAttemptAsync(CancellationToken cancellationToken)
+        => await _capturer.Capture()
+            .Tap(bytes => CompressUploadAndReportReadyAsync(bytes, cancellationToken))
+            .TapError(error => ReportReadinessIfChangedAsync(
+                isReady: false, error.Reason, error.Detail, cancellationToken));
+
+    private async Task CompressUploadAndReportReadyAsync(byte[] bytes, CancellationToken cancellationToken)
     {
-        var result = _capturer.Capture();
+        var payload = ScreenshotCompressor.Compress(bytes);
+        await _connection.UploadScreenshotAsync(payload, cancellationToken);
+        Activity?.Invoke($"Screenshot envoyé au serveur ({payload.Length:N0} octets).");
 
-        if (result.IsSuccess)
-        {
-            await _connection.UploadScreenshotAsync(result.Value, cancellationToken);
-            Activity?.Invoke($"Screenshot envoyé au serveur ({result.Value.Length:N0} octets).");
-        }
-
-        await ReportReadinessIfChangedAsync(result, cancellationToken);
+        await ReportReadinessIfChangedAsync(isReady: true, reason: null, detail: null, cancellationToken);
     }
 
     private async Task ReportReadinessIfChangedAsync(
-        Result<byte[], CaptureError> result, CancellationToken cancellationToken)
+        bool isReady,
+        CaptureFailureReason? reason,
+        string? detail,
+        CancellationToken cancellationToken)
     {
-        if (_lastReadiness == result.IsSuccess)
+        if (_lastReadiness == isReady)
         {
             return;
         }
 
-        _lastReadiness = result.IsSuccess;
-        _lastFailureReason = result.IsSuccess ? null : result.Error.Reason;
-        _lastFailureDetail = result.IsSuccess ? null : result.Error.Detail;
+        _lastReadiness = isReady;
+        _lastFailureReason = reason;
+        _lastFailureDetail = detail;
 
-        await _connection.ReportReadinessAsync(
-            result.IsSuccess, _lastFailureReason, _lastFailureDetail, cancellationToken);
+        await _connection.ReportReadinessAsync(isReady, reason, detail, cancellationToken);
 
-        Activity?.Invoke(result.IsSuccess
+        Activity?.Invoke(isReady
             ? "Statut de préparation envoyé : prêt."
-            : $"Statut de préparation envoyé : échec ({_lastFailureReason}).");
+            : $"Statut de préparation envoyé : échec ({reason}).");
     }
 
     private async Task HandleReconnectedAsync()

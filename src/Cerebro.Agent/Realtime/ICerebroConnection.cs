@@ -15,5 +15,5 @@ public interface ICerebroConnection : IAsyncDisposable
     Task ReportReadinessAsync(
         bool isReady, CaptureFailureReason? failureReason, string? failureDetail, CancellationToken cancellationToken);
 
-    Task UploadScreenshotAsync(byte[] pngBytes, CancellationToken cancellationToken);
+    Task UploadScreenshotAsync(byte[] imageBytes, CancellationToken cancellationToken);
 }

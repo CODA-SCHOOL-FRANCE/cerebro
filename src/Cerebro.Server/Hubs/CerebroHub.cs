@@ -183,24 +183,24 @@ public sealed class CerebroHub(
                 await Clients.Group(DashboardGroup(sessionCode)).CandidateReadinessUpdated(candidate);
             });
 
-    public async Task UploadScreenshot(byte[] pngBytes)
+    public async Task UploadScreenshot(byte[] imageBytes)
     {
         var timestamp = DateTimeOffset.UtcNow;
         await registry.RecordScreenshot(Context.ConnectionId, timestamp)
             .Tap(async result =>
             {
                 using var activity = CerebroTelemetry.ActivitySource.StartActivity("Candidate.UploadScreenshot");
-                activity?.SetTag("cerebro.screenshot_bytes", pngBytes.Length);
+                activity?.SetTag("cerebro.screenshot_bytes", imageBytes.Length);
 
                 var (sessionCode, candidate) = result;
 
                 activity?.SetTag(CerebroSessionCodeTag, sessionCode);
                 activity?.SetTag(CerebroCandidateIdTag, candidate.CandidateId);
 
-                await screenshotStore.SaveAsync(sessionCode, candidate.CandidateId, pngBytes, timestamp);
+                await screenshotStore.SaveAsync(sessionCode, candidate.CandidateId, imageBytes, timestamp);
 
                 CerebroTelemetry.ScreenshotsReceived.Add(1);
-                var detail = JsonSerializer.Serialize(new {bytes = pngBytes.Length});
+                var detail = JsonSerializer.Serialize(new {bytes = imageBytes.Length});
                 await activityStore.RecordAsync(
                     sessionCode, candidate.CandidateId, SessionActivityEventType.ScreenshotReceived, detail,
                     Context.ConnectionAborted);

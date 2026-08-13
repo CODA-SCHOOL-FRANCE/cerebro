@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.10" />
+    <!-- Redimensionnement + encodage WebP des screenshots avant envoi (voir ScreenshotCompressor).
+         Variante NoDependencies pour Linux : évite d'exiger fontconfig sur la machine candidate
+         (inutile ici, on ne fait ni rendu de texte ni de police). -->
+    <PackageReference Include="SkiaSharp" Version="3.119.0" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
     <PackageReference Include="ConsoleAppFramework" Version="5.7.13" />
   </ItemGroup>
@@ -35,23 +40,21 @@
     binaire distribué au client ne le peut jamais complètement) - ça relève le niveau nécessaire
     au-delà d'un simple survol dans un décompilateur.
   -->
-  <Target Name="ObfuscateAgent" AfterTargets="Build"
-          Condition="'$(ObfuscateAgent)' == 'true' AND '$(Configuration)' == 'Release'">
+  <Target Name="ObfuscateAgent" AfterTargets="Build" Condition="'$(ObfuscateAgent)' == 'true' AND '$(Configuration)' == 'Release'">
     <PropertyGroup>
       <_ObfuscarOutDir>$(OutDir)_obfuscated\</_ObfuscarOutDir>
     </PropertyGroup>
 
-    <Exec Command="obfuscar.console &quot;$(MSBuildProjectDirectory)/obfuscar.xml&quot;" WorkingDirectory="$(OutDir)"/>
+    <Exec Command="obfuscar.console &quot;$(MSBuildProjectDirectory)/obfuscar.xml&quot;" WorkingDirectory="$(OutDir)" />
 
     <ItemGroup>
-      <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)$(AssemblyName).dll"/>
+      <_ObfuscatedAssembly Include="$(_ObfuscarOutDir)$(AssemblyName).dll" />
     </ItemGroup>
 
-    <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) - vérifier obfuscar.xml."
-           Condition="!Exists('$(_ObfuscarOutDir)$(AssemblyName).dll')"/>
+    <Error Text="Obfuscar n'a produit aucune sortie dans $(_ObfuscarOutDir) - vérifier obfuscar.xml." Condition="!Exists('$(_ObfuscarOutDir)$(AssemblyName).dll')" />
 
-    <Copy SourceFiles="@(_ObfuscatedAssembly)" DestinationFolder="$(OutDir)"/>
-    <RemoveDir Directories="$(_ObfuscarOutDir)"/>
+    <Copy SourceFiles="@(_ObfuscatedAssembly)" DestinationFolder="$(OutDir)" />
+    <RemoveDir Directories="$(_ObfuscarOutDir)" />
   </Target>
 
 </Project>

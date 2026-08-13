@@ -58,8 +58,8 @@ public sealed class SignalRCerebroConnection : ICerebroConnection
         CancellationToken cancellationToken)
         => _connection.InvokeAsync("ReportReadiness", isReady, failureReason, failureDetail, cancellationToken);
 
-    public Task UploadScreenshotAsync(byte[] pngBytes, CancellationToken cancellationToken) 
-        => _connection.InvokeAsync("UploadScreenshot", pngBytes, cancellationToken);
+    public Task UploadScreenshotAsync(byte[] imageBytes, CancellationToken cancellationToken)
+        => _connection.InvokeAsync("UploadScreenshot", imageBytes, cancellationToken);
 
     public ValueTask DisposeAsync() => _connection.DisposeAsync();
 }

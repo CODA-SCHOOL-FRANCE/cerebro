@@ -41,7 +41,7 @@ C4Component
         Component(credentialsStore, "SqliteDashboardCredentialsStore", "Service singleton (Dapper)", "Identifiants du dashboard (cookie auth), alimentés par 'set-password'")
     }
 
-    ContainerDb(disk, "Disque", "Système de fichiers", "screenshots/{session}/{candidat}/*.png")
+    ContainerDb(disk, "Disque", "Système de fichiers", "screenshots/{session}/{candidat}/*.webp")
     ContainerDb(sqlite, "cerebro.db", "SQLite", "ExamSessions, Candidates (id du roster), SessionActivityEvents, DashboardCredentials")
 
     Rel(agent, hub, "Invoque les méthodes du hub (sans authentification, validé par code de session + id candidat)", "SignalR")
@@ -61,7 +61,7 @@ C4Component
     Rel(credentialsStore, sqlite, "Lit/écrit")
 ```
 
-- **Xavier** (projet `Cerebro.Agent`, binaire publié sous le nom `xavier`/`xavier.exe`) — console app .NET, un binaire par OS. Capture l'écran, s'auto-teste à la connexion, puis boucle à intervalle aléatoire.
+- **Xavier** (projet `Cerebro.Agent`, binaire publié sous le nom `xavier`/`xavier.exe`) — console app .NET, un binaire par OS. Capture l'écran, s'auto-teste à la connexion, puis boucle à intervalle aléatoire. Chaque capture est redimensionnée (1280px de long côté max) et compressée en WebP (qualité 75) avant envoi (`ScreenshotCompressor`), pour réduire la bande passante et l'espace disque sans nuire à la lisibilité du contenu.
 - **`Cerebro.Server`** — ASP.NET Core + SignalR Hub. 
   - Reçoit les screenshots, maintient l'état des candidats par session, sert le dashboard temps réel. 
   - Inclut aussi un mode admin en CLI (`provision`/`start`, via [ConsoleAppFramework](https://github.com/Cysharp/ConsoleAppFramework)) et la persistance des sessions/candidats en SQLite.

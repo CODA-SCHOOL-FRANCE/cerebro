@@ -9,16 +9,16 @@ public sealed class ScreenshotStore : IScreenshotStore
     public ScreenshotStore(IWebHostEnvironment environment)
         => _rootPath = Path.Combine(environment.ContentRootPath, "screenshots");
 
-    public async Task<string> SaveAsync(string sessionCode, string candidateId, byte[] pngBytes,
+    public async Task<string> SaveAsync(string sessionCode, string candidateId, byte[] imageBytes,
         DateTimeOffset timestamp)
     {
         var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode), SanitizeSegment(candidateId));
         Directory.CreateDirectory(directory);
 
-        var fileName = $"{timestamp.UtcDateTime:yyyyMMdd_HHmmssfff}.png";
+        var fileName = $"{timestamp.UtcDateTime:yyyyMMdd_HHmmssfff}.webp";
         var fullPath = Path.Combine(directory, fileName);
 
-        await File.WriteAllBytesAsync(fullPath, pngBytes);
+        await File.WriteAllBytesAsync(fullPath, imageBytes);
         return fullPath;
     }
 
@@ -26,11 +26,11 @@ public sealed class ScreenshotStore : IScreenshotStore
     {
         var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode));
         return Directory.Exists(directory) &&
-               Directory.EnumerateFiles(directory, "*.png", SearchOption.AllDirectories).Any();
+               Directory.EnumerateFiles(directory, "*.webp", SearchOption.AllDirectories).Any();
     }
 
     // Un fichier par candidat/screenshot, réunis dans un seul zip organisé par candidat
-    // (CAND0001/20260101_...png) : le surveillant récupère tout d'un coup pour une session donnée,
+    // (CAND0001/20260101_...webp) : le surveillant récupère tout d'un coup pour une session donnée,
     // sans avoir à fouiller le disque du serveur.
     //
     // `destination` est la réponse HTTP en streaming (voir Program.cs) : Kestrel y interdit les
@@ -42,7 +42,7 @@ public sealed class ScreenshotStore : IScreenshotStore
     public async Task WriteZipAsync(string sessionCode, Stream destination, CancellationToken cancellationToken)
     {
         var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode));
-        var tempFilePath = Path.GetTempFileName();
+        var tempFilePath = Path.GetRandomFileName();
 
         try
         {
@@ -51,7 +51,7 @@ public sealed class ScreenshotStore : IScreenshotStore
                 await using var tempFileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
                 await using var archive = new ZipArchive(tempFileStream, ZipArchiveMode.Create);
 
-                foreach (var filePath in Directory.EnumerateFiles(directory, "*.png", SearchOption.AllDirectories))
+                foreach (var filePath in Directory.EnumerateFiles(directory, "*.webp", SearchOption.AllDirectories))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
