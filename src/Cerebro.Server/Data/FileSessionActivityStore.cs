@@ -71,6 +71,7 @@ public sealed class FileSessionActivityStore : ISessionActivityStore
         return lines
             .Where(line => !string.IsNullOrWhiteSpace(line))
             .Select(ParseLine)
+            .Reverse()
             .ToList();
     }
 
