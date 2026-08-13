@@ -1,0 +1,28 @@
+docs/LIMITATIONS.md
+  s_347d16a866ffe9::t_53215cdd1337a4 10-21
+  s_347d16a866ffe9::t_88061f8abf2caf 28-30
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_0834613bfcea3f 14,19
+TESTING.md
+  s_347d16a866ffe9::t_5b2ce99d0de2f9 158-161
+  s_347d16a866ffe9::t_7b7bcfb0de0752 6
+README.md
+  s_347d16a866ffe9::t_614d1b60ca4f65 78
+  s_347d16a866ffe9::t_fc8425d4d60eaa 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "81bacc110d9e387a83642b2bb2aaf4795ae26b27",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
