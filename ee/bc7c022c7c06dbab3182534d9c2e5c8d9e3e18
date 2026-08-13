@@ -1,0 +1,14 @@
+deploy/docker-compose.prod.yml
+  h_0a88d9aba8622a 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "eebc7c022c7c06dbab3182534d9c2e5c8d9e3e18",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
