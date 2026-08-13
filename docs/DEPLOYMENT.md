@@ -161,7 +161,7 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 
 **Via GitHub Actions** : un tag `agent-vX.Y.Z` poussé sur un commit `main` déclenche `.github/workflows/agent-release.yml`
 - build obfusqué pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
-- création d'une **Release GitHub en brouillon**, nommée `Xavier agent-vX.Y.Z` (à relire et publier manuellement, ce sont des binaires exécutés directement par les candidats)
+- création directe d'une **Release GitHub publiée**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
 
 ## 3. Provisionner une épreuve
 

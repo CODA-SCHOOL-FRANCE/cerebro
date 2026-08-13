@@ -1,9 +1,8 @@
 name: Release Xavier (agent)
 
 # Un tag agent-vX.Y.Z posé sur un commit de main construit un exécutable autonome par OS (Windows,
-# macOS Intel/Apple Silicon, Linux), obfusqué en Release, et crée une Release GitHub en DRAFT (pas
-# publiée automatiquement : un humain relit/valide avant de la rendre publique — ce sont des
-# binaires exécutés directement par les candidats, contrairement à l'image Docker du backend).
+# macOS Intel/Apple Silicon, Linux), obfusqué en Release, et publie directement une Release GitHub
+# (le job `test` en amont sert de garde-fou : la release n'est créée que si la suite de tests passe).
 #
 # Espace de tags séparé de celui du backend (voir server-release.yml, tags vX.Y.Z) : Agent et
 # Server évoluent et se publient indépendamment l'un de l'autre.
@@ -104,10 +103,10 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Créer la Release GitHub (brouillon)
+      - name: Créer la Release GitHub
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          draft: false
           name: Xavier ${{ github.ref_name }}
           generate_release_notes: true
           files: artifacts/*.zip
@@ -115,9 +114,6 @@ jobs:
             Exécutable candidat autonome (Windows, macOS Intel/Apple Silicon, Linux) — aucune
             installation requise, un seul fichier par OS. Instructions d'installation et d'usage
             incluses dans chaque archive (`USER-DOC.txt`).
-
-            **Cette release est un brouillon** : à relire puis publier manuellement une fois les
-            binaires vérifiés (voir TESTING.md pour un scénario de test complet).
 
             | Archive | Système |
             |---|---|
