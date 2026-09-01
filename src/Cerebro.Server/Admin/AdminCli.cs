@@ -54,7 +54,7 @@ internal sealed class AdminCommands
 
         var count = await ExamProvisioner.ProvisionAsync(
             repository, session, rosterJson, CancellationToken.None,
-            onCandidateAdded: (email, student) => Console.WriteLine($"  {student.Nom} <{email}> ({student.Id})"));
+            onCandidateAdded: student => Console.WriteLine($"  {student.Nom} ({student.Id})"));
 
         Console.WriteLine($"Session '{session}' provisionnée avec {count} candidat(s).");
     }

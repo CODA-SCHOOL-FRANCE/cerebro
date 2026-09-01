@@ -206,19 +206,15 @@ serveur génère un identifiant de connexion unique et non devinable pour chaque
 affiché **une seule fois** juste après la création — à noter ou copier (bouton "Copier la liste")
 pour le communiquer aux candidats, il n'est pas ré-affiché ensuite ailleurs dans le dashboard.
 
-**Avec un fichier JSON existant** (export d'établissement, format `ec`/`date`/`rattrapage`/`etudiants`/`correcteurs`/`diplome`) :
+**Avec un fichier JSON existant** (une liste `etudiants`, chacun avec `nom` et `id` — c'est tout ce
+qu'`ExamProvisioner` utilise, voir `Admin/ExamRoster.cs`) :
 
 ```json
 {
-  "ec": "E01",
-  "date": "2026-10-09",
-  "rattrapage": false,
-  "etudiants": {
-    "jean.dupont@example.com": { "nom": "Jean Dupont", "id": "FFFB5AB1", "promo": "B1", "drive_folder_id": "..." },
-    "marie.durand@example.com": { "nom": "Marie Durand", "id": "0770F2DB", "promo": "B1", "drive_folder_id": "..." }
-  },
-  "correcteurs": [{ "nom": "Alice Martin", "email": "alice.martin@example.com" }],
-  "diplome": "DIPLOME-XYZ"
+  "etudiants": [
+    { "nom": "Jean Dupont", "id": "FFFB5AB1" },
+    { "nom": "Marie Durand", "id": "0770F2DB" }
+  ]
 }
 ```
 

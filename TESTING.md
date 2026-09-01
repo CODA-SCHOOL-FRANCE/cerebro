@@ -32,15 +32,10 @@ dotnet build
 mkdir -p /tmp/cerebro-test
 cat > /tmp/cerebro-test/roster.json << 'EOF'
 {
-  "ec": "E01",
-  "date": "2026-08-03",
-  "rattrapage": false,
-  "etudiants": {
-    "etudiant1@ecole.fr": { "nom": "Test Un", "id": "AAAA1111", "promo": "B1" },
-    "etudiant2@ecole.fr": { "nom": "Test Deux", "id": "BBBB2222", "promo": "B1" }
-  },
-  "correcteurs": [{ "nom": "Surveillant Test", "email": "surveillant@ecole.fr" }],
-  "diplome": "TEST"
+  "etudiants": [
+    { "nom": "Test Un", "id": "AAAA1111" },
+    { "nom": "Test Deux", "id": "BBBB2222" }
+  ]
 }
 EOF
 ```
@@ -59,7 +54,7 @@ fichier atterrit donc dans `src/Cerebro.Server/db/cerebro.db`, à côté de `www
 automatiquement s'il n'existe pas encore.
 
 **Attendu** :
-- Chaque candidat listé sur sa propre ligne (`Test Un <etudiant1@ecole.fr> (AAAA1111)`, idem pour Test Deux)
+- Chaque candidat listé sur sa propre ligne (`Test Un (AAAA1111)`, idem pour Test Deux)
 - `Session 'TEST-2026' provisionnée avec 2 candidat(s).`
 - Code de sortie `0`
 - Aucun fichier généré à côté du roster (celui-ci n'est utilisé que pour peupler `db/cerebro.db`)
@@ -209,7 +204,7 @@ laisser traîner les données de ce test sur le disque.)
 | Provisioning avec un fichier roster manquant | `provision --session X --input /chemin/inexistant.json` | Échec, code de sortie `1`, message `Fichier d'entrée introuvable`. |
 | Création de session (dashboard) sur un code déjà existant | Bouton "+ NOUVELLE SESSION", coller le roster de l'étape 2, code de session `TEST-2026` | Erreur affichée dans le formulaire : `La session 'TEST-2026' existe déjà dans la base. Choisissez un autre code.` (même message que la CLI, voir `Admin/ExamProvisioner.cs`) |
 | Création de session (dashboard) avec un JSON invalide | Coller un texte qui n'est pas du JSON valide | Erreur affichée dans le formulaire : `Roster JSON invalide : ...` |
-| Création de session (dashboard) avec un roster sans étudiant | Coller `{"ec":"X","date":"2026-01-01","rattrapage":false,"etudiants":{}}` | Erreur affichée dans le formulaire : `Le roster ne contient aucun étudiant exploitable.` |
+| Création de session (dashboard) avec un roster sans étudiant | Coller `{"etudiants":[]}` | Erreur affichée dans le formulaire : `Le roster ne contient aucun étudiant exploitable.` |
 | `start` (CLI) sur une session inconnue | `dotnet run --project src/Cerebro.Server -- start --session INCONNUE` | Échec, code de sortie `1`, message `Session 'INCONNUE' introuvable dans la base.` |
 | `StartSession`/`StopSession` (dashboard) sur une session inconnue | Appel hub direct avec un code de session inexistant | Rejet avec `HubException: Session introuvable.` (pas de commande CLI `stop` équivalente — l'arrêt se fait uniquement depuis le dashboard) |
 | Suppression (dashboard) d'une session en cours | Bouton "🗑 SUPPRIMER LA SESSION" sur une épreuve démarrée, non arrêtée | Rejet avec `HubException: Impossible de supprimer une épreuve en cours. Arrêtez-la d'abord.`, session et fichiers toujours présents |

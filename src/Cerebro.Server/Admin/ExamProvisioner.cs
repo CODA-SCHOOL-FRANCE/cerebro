@@ -22,7 +22,7 @@ public static class ExamProvisioner
         string sessionCode,
         string rosterJson,
         CancellationToken cancellationToken,
-        Action<string, ExamRosterStudent>? onCandidateAdded = null)
+        Action<ExamRosterStudent>? onCandidateAdded = null)
     {
         if (await repository.SessionExistsAsync(sessionCode, cancellationToken))
         {
@@ -47,10 +47,10 @@ public static class ExamProvisioner
 
         var sessionId = await repository.CreateSessionAsync(sessionCode, cancellationToken);
 
-        foreach (var (email, student) in roster.Etudiants)
+        foreach (var student in roster.Etudiants)
         {
             await repository.AddCandidateAsync(sessionId, student.Id, student.Nom, cancellationToken);
-            onCandidateAdded?.Invoke(email, student);
+            onCandidateAdded?.Invoke(student);
         }
 
         return roster.Etudiants.Count;

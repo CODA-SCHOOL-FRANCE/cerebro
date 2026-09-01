@@ -18,9 +18,9 @@
     serveur génère un identifiant de connexion unique et non devinable pour chaque étudiant,
     affiché une seule fois juste après la création (à noter/copier pour le communiquer) — voir
     `ExamProvisioner.ProvisionFromNamesAsync`.
-  - **Roster JSON** : coller ou charger le fichier JSON existant de l'école (mêmes champs que la
-    CLI). Même logique de validation que `provision --input`, donc mêmes erreurs (code de session
-    déjà pris, JSON invalide, roster sans étudiant).
+  - **Roster JSON** : coller ou charger un fichier JSON existant (format minimal, voir
+    `Admin/ExamRoster.cs`). Même logique de validation que `provision --input`, donc mêmes erreurs
+    (code de session déjà pris, JSON invalide, roster sans étudiant).
 - **Démarrage/arrêt de session depuis le dashboard**
 - **Suppression de session depuis le dashboard** : bouton "🗑 SUPPRIMER LA SESSION" sur l'écran de détail d'une épreuve, avec confirmation avant l'action (irréversible). Efface la session et ses candidats en base, ainsi que tout son dossier `screenshots/{session}` (screenshots + journal d'activité), récursivement. Refusée tant que la session est en cours (démarrée, pas encore arrêtée) pour éviter de couper une épreuve en direct.
 - **Reconnexion automatique** : coupure réseau ponctuelle gérée par l'agent, qui rejoint automatiquement la session et renvoie son dernier statut connu
@@ -28,7 +28,7 @@
 - **Stockage des screenshots côté serveur**, organisé par session/candidat, avec assainissement strict des identifiants pour empêcher toute traversée de répertoire.
 - **Téléchargement de l'export complet d'une session depuis le dashboard** : bouton "⬇ Télécharger Session (ZIP)" sur l'écran de détail d'une épreuve, génère à la volée un zip de tous les screenshots de la session (organisé par candidat) et du journal d'activité (`activity.log`), sans avoir besoin d'un accès au disque du serveur (`docker cp`/SSH) — voir [Récupérer les screenshots](DEPLOYMENT.md#récupérer-les-screenshots-depuis-le-conteneur).
 - **Chiffrement en transit par épinglage de certificat** : l'agent peut valider le certificat du serveur par empreinte SHA-256 plutôt que par la chaîne de confiance du système — utile derrière un reverse proxy TLS auto-signé sans avoir à installer une CA sur chaque machine étudiante (voir [Sécurisation du transport](DEPLOYMENT.md#sécurisation-du-transport-tls)).
-- **Authentification par identifiant candidat enregistré** : le provisioning charge le roster officiel de l'épreuve (export existant de l'école) en base SQLite, et le hub vérifie que l'identifiant fourni par l'agent y est bien enregistré pour cette session avant d'accepter la connexion.
+- **Authentification par identifiant candidat enregistré** : le provisioning charge le roster de l'épreuve en base SQLite, et le hub vérifie que l'identifiant fourni par l'agent y est bien enregistré pour cette session avant d'accepter la connexion.
 - **Dashboard protégé par identifiant/mot de passe** 
 - **Télémétrie OpenTelemetry** : chaque connexion, déconnexion, screenshot reçu et changement de statut de préparation est tracé (`ActivitySource`) et compté (métriques), et persisté dans un journal d'activité par session, en texte brut (`screenshots/{session}/activity.log`, une ligne par évènement — pas de JSON à parser pour le relire)
   - consultable directement depuis le dashboard (bouton "Journal d'activité"), ou en ouvrant le fichier directement sur le disque du serveur, sans outil externe ni base SQLite.

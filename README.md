@@ -51,16 +51,12 @@ packaging/
 # Compiler toute la solution
 dotnet build
 
-# Créer un roster de test minimal (même format que l'export officiel de l'école)
+# Créer un roster de test minimal
 cat > roster-test.json << 'EOF'
 {
-  "ec": "TEST",
-  "date": "2026-01-01",
-  "rattrapage": false,
-  "etudiants": {
-    "test@example.com": { "nom": "Test Candidat", "id": "CAND0001", "promo": "B1" }
-  },
-  "diplome": "TEST"
+  "etudiants": [
+    { "nom": "Test Candidat", "id": "CAND0001" }
+  ]
 }
 EOF
 

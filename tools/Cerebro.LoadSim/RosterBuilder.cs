@@ -3,8 +3,8 @@ using System.Text.Json;
 namespace Cerebro.LoadSim;
 
 // Construit un roster minimal, au format attendu par ExamProvisioner côté serveur (voir
-// Admin/ExamRoster.cs) : mêmes clés que l'export officiel de l'école, mais avec des candidats
-// synthétiques aux identifiants prévisibles (ex: SIM0001, SIM0002...).
+// Admin/ExamRoster.cs), avec des candidats synthétiques aux identifiants prévisibles
+// (ex: SIM0001, SIM0002...).
 internal static class RosterBuilder
 {
     public static (string RosterJson, IReadOnlyList<string> CandidateIds) Build(
@@ -14,18 +14,9 @@ internal static class RosterBuilder
             .Select(i => $"{candidateIdPrefix}{i:0000}")
             .ToList();
 
-        var etudiants = candidateIds.ToDictionary(
-            id => $"{id.ToLowerInvariant()}@simulation.local",
-            id => new { nom = $"Candidat simulé {id}", id, promo = (string?)null });
+        var etudiants = candidateIds.Select(id => new {nom = $"Candidat simulé {id}", id});
 
-        var roster = new
-        {
-            ec = "SIMULATION",
-            date = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"),
-            rattrapage = false,
-            etudiants,
-            diplome = (string?)null
-        };
+        var roster = new {etudiants};
 
         return (JsonSerializer.Serialize(roster), candidateIds);
     }
