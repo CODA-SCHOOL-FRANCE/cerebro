@@ -10,6 +10,7 @@ Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur s
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
 - `Node.js` / `npm`
 - Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour un examen](docs/DEPLOYMENT.md))
+- Pour l'installation de l'agent côté étudiant (npm/Homebrew/Scoop/script) : voir [Déploiement §2](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal)
 
 ## Structure du dépôt
 
@@ -35,6 +36,8 @@ tests/
     Integration/        # capture réelle, disque réel, SignalR réel de bout en bout
 tools/
   Cerebro.LoadSim/     # simule une session avec N candidats depuis une seule machine (voir son README)
+packaging/
+  npm/                 # wrapper npm "xavier-agent" (télécharge le binaire natif au postinstall, voir son README)
 ```
 
 ## Développement local

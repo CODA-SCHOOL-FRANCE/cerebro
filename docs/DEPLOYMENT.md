@@ -150,7 +150,7 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
 
 Le surveillant se connecte ensuite sur `https://<server-ip>:8443/login.html` avec ce couple identifiant/mot de passe.
 
-## 2. Agent (Xavier), un exécutable autonome par OS
+## 2. Agent (Xavier), distribution multi-canal
 
 `dotnet publish` en mode self-contained + fichier unique : l'étudiant n'a pas besoin du runtime .NET installé.
 Le projet source reste `src/Cerebro.Agent`, mais l'exécutable publié (`AssemblyName` dans le `.csproj`) s'appelle `xavier` (`xavier.exe` sous Windows).
@@ -165,6 +165,37 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 **Via GitHub Actions** : un tag `agent-vX.Y.Z` poussé sur un commit `main` déclenche `.github/workflows/agent-release.yml`
 - build obfusqué pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
 - création directe d'une **Release GitHub publiée**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
+
+`cerebro` étant privé, cette Release exige une authentification GitHub — incompatible avec un
+`curl`/gestionnaire de paquets anonyme depuis la machine d'un candidat. Le job `mirror-public-release`
+(même workflow, `needs: release`) miroir donc automatiquement les mêmes archives vers
+[`xavier-releases`](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases) — un dépôt public sans
+aucun code source — et y régénère le bucket Scoop et la formule
+[`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
+hachages. Canaux disponibles pour les étudiants (détail dans `docs/USER-DOC.txt`) :
+
+| Canal | Commande |
+|---|---|
+| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.sh \| sh` |
+| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.ps1 \| iex` |
+| Homebrew (macOS/Linux) | `brew install coda-school-france/cerebro/xavier` |
+| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/xavier-releases && scoop install xavier/xavier` |
+| npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
+| Manuel | archive `Xavier-<version>-<rid>.zip` sur la Release GitHub |
+
+Ces canaux n'embarquent volontairement pas de `xavier.config.json` préempli (contrairement à
+l'archive manuelle) : ce fichier est à éditer par le surveillant avant une distribution
+individuelle (voir §4 et `docs/USER-DOC.txt`) ; sans lui, l'agent retombe simplement sur les
+prompts interactifs.
+
+Mise en place initiale (à faire une seule fois, avant le premier tag) :
+1. Créer les deux dépôts publics `xavier-releases` et `homebrew-cerebro` sous l'organisation
+   `CODA-SCHOOL-FRANCE`, y pousser les fichiers statiques (`install.sh`, `install.ps1`,
+   `bucket/xavier.json` et `Formula/xavier.rb` placeholders, `README.md`).
+2. Générer un PAT classique (scope `repo`) et l'ajouter comme secret `XAVIER_RELEASES_PAT` sur le
+   dépôt privé `cerebro` (le `GITHUB_TOKEN` par défaut ne peut pas écrire sur un autre dépôt).
+3. Le package npm (`packaging/npm/`) se publie séparément via `.github/workflows/npm-publish.yml`
+   (déclenchement manuel, secret `NPM_TOKEN`) — pas couplé aux tags `agent-vX.Y.Z`.
 
 ## 3. Provisionner une épreuve
 

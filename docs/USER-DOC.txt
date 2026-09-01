@@ -3,6 +3,35 @@ Cerebro — Agent candidat (Xavier)
 
 Un seul fichier exécutable, rien à installer. Le runtime .NET est intégré dedans.
 
+Installation facile (recommandée)
+------------------------------------
+
+Plutôt que de télécharger et dézipper l'archive à la main, vous pouvez utiliser l'un de ces
+raccourcis selon votre système :
+
+  macOS / Linux (script) :
+      curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.sh | sh
+
+  Windows (PowerShell) :
+      irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.ps1 | iex
+
+  macOS / Linux (Homebrew) :
+      brew install coda-school-france/cerebro/xavier
+
+  Windows (Scoop) :
+      scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/xavier-releases
+      scoop install xavier/xavier
+
+  Tous OS (npm, si Node.js est déjà installé) :
+      npx xavier-agent <serverUrl> <sessionCode> <candidateId>
+
+Si votre surveillant vous a transmis un fichier xavier.config.json prérempli, placez-le dans le
+même dossier que l'exécutable installé avant de le lancer (voir "Configuration" ci-dessous) — ces
+méthodes d'installation n'incluent volontairement pas de configuration préremplie.
+
+Le téléchargement manuel de l'archive (ci-dessous) reste disponible et fonctionne toujours,
+notamment si le surveillant préfère distribuer l'exécutable et sa configuration ensemble.
+
 Ce que le système d'exploitation va afficher au premier lancement
 -------------------------------------------------------------------
 

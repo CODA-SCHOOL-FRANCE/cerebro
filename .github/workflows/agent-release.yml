@@ -121,3 +121,126 @@ jobs:
             | `*-osx-x64.zip` | macOS Intel |
             | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
             | `*-linux-x64.zip` | Linux 64 bits |
+
+  # cerebro est privé : ses assets de Release exigent une authentification GitHub, incompatible
+  # avec un `curl`/gestionnaire de paquets anonyme depuis la machine d'un candidat. On miroir donc
+  # les mêmes archives vers xavier-releases (dépôt public, sans aucun code source) et on y régénère
+  # le bucket Scoop et la formule Homebrew avec les nouveaux hachages — voir docs/DEPLOYMENT.md §2.
+  mirror-public-release:
+    needs: release
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.XAVIER_RELEASES_PAT }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: xavier-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publier la Release miroir (xavier-releases, dépôt public)
+        run: |
+          gh release create "${GITHUB_REF_NAME}" artifacts/*.zip \
+            --repo CODA-SCHOOL-FRANCE/xavier-releases \
+            --title "Xavier ${GITHUB_REF_NAME}" \
+            --generate-notes
+
+      - name: Calculer les sha256 de chaque archive
+        id: sums
+        run: |
+          version="${GITHUB_REF_NAME#agent-v}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          for rid in win-x64 osx-x64 osx-arm64 linux-x64; do
+            sha=$(sha256sum "artifacts/Xavier-${version}-${rid}.zip" | cut -d' ' -f1)
+            echo "sha_${rid//-/_}=${sha}" >> "$GITHUB_OUTPUT"
+          done
+
+      # Un seul manifest (win-x64, seul RID Windows publié) : voir bucket/xavier.json dans
+      # xavier-releases. Commit direct sur main (pas de PR) : fichier généré à usage unique, sans
+      # valeur de revue humaine.
+      - name: Mettre à jour le bucket Scoop (xavier-releases)
+        env:
+          VERSION: ${{ steps.sums.outputs.version }}
+          SHA_WIN_X64: ${{ steps.sums.outputs.sha_win_x64 }}
+        run: |
+          git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/CODA-SCHOOL-FRANCE/xavier-releases.git" scoop-repo
+          cd scoop-repo
+          mkdir -p bucket
+          cat > bucket/xavier.json <<EOF
+          {
+              "version": "${VERSION}",
+              "description": "Agent candidat Cerebro (Xavier)",
+              "homepage": "https://github.com/CODA-SCHOOL-FRANCE/cerebro",
+              "license": "Proprietary",
+              "architecture": {
+                  "64bit": {
+                      "url": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-win-x64.zip",
+                      "hash": "${SHA_WIN_X64}"
+                  }
+              },
+              "bin": "xavier.exe",
+              "checkver": {
+                  "github": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases"
+              },
+              "autoupdate": {
+                  "architecture": {
+                      "64bit": {
+                          "url": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/agent-v\$version/Xavier-\$version-win-x64.zip"
+                      }
+                  }
+              }
+          }
+          EOF
+          git config user.name "xavier-release-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add bucket/xavier.json
+          git diff --cached --quiet || git commit -m "xavier ${GITHUB_REF_NAME}"
+          git push
+
+      - name: Mettre à jour le tap Homebrew (homebrew-cerebro)
+        env:
+          VERSION: ${{ steps.sums.outputs.version }}
+          SHA_OSX_ARM64: ${{ steps.sums.outputs.sha_osx_arm64 }}
+          SHA_OSX_X64: ${{ steps.sums.outputs.sha_osx_x64 }}
+          SHA_LINUX_X64: ${{ steps.sums.outputs.sha_linux_x64 }}
+        run: |
+          git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro.git" brew-repo
+          cd brew-repo
+          mkdir -p Formula
+          cat > Formula/xavier.rb <<EOF
+          class Xavier < Formula
+            desc "Agent candidat Cerebro (surveillance d'épreuves)"
+            homepage "https://github.com/CODA-SCHOOL-FRANCE/cerebro"
+            version "${VERSION}"
+            license "Proprietary"
+
+            on_macos do
+              on_arm do
+                url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-arm64.zip"
+                sha256 "${SHA_OSX_ARM64}"
+              end
+              on_intel do
+                url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-x64.zip"
+                sha256 "${SHA_OSX_X64}"
+              end
+            end
+
+            on_linux do
+              url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-linux-x64.zip"
+              sha256 "${SHA_LINUX_X64}"
+            end
+
+            def install
+              bin.install "xavier"
+            end
+
+            test do
+              assert_predicate bin/"xavier", :exist?
+            end
+          end
+          EOF
+          git config user.name "xavier-release-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Formula/xavier.rb
+          git diff --cached --quiet || git commit -m "xavier ${GITHUB_REF_NAME}"
+          git push
