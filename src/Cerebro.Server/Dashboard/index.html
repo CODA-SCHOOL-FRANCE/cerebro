@@ -47,25 +47,56 @@
                 <button aria-label="Fermer" class="drawer-close" id="closeCreateSessionButton">✕</button>
             </div>
 
+            <div class="create-session-tabs" id="createSessionTabs" role="tablist">
+                <button aria-selected="true" class="tab-btn active" id="createSessionTabManual" role="tab"
+                        type="button">Saisie manuelle</button>
+                <button aria-selected="false" class="tab-btn" id="createSessionTabJson" role="tab"
+                        type="button">Roster JSON</button>
+            </div>
+
             <form class="login-form" id="createSessionForm">
                 <label class="login-label" for="createSessionCode">Code de session</label>
                 <input autocomplete="off" autofocus class="login-input" id="createSessionCode" name="sessionCode"
                        required type="text"/>
 
-                <label class="login-label" for="createSessionRosterFile">Roster (fichier JSON de l'école)</label>
-                <input accept="application/json,.json" class="login-input" id="createSessionRosterFile"
-                       name="rosterFile"
-                       type="file"/>
+                <div id="createSessionManualPanel">
+                    <label class="login-label" for="createSessionNames">Étudiants (un nom par ligne)</label>
+                    <textarea class="login-input create-session-roster" id="createSessionNames" name="studentNames"
+                              placeholder="Jean Dupont&#10;Marie Durand" rows="8"></textarea>
+                    <p class="create-session-hint">Un identifiant de connexion unique sera généré automatiquement
+                        pour chaque étudiant, affiché juste après la création — à noter ou copier pour le
+                        communiquer.</p>
+                </div>
 
-                <label class="login-label" for="createSessionRosterJson">Ou coller le JSON directement</label>
-                <textarea class="login-input create-session-roster" id="createSessionRosterJson" name="rosterJson"
-                          placeholder='{"ec": "E01", "date": "2026-10-09", "rattrapage": false, "etudiants": {"...": {"nom": "...", "id": "..."}}}'
-                          rows="8"></textarea>
+                <div hidden id="createSessionJsonPanel">
+                    <label class="login-label" for="createSessionRosterFile">Roster (fichier JSON de l'école)</label>
+                    <input accept="application/json,.json" class="login-input" id="createSessionRosterFile"
+                           name="rosterFile"
+                           type="file"/>
+
+                    <label class="login-label" for="createSessionRosterJson">Ou coller le JSON directement</label>
+                    <textarea class="login-input create-session-roster" id="createSessionRosterJson"
+                              name="rosterJson"
+                              placeholder='{"ec": "E01", "date": "2026-10-09", "rattrapage": false, "etudiants": {"...": {"nom": "...", "id": "..."}}}'
+                              rows="8"></textarea>
+                </div>
 
                 <div class="login-error" hidden id="createSessionError"></div>
 
-                <button class="btn btn-lime login-submit" type="submit">▶ CRÉER LA SESSION</button>
+                <button class="btn btn-lime login-submit" id="createSessionSubmitButton"
+                        type="submit">▶ CRÉER LA SESSION</button>
             </form>
+
+            <div hidden id="createSessionResultsPanel">
+                <p class="create-session-hint">Session créée. Notez ou copiez les identifiants ci-dessous — ils ne
+                    seront plus affichés automatiquement ensuite.</p>
+                <div id="createSessionResultsList"></div>
+                <div class="create-session-results-actions">
+                    <button class="btn btn-outline" id="createSessionResultsCopyButton"
+                            type="button">⧉ COPIER LA LISTE</button>
+                    <button class="btn btn-lime" id="createSessionResultsDoneButton" type="button">TERMINÉ</button>
+                </div>
+            </div>
         </aside>
     </div>
 

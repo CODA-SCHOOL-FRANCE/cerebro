@@ -16,6 +16,7 @@ export interface CerebroHubClient {
   getSnapshot(sessionCode: string): Promise<CandidateStatusDto[]>;
   getSessionActivity(sessionCode: string): Promise<SessionActivityEventDto[]>;
   createSession(sessionCode: string, rosterJson: string): Promise<number>;
+  createSessionFromNames(sessionCode: string, studentNames: string[]): Promise<CandidateRosterEntryDto[]>;
   joinAsDashboard(sessionCode: string): Promise<void>;
   startSession(sessionCode: string): Promise<void>;
   stopSession(sessionCode: string): Promise<void>;
@@ -49,6 +50,8 @@ export function createHubClient(): CerebroHubClient {
       connection.invoke<SessionActivityEventDto[]>("GetSessionActivity", sessionCode),
     createSession: (sessionCode, rosterJson) =>
       connection.invoke<number>("CreateSession", sessionCode, rosterJson),
+    createSessionFromNames: (sessionCode, studentNames) =>
+      connection.invoke<CandidateRosterEntryDto[]>("CreateSessionFromNames", sessionCode, studentNames),
     joinAsDashboard: (sessionCode) => connection.invoke("JoinAsDashboard", sessionCode),
     startSession: (sessionCode) => connection.invoke("StartSession", sessionCode),
     stopSession: (sessionCode) => connection.invoke("StopSession", sessionCode),

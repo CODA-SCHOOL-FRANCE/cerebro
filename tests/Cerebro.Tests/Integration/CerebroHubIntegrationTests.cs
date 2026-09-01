@@ -540,4 +540,57 @@ public sealed class CerebroHubIntegrationTests : IAsyncLifetime
         var sessions = await dashboard.InvokeAsync<List<ExamSessionSummaryDto>>("GetPlannedSessions");
         Check.That(sessions.Select(s => s.SessionCode)).Not.Contains(sessionCode);
     }
+
+    [Fact]
+    public async Task CreateSessionFromNames_ShouldProvisionCandidatesWithGeneratedUniqueIds()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+
+        var candidates = await dashboard.InvokeAsync<List<CandidateRosterEntryDto>>(
+            "CreateSessionFromNames", sessionCode, new List<string> {"Jean Dupont", "Marie Durand"});
+
+        Check.That(candidates.Select(c => c.Name)).ContainsExactly("Jean Dupont", "Marie Durand");
+        Check.That(candidates.Select(c => c.CandidateId).Distinct()).HasSize(2);
+        Check.That(candidates.Select(c => c.CandidateId.Length)).ContainsExactly(8, 8);
+
+        // Les ids générés doivent être immédiatement utilisables par un agent, exactement comme
+        // ceux fournis via un roster JSON (voir JoinAsCandidate_ShouldNotifyDashboardAndAppearInSnapshot).
+        await using var candidate = CreateConnection();
+        await candidate.StartAsync();
+        await candidate.InvokeAsync("JoinAsCandidate", sessionCode, candidates[0].CandidateId);
+    }
+
+    [Fact]
+    public async Task CreateSessionFromNames_WithBlankNamesOnly_ShouldReject()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+
+        var exception = await Assert.ThrowsAsync<HubException>(
+            () => dashboard.InvokeAsync<List<CandidateRosterEntryDto>>(
+                "CreateSessionFromNames", sessionCode, new List<string> {"  ", ""}));
+
+        Check.That(exception.Message).Contains("étudiant");
+    }
+
+    [Fact]
+    public async Task CreateSessionFromNames_WithExistingSessionCode_ShouldReject()
+    {
+        var sessionCode = $"TEST-{Guid.NewGuid():N}";
+        await RegisterCandidateAsync(sessionCode, "FFFB5AB1");
+
+        await using var dashboard = await CreateAuthenticatedDashboardConnectionAsync();
+        await dashboard.StartAsync();
+
+        var exception = await Assert.ThrowsAsync<HubException>(
+            () => dashboard.InvokeAsync<List<CandidateRosterEntryDto>>(
+                "CreateSessionFromNames", sessionCode, new List<string> {"Jean Dupont"}));
+
+        Check.That(exception.Message).Contains("existe déjà");
+    }
 }

@@ -1,5 +1,7 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using Cerebro.Server.Data;
+using Cerebro.Shared.Realtime;
 
 namespace Cerebro.Server.Admin;
 
@@ -10,6 +12,10 @@ namespace Cerebro.Server.Admin;
 public static class ExamProvisioner
 {
     private static readonly JsonSerializerOptions RosterJsonOptions = new() {PropertyNameCaseInsensitive = true};
+
+    // Longueur alignée sur les ids déjà vus dans les exports d'école (ex: "FFFB5AB1") : assez
+    // court pour être recopié/annoncé à l'oral, assez long pour ne pas être devinable.
+    private const int GeneratedCandidateIdLength = 8;
 
     public static async Task<int> ProvisionAsync(
         IExamRepository repository,
@@ -48,5 +54,51 @@ public static class ExamProvisioner
         }
 
         return roster.Etudiants.Count;
+    }
+
+    // Variante "saisie manuelle" (pas de roster JSON fourni par l'école) : le surveillant ne donne
+    // que des noms, le serveur génère un identifiant candidat aléatoire pour chacun (voir
+    // ExamRosterFile pour le rappel : cet id sert à la fois d'identifiant candidat et de secret de
+    // connexion). Les ids générés sont retournés pour que l'appelant (CerebroHub.CreateSessionFromNames)
+    // puisse les afficher au surveillant - c'est la seule fois où ils sont communiqués.
+    public static async Task<IReadOnlyList<CandidateRosterEntryDto>> ProvisionFromNamesAsync(
+        IExamRepository repository,
+        string sessionCode,
+        IReadOnlyList<string> studentNames,
+        CancellationToken cancellationToken)
+    {
+        if (await repository.SessionExistsAsync(sessionCode, cancellationToken))
+        {
+            throw new InvalidOperationException(
+                $"La session '{sessionCode}' existe déjà dans la base. Choisissez un autre code.");
+        }
+
+        var names = studentNames
+            .Select(name => name.Trim())
+            .Where(name => name.Length > 0)
+            .ToList();
+
+        if (names.Count == 0)
+        {
+            throw new InvalidOperationException("Aucun étudiant renseigné.");
+        }
+
+        var sessionId = await repository.CreateSessionAsync(sessionCode, cancellationToken);
+
+        var usedIds = new HashSet<string>();
+        var result = new List<CandidateRosterEntryDto>(names.Count);
+        foreach (var name in names)
+        {
+            string candidateId;
+            do
+            {
+                candidateId = RandomNumberGenerator.GetHexString(GeneratedCandidateIdLength, lowercase: false);
+            } while (!usedIds.Add(candidateId));
+
+            await repository.AddCandidateAsync(sessionId, candidateId, name, cancellationToken);
+            result.Add(new CandidateRosterEntryDto {CandidateId = candidateId, Name = name, HasConnectedOnce = false});
+        }
+
+        return result;
     }
 }

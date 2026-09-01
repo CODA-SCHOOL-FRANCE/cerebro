@@ -13,10 +13,14 @@
 - **Suivi de connexion en direct** : chaque agent envoie un battement (`Ping`) toutes les 60 secondes par défaut, indépendamment des screenshots.
   - le dashboard affiche le statut de connexion et l'horodatage du dernier signal reçu par candidat; si un agent se déconnecte (perte réseau, fermeture de l'application, machine éteinte...), sa ligne reste visible mais passe **en rouge**
   - le surveillant voit immédiatement qui a décroché, plutôt que de perdre la trace du candidat
-- **Création de session depuis le dashboard** : 
-  - provisionner une épreuve (créer la session, y enregistrer les candidats à partir du fichier JSON de l'école)
-  - "+ NOUVELLE SESSION", roster collé ou chargé depuis un fichier local
-  - Même logique de validation que la CLI (`provision --input`), donc mêmes erreurs (code de session déjà pris, JSON invalide, roster sans étudiant)
+- **Création de session depuis le dashboard** ("+ NOUVELLE SESSION"), deux modes au choix :
+  - **Saisie manuelle** : coller la liste des étudiants (un nom par ligne), sans fichier JSON. Le
+    serveur génère un identifiant de connexion unique et non devinable pour chaque étudiant,
+    affiché une seule fois juste après la création (à noter/copier pour le communiquer) — voir
+    `ExamProvisioner.ProvisionFromNamesAsync`.
+  - **Roster JSON** : coller ou charger le fichier JSON existant de l'école (mêmes champs que la
+    CLI). Même logique de validation que `provision --input`, donc mêmes erreurs (code de session
+    déjà pris, JSON invalide, roster sans étudiant).
 - **Démarrage/arrêt de session depuis le dashboard**
 - **Suppression de session depuis le dashboard** : bouton "🗑 SUPPRIMER LA SESSION" sur l'écran de détail d'une épreuve, avec confirmation avant l'action (irréversible). Efface la session et ses candidats en base, ainsi que tout son dossier `screenshots/{session}` (screenshots + journal d'activité), récursivement. Refusée tant que la session est en cours (démarrée, pas encore arrêtée) pour éviter de couper une épreuve en direct.
 - **Reconnexion automatique** : coupure réseau ponctuelle gérée par l'agent, qui rejoint automatiquement la session et renvoie son dernier statut connu

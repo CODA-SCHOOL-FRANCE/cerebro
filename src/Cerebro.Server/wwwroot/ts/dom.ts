@@ -24,6 +24,17 @@ export const createSessionRosterFileInput = required<HTMLInputElement>("createSe
 export const createSessionRosterJsonInput = required<HTMLTextAreaElement>("createSessionRosterJson");
 export const createSessionError = required<HTMLElement>("createSessionError");
 
+export const createSessionTabManual = required<HTMLButtonElement>("createSessionTabManual");
+export const createSessionTabJson = required<HTMLButtonElement>("createSessionTabJson");
+export const createSessionManualPanel = required<HTMLElement>("createSessionManualPanel");
+export const createSessionJsonPanel = required<HTMLElement>("createSessionJsonPanel");
+export const createSessionNamesInput = required<HTMLTextAreaElement>("createSessionNames");
+
+export const createSessionResultsPanel = required<HTMLElement>("createSessionResultsPanel");
+export const createSessionResultsList = required<HTMLDivElement>("createSessionResultsList");
+export const createSessionResultsCopyButton = required<HTMLButtonElement>("createSessionResultsCopyButton");
+export const createSessionResultsDoneButton = required<HTMLButtonElement>("createSessionResultsDoneButton");
+
 export const sessionDetailSection = required<HTMLElement>("sessionDetail");
 export const currentSessionTitle = required<HTMLHeadingElement>("currentSessionTitle");
 export const currentSessionStatus = required<HTMLElement>("currentSessionStatus");

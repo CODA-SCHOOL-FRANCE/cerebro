@@ -199,7 +199,14 @@ Mise en place initiale (à faire une seule fois, avant le premier tag) :
 
 ## 3. Provisionner une épreuve
 
-L'admin fournit le code de session et le fichier JSON de l'épreuve (export existant de l'établissement, format `ec`/`date`/`rattrapage`/`etudiants`/`correcteurs`/`diplome`) :
+**Depuis le dashboard, sans fichier JSON** : bouton **"+ NOUVELLE SESSION"**, onglet **"Saisie
+manuelle"** — coller la liste des étudiants (un nom par ligne) et saisir le code de session. Le
+serveur génère un identifiant de connexion unique et non devinable pour chaque étudiant
+(`Admin/ExamProvisioner.ProvisionFromNamesAsync`, via SignalR `CerebroHub.CreateSessionFromNames`),
+affiché **une seule fois** juste après la création — à noter ou copier (bouton "Copier la liste")
+pour le communiquer aux candidats, il n'est pas ré-affiché ensuite ailleurs dans le dashboard.
+
+**Avec un fichier JSON existant** (export d'établissement, format `ec`/`date`/`rattrapage`/`etudiants`/`correcteurs`/`diplome`) :
 
 ```json
 {
@@ -219,7 +226,16 @@ L'admin fournit le code de session et le fichier JSON de l'épreuve (export exis
 dotnet Cerebro.Server.dll provision --session SESSION-2026-A --input epreuve-e01.json --db ./cerebro.db
 ```
 
-Le champ **`id`** de chaque étudiant (ex: `FFFB5AB1`) sert à la fois d'identifiant candidat et de secret de connexion — pas de jeton généré séparément : c'est déjà un identifiant propre à l'établissement, non devinable.
+**Depuis le dashboard**, sans accès CLI/SSH au serveur : bouton **"+ NOUVELLE SESSION"**, onglet
+**"Roster JSON"**, coller le même JSON (ou charger le fichier) et saisir le code de session —
+utilise exactement la même logique de provisioning (`Admin/ExamProvisioner.ProvisionAsync`) via
+SignalR (`CerebroHub.CreateSession`), donc les mêmes validations et messages d'erreur que la
+commande CLI.
+
+Dans les deux cas, l'**`id`** de chaque étudiant sert à la fois d'identifiant candidat et de secret
+de connexion — pas de jeton généré séparément. Avec le JSON, c'est déjà un identifiant propre à
+l'établissement (ex: `FFFB5AB1`), non devinable ; en saisie manuelle, c'est le serveur qui le
+génère avec les mêmes propriétés.
 
 Le même fichier `cerebro.db` doit être utilisé par le serveur au démarrage (variable`ConnectionStrings__CerebroDb`, ou `appsettings.json` → `ConnectionStrings:CerebroDb`) :
 

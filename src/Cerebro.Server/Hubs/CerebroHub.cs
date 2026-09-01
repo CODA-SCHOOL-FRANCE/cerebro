@@ -96,6 +96,36 @@ public sealed class CerebroHub(
         return candidateCount;
     }
 
+    // Variante "saisie manuelle" de CreateSession : pas de roster JSON, juste une liste de noms -
+    // voir ExamProvisioner.ProvisionFromNamesAsync pour la génération des identifiants candidat.
+    // Les ids générés sont retournés au dashboard pour affichage immédiat : c'est la seule occasion
+    // de les communiquer, ils ne sont pas ré-affichés ensuite (voir candidate-list.ts).
+    [Authorize]
+    public async Task<IReadOnlyList<CandidateRosterEntryDto>> CreateSessionFromNames(
+        string sessionCode, List<string> studentNames)
+    {
+        using var activity = CerebroTelemetry.ActivitySource.StartActivity("Session.Create");
+        activity?.SetTag(CerebroSessionCodeTag, sessionCode);
+
+        IReadOnlyList<CandidateRosterEntryDto> candidates;
+        try
+        {
+            candidates = await ExamProvisioner.ProvisionFromNamesAsync(
+                examRepository, sessionCode, studentNames, Context.ConnectionAborted);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new HubException(ex.Message);
+        }
+
+        CerebroTelemetry.SessionsCreated.Add(1);
+        await activityStore.RecordAsync(
+            sessionCode, candidateId: null, SessionActivityEventType.SessionCreated,
+            detail: $"{candidates.Count} candidat(s)", Context.ConnectionAborted);
+
+        return candidates;
+    }
+
     [Authorize]
     public Task<IReadOnlyList<CandidateRosterEntryDto>> GetCandidateRoster(string sessionCode)
         => examRepository.GetCandidatesAsync(sessionCode, Context.ConnectionAborted);
