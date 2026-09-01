@@ -1,0 +1,39 @@
+packaging/npm/README.md
+  s_347d16a866ffe9::t_9ec86e21d87ef5 8
+packaging/npm/scripts/postinstall.js
+  s_347d16a866ffe9::t_c3e18bc66345a3 2-3
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_6aa5cbaf82d5a5 4-5
+  s_347d16a866ffe9::t_3cffae6df3914f 119-121
+  s_347d16a866ffe9::t_c5842aaffd4684 44,47
+README.md
+  s_347d16a866ffe9::t_a5b80de3247304 35,38-40
+  s_347d16a866ffe9::t_6ff9eca72fed02 13-20,26-34,36-37,41-42,44-59
+  s_347d16a866ffe9::t_38e931b276f342 43
+  h_0a88d9aba8622a 21-25
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_41f33774651400 163-165,167-169
+  s_347d16a866ffe9::t_b07647fc132c0c 10,16
+  s_347d16a866ffe9::t_f19953bf859b6e 190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3afd621d77348864fefed730cf36dc746eddf77c",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
