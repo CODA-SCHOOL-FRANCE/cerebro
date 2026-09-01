@@ -1,0 +1,28 @@
+{
+  "name": "xavier-agent",
+  "version": "1.0.0",
+  "description": "Agent candidat Cerebro (Xavier) — installe le binaire natif correspondant à votre plateforme.",
+  "bin": {
+    "xavier": "bin/xavier.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "os": ["win32", "darwin", "linux"],
+  "cpu": ["x64", "arm64"],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro"
+  },
+  "license": "UNLICENSED",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

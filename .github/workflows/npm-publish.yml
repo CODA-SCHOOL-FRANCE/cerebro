@@ -1,0 +1,31 @@
+name: Publier xavier-agent (npm)
+
+# Volontairement découplé des tags agent-vX.Y.Z : le wrapper npm (packaging/npm) ne fait que
+# télécharger le binaire Xavier au postinstall, il change rarement et n'a pas besoin d'être
+# republié à chaque release binaire — voir docs/DEPLOYMENT.md §2.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version npm à publier (ex: 1.0.1)"
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packaging/npm
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - run: npm version "${{ inputs.version }}" --no-git-tag-version
+      - run: npm install --omit=dev --ignore-scripts
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
