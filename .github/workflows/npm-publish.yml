@@ -1,13 +1,23 @@
 name: Publier xavier-agent (npm)
 
-# Volontairement découplé des tags agent-vX.Y.Z : le wrapper npm (packaging/npm) ne fait que
-# télécharger le binaire Xavier au postinstall, il change rarement et n'a pas besoin d'être
-# republié à chaque release binaire — voir docs/DEPLOYMENT.md §2.
+# Déclenché automatiquement par agent-release.yml (job publish-npm, needs: release) à chaque tag
+# agent-vX.Y.Z, avec la même version - le wrapper npm reste ainsi toujours publié en même temps que
+# le binaire qu'il télécharge au postinstall. workflow_dispatch reste disponible pour republier le
+# wrapper seul (ex: fix du script postinstall) sans couper une nouvelle release de l'agent.
 on:
   workflow_dispatch:
     inputs:
       version:
         description: "Version npm à publier (ex: 1.0.1)"
+        required: true
+  workflow_call:
+    inputs:
+      version:
+        description: "Version npm à publier (ex: 1.0.1)"
+        required: true
+        type: string
+    secrets:
+      NPM_TOKEN:
         required: true
 
 jobs:

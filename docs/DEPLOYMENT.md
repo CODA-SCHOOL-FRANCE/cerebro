@@ -160,14 +160,20 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 - build pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
 - création directe d'une **Release GitHub publiée sur ce dépôt**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
 
-Le job `update-distribution-channels` (même workflow, `needs: release`) régénère ensuite le bucket
-Scoop (`bucket/xavier.json`, dans ce dépôt, commit direct sur `main`) et la formule
-[`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
-hachages — Homebrew impose qu'un tap vive dans un dépôt séparé nommé `homebrew-<nom>`,
-indépendamment de la visibilité du dépôt principal, donc ce dépôt-là reste distinct. Le script
-d'installation et le wrapper npm résolvent la dernière release agent directement sur ce dépôt (voir
-`packaging/install.sh`, `install.ps1`, `packaging/npm/scripts/postinstall.js`) : rien à mirorer
-pour eux. Canaux disponibles pour les étudiants (détail dans `docs/USER-DOC.txt`) :
+Deux jobs se déclenchent ensuite en parallèle (même workflow, `needs: release`) :
+- `publish-npm` republie le wrapper npm (`packaging/npm/`) avec le même numéro de version, via
+  `npm-publish.yml` appelé en workflow réutilisable (`workflow_dispatch` y reste disponible pour
+  republier le wrapper seul, sans nouvelle release agent).
+- `update-distribution-channels` régénère le bucket Scoop (`bucket/xavier.json`, dans ce dépôt,
+  commit direct sur `main`) et la formule
+  [`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
+  hachages — Homebrew impose qu'un tap vive dans un dépôt séparé nommé `homebrew-<nom>`,
+  indépendamment de la visibilité du dépôt principal, donc ce dépôt-là reste distinct.
+
+Le script d'installation et le postinstall npm résolvent la dernière release agent directement sur
+ce dépôt (voir `packaging/install.sh`, `install.ps1`, `packaging/npm/scripts/postinstall.js`) :
+rien à mirorer côté binaire. Canaux disponibles pour les étudiants (détail dans
+`docs/USER-DOC.txt`) :
 
 | Canal | Commande |
 |---|---|

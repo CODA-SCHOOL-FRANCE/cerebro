@@ -77,6 +77,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -90,6 +92,12 @@ jobs:
             echo "::error::Le tag ${GITHUB_REF_NAME} ne pointe pas vers un commit de main."
             exit 1
           fi
+
+      # Réutilisée par le job publish-npm (needs: release) pour publier le wrapper npm avec le
+      # même numéro de version que le binaire qui vient d'être publié.
+      - name: Extraire la version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#agent-v}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v8
         with:
@@ -116,9 +124,20 @@ jobs:
             | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
             | `*-linux-x64.zip` | Linux 64 bits |
 
-  # Le script d'installation, le wrapper npm et le bucket Scoop (bucket/xavier.json, ce dépôt)
-  # résolvent la dernière release agent directement depuis ce dépôt, désormais public - rien à
-  # mirorer. Seule la formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) :
+  # Republie le wrapper npm (packaging/npm) avec le même numéro de version que le binaire qui vient
+  # d'être publié - voir npm-publish.yml (workflow_dispatch y reste disponible pour republier le
+  # wrapper seul, sans nouvelle release agent).
+  publish-npm:
+    needs: release
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Le script d'installation et le bucket Scoop (bucket/xavier.json, ce dépôt) résolvent la
+  # dernière release agent directement depuis ce dépôt, désormais public - rien à mirorer. Seule
+  # la formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) :
   # Homebrew impose qu'un tap vive dans un dépôt nommé homebrew-<nom>, indépendamment de la
   # visibilité de ce dépôt - voir docs/DEPLOYMENT.md §2.
   update-distribution-channels:
