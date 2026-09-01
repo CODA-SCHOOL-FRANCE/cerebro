@@ -1,0 +1,43 @@
+src/Cerebro.Server/wwwroot/ts/create-session.ts
+  s_347d16a866ffe9::t_228d4e839004e1 5-7,9-12,14-16,19-23,28-30,40-42,57-58,63-106,109,131-164
+  s_347d16a866ffe9::t_c4e831e172e618 165
+src/Cerebro.Server/wwwroot/ts/dom.ts
+  s_347d16a866ffe9::t_848c0ff01cdfee 27-37
+src/Cerebro.Server/wwwroot/css/dashboard.css
+  s_347d16a866ffe9::t_c0938dac9df271 380-417
+tests/Cerebro.Tests/Integration/CerebroHubIntegrationTests.cs
+  s_347d16a866ffe9::t_9d63df05223fd9 543-556,558-595
+  s_347d16a866ffe9::t_4fffdd44e86e68 557
+docs/FEATURES.md
+  s_347d16a866ffe9::t_6d4ad3c0248ea5 16-23
+src/Cerebro.Server/wwwroot/ts/hub-client.ts
+  s_347d16a866ffe9::t_580aa3b31e044f 53-54
+  s_347d16a866ffe9::t_274923227b9ff8 19
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_11220ff9d41371 50-56,62-75,77-82,86-87,89-99
+src/Cerebro.Server/Admin/ExamProvisioner.cs
+  s_347d16a866ffe9::t_fb7e11b3ebc610 58-103
+  s_347d16a866ffe9::t_a2e77802842cf2 1,4,16-18
+  s_347d16a866ffe9::t_17cf358ed069f2 19
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_2933702ecb1537 234
+  s_347d16a866ffe9::t_df01a04a1da7a8 202-209,229-233,235-238
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_572b7123a44526 99-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "b50d4042303015e9a18c9de0053aaf87f12b4335",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
