@@ -17,23 +17,23 @@ public sealed class AdminCliProvisionIntegrationTests : IDisposable
           "date": "2026-10-09",
           "rattrapage": false,
           "etudiants": {
-            "yoan.thirion@outlook.fr": {
-              "nom": "Jean Luc",
+            "jean.dupont@example.com": {
+              "nom": "Jean Dupont",
               "id": "FFFB5AB1",
               "promo": "B1",
               "drive_folder_id": "1GAzx9-9s84Z2dNaAV4a2MHQqdpCX0_Ib"
             },
-            "yoan.thirion@gmail.com": {
-              "nom": "Herr Cul",
+            "marie.durand@example.com": {
+              "nom": "Marie Durand",
               "id": "0770F2DB",
               "promo": "B1",
               "drive_folder_id": "1k3eIRxbfgzymoN-cvnxdQXgnrJ-2op5L"
             }
           },
           "correcteurs": [
-            { "nom": "Yoan Thirion", "email": "yoan.thirion@ik.me" }
+            { "nom": "Alice Martin", "email": "alice.martin@example.com" }
           ],
-          "diplome": "RNCP39608-CDWFS"
+          "diplome": "DIPLOME-XYZ"
         }
         """;
 

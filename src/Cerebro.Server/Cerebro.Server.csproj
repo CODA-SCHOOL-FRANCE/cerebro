@@ -37,7 +37,7 @@
     <!--
       Recompile le dashboard TypeScript (wwwroot/ts -> wwwroot/js) avant chaque build, mais
       seulement si des sources .ts ont changé (Inputs/Outputs) et si `npm install` a déjà été
-      lancé une fois (node_modules présent). Sans Node/npm installés (ex: machine d'examen hors
+      lancé une fois (node_modules présent). Sans Node/npm installés (ex: machine d'épreuve hors
       ligne), cette étape est silencieusement ignorée et le JS déjà committé dans wwwroot/js est
       utilisé tel quel - dotnet run/build ne dépend jamais de Node pour fonctionner.
     -->

@@ -35,7 +35,7 @@ static async Task<int> RunAgentAsync(
     // Uniquement pertinent en HTTPS (certificat auto-signé épinglé par empreinte, voir
     // CertificateThumbprintValidator) — ne pas demander pour une connexion HTTP simple (réseau de
     // test local, pas de TLS). Laisser vide = validation TLS standard du système (cas d'un vrai
-    // certificat reconnu, hors réseau d'examen isolé).
+    // certificat reconnu, hors réseau d'épreuve isolé).
     if (string.IsNullOrWhiteSpace(certThumbprint) &&
         serverUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
     {

@@ -1,6 +1,6 @@
 namespace Cerebro.Agent.Realtime;
 
-// Le certificat du serveur est auto-signé (réseau d'examen isolé, pas de CA publique) : plutôt que
+// Le certificat du serveur est auto-signé (réseau d'épreuve isolé, pas de CA publique) : plutôt que
 // de désactiver toute validation TLS, on épingle le certificat attendu par son empreinte SHA-256.
 // Un certificat différent (ex: MITM) est rejeté même s'il est par ailleurs valide.
 public static class CertificateThumbprintValidator

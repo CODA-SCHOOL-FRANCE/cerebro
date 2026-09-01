@@ -5,7 +5,7 @@ C4Container
     title Cerebro — Diagramme de conteneurs
 
     Person(candidat, "Candidat", "Étudiant passant l'épreuve sur sa propre machine (Windows/macOS/Linux)")
-    Person(surveillant, "Surveillant", "Supervise l'examen et valide le démarrage")
+    Person(surveillant, "Surveillant", "Supervise l'épreuve et valide le démarrage")
 
     System_Boundary(cerebro, "Cerebro") {
         Container(agent, "Xavier", ".NET, exécutable self-contained", "Capture l'écran à intervalles aléatoires, s'auto-teste à la connexion")

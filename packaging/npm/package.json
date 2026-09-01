@@ -20,7 +20,7 @@
     "type": "git",
     "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": false,
   "publishConfig": {
     "access": "public"

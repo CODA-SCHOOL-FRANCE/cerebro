@@ -26,7 +26,7 @@ dotnet run --project tools/Cerebro.LoadSim -- http://localhost:5289 20 \
 
 (mot de passe demandé de façon masquée si `--dashboard-password` est omis)
 
-Contre un serveur en HTTPS avec certificat auto-signé (réseau d'examen isolé) :
+Contre un serveur en HTTPS avec certificat auto-signé (réseau d'épreuve isolé) :
 
 ```bash
 dotnet run --project tools/Cerebro.LoadSim -- https://192.168.1.10:8443 20 \
@@ -42,6 +42,6 @@ options (code de session, préfixe des identifiants, intervalles de capture/ping
   quantité de candidats élevée, la simulation génère une vraie charge réseau/disque représentative.
 - Les intervalles par défaut (`--min-interval-seconds 15 --max-interval-seconds 30`, très en dessous
   des 8-12 minutes réelles de l'agent) sont pensés pour observer rapidement le comportement du
-  dashboard — à ajuster si l'objectif est plutôt de reproduire fidèlement le trafic d'un examen réel.
+  dashboard — à ajuster si l'objectif est plutôt de reproduire fidèlement le trafic d'une épreuve réelle.
 - Un candidat qui échoue (ex: session arrêtée en cours de simulation) affiche son erreur en rouge
   mais n'interrompt pas les autres.

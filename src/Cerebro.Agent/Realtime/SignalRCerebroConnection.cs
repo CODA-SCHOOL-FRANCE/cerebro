@@ -11,7 +11,7 @@ public sealed class SignalRCerebroConnection : ICerebroConnection
     public event Func<Task>? Reconnected;
 
     // expectedServerCertificateThumbprint : à renseigner quand le serveur est derrière un reverse proxy
-    // TLS avec certificat auto-signé (cas normal sur un réseau d'examen isolé, sans CA publique).
+    // TLS avec certificat auto-signé (cas normal sur un réseau d'épreuve isolé, sans CA publique).
     // Laissé à null, la validation TLS standard du système s'applique (HTTP simple ou certificat reconnu).
     public SignalRCerebroConnection(string serverUrl, string? expectedServerCertificateThumbprint = null)
     {

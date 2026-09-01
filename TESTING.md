@@ -1,6 +1,6 @@
 # Scénario de test — Cerebro
 
-Ce document décrit un scénario de test manuel de bout en bout pour valider une session d'examen
+Ce document décrit un scénario de test manuel de bout en bout pour valider une session d'épreuve
 complète sur une seule machine (un serveur + deux agents simulant des candidats), ainsi que les
 principaux scénarios d'erreur attendus. Il complète les tests automatisés (`dotnet test`, voir
 [Tests](README.md#tests)) : ceux-ci valident chaque composant isolément, ce document valide
@@ -219,8 +219,7 @@ laisser traîner les données de ce test sur le disque.)
 
 ## Ce que ce scénario ne couvre pas
 
-- Capture d'écran réelle sur Windows et Linux (à rejouer sur du matériel réel — voir
-  [Limites connues](docs/LIMITATIONS.md))
+- Capture d'écran réelle sur Windows et Linux (à rejouer sur du matériel réel)
 - Le TLS/reverse proxy Caddy (voir [Sécurisation du transport](docs/DEPLOYMENT.md#sécurisation-du-transport-tls)
   pour un scénario dédié avec certificat auto-signé et épinglage d'empreinte)
 - La montée en charge avec un grand nombre de candidats simultanés

@@ -1,6 +1,6 @@
 # Image Caddy + openssl (pour lire sa propre empreinte de certificat au démarrage, voir
 # caddy-entrypoint.sh) — openssl installé au build, aucune dépendance réseau requise à l'exécution
-# (le poste serveur d'un examen n'a pas forcément d'accès internet, voir README).
+# (le poste serveur d'une épreuve n'a pas forcément d'accès internet, voir README).
 FROM caddy:2-alpine
 
 RUN apk add --no-cache openssl

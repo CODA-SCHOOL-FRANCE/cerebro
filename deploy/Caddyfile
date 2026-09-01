@@ -1,4 +1,4 @@
-# Reverse proxy TLS pour Cerebro.Server, pensé pour un réseau d'examen isolé (pas de CA publique
+# Reverse proxy TLS pour Cerebro.Server, pensé pour un réseau d'épreuve isolé (pas de CA publique
 # accessible : Caddy génère et sert un certificat auto-signé via sa CA interne locale).
 #
 # Trois façons de déployer, ce fichier sert dans les trois cas (seul CEREBRO_UPSTREAM change) :
@@ -31,12 +31,12 @@
 # généralement aucun SNI dans le ClientHello TLS (RFC 6066) : sans "default_sni", Caddy ne sait
 # alors pas quel certificat servir (un seul site est pourtant configuré) et répond par une alerte
 # TLS "internal_error" avant même l'envoi du certificat. CEREBRO_SERVER_ADDRESS étant justement une
-# IP dans ce déploiement (le poste serveur sur le réseau d'examen), on force explicitement le
+# IP dans ce déploiement (le poste serveur sur le réseau d'épreuve), on force explicitement le
 # certificat à utiliser quand aucun SNI n'est présenté.
 #
 # CA interne personnalisée : Caddy ne permet pas de définir un champ Organization sur le
 # certificat serveur lui-même (seul le CommonName de la CA racine/intermédiaire est
-# configurable, voir https://caddyserver.com/docs/caddyfile/options#pki-app) - "CODA" apparaît
+# configurable, voir https://caddyserver.com/docs/caddyfile/options#pki-app) - "Cerebro" apparaît
 # donc dans le champ Issuer du certificat (visible en l'inspectant), pas dans un champ O=.
 #
 # intermediate_lifetime est indispensable ici : un certificat signé ne peut jamais dépasser la
@@ -48,9 +48,9 @@
 {
 	pki {
 		ca local {
-			name "CODA Cerebro CA"
-			root_cn "CODA Cerebro Root CA"
-			intermediate_cn "CODA Cerebro Intermediate CA"
+			name "Cerebro CA"
+			root_cn "Cerebro Root CA"
+			intermediate_cn "Cerebro Intermediate CA"
 			intermediate_lifetime 70080h
 		}
 	}
@@ -63,7 +63,7 @@
 	# est de toute façon persisté dans le volume caddy_data (voir docker-compose.yml) et son
 	# empreinte SHA-256 épinglée côté agents (CEREBRO_SERVER_CERT_THUMBPRINT) - un renouvellement
 	# automatique fréquent (défaut 12h) est une source de risque inutile de changement silencieux
-	# de cette empreinte entre deux sessions d'examen.
+	# de cette empreinte entre deux sessions d'épreuve.
 	tls {
 		issuer internal {
 			lifetime 43800h

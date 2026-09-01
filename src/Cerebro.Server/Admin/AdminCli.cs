@@ -38,7 +38,7 @@ internal sealed class QuietErrorFilter(ConsoleAppFilter next) : ConsoleAppFilter
 
 internal sealed class AdminCommands
 {
-    /// <summary>Provisionne une session d'examen à partir d'un roster JSON.</summary>
+    /// <summary>Provisionne une session d'épreuve à partir d'un roster JSON.</summary>
     /// <param name="session">Code de la session à créer.</param>
     /// <param name="input">Chemin vers le fichier roster JSON.</param>
     /// <param name="db">Chemin vers le fichier de base SQLite.</param>
@@ -59,7 +59,7 @@ internal sealed class AdminCommands
         Console.WriteLine($"Session '{session}' provisionnée avec {count} candidat(s).");
     }
 
-    /// <summary>Démarre une session d'examen déjà provisionnée.</summary>
+    /// <summary>Démarre une session d'épreuve déjà provisionnée.</summary>
     /// <param name="session">Code de la session à démarrer.</param>
     /// <param name="db">Chemin vers le fichier de base SQLite.</param>
     public async Task Start(string session, string db = "db/cerebro.db")

@@ -66,7 +66,7 @@ public sealed class CerebroHub(
 
     // Même logique de provisioning que AdminCli.Provision (voir Admin/ExamProvisioner.cs) : le
     // dashboard accepte le même roster JSON que celui passé à `--input`, collé ou chargé depuis un
-    // fichier côté navigateur, plutôt que d'exiger un accès CLI/SSH au serveur le jour de l'examen.
+    // fichier côté navigateur, plutôt que d'exiger un accès CLI/SSH au serveur le jour de l'épreuve.
     [Authorize]
     public async Task<int> CreateSession(string sessionCode, string rosterJson)
     {

@@ -5,7 +5,7 @@
 [![Homebrew](https://img.shields.io/badge/homebrew-brew%20install-fbb040?logo=homebrew&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro)
 [![Scoop](https://img.shields.io/badge/scoop-scoop%20install-blue?logo=powershell&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/tree/main/bucket)
 
-Outil anti-fraude pour la surveillance d'épreuves certifiantes à distance (BYOD, multi-OS).
+Outil anti-fraude pour la surveillance d'épreuves à distance (BYOD, multi-OS).
 Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur sa propre machine ; l'agent capture des screenshots à intervalles aléatoires et les transmet en temps réel à un serveur central, consulté par le surveillant via un dashboard web.
 
 ![Cerebro by Charles Thirion](img/cerebro.webp)
@@ -14,7 +14,7 @@ Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur s
 
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
 - `Node.js` / `npm`
-- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour un examen](docs/DEPLOYMENT.md))
+- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour une épreuve](docs/DEPLOYMENT.md))
 - Pour l'installation de l'agent côté étudiant (npm/Homebrew/Scoop/script) : voir [Déploiement §2](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal)
 
 ## Structure du dépôt
@@ -90,7 +90,6 @@ Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scé
 ## Autres documentations
 - [Architecture](docs/ARCHITECTURE.md)
 - [Fonctionnalités supportées](docs/FEATURES.md)
-- [Limites connues](docs/LIMITATIONS.md)
 - [Déploiement](docs/DEPLOYMENT.md)
 - [Documentation candidat](docs/USER-DOC.txt)
 - [Protocole de test manuel de bout en bout](TESTING.md) 
