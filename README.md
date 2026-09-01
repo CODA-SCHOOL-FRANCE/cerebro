@@ -1,5 +1,10 @@
 # Cerebro
 
+[![Release Xavier](https://img.shields.io/github/v/release/CODA-SCHOOL-FRANCE/xavier-releases?label=xavier&color=blue)](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases)
+[![npm](https://img.shields.io/npm/v/xavier-agent?label=npm&logo=npm&logoColor=white)](https://www.npmjs.com/package/xavier-agent)
+[![Homebrew](https://img.shields.io/badge/homebrew-brew%20install-fbb040?logo=homebrew&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro)
+[![Scoop](https://img.shields.io/badge/scoop-scoop%20install-blue?logo=powershell&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/tree/main/bucket)
+
 Outil anti-fraude pour la surveillance d'épreuves certifiantes à distance (BYOD, multi-OS).
 Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur sa propre machine ; l'agent capture des screenshots à intervalles aléatoires et les transmet en temps réel à un serveur central, consulté par le surveillant via un dashboard web.
 

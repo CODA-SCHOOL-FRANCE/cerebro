@@ -1,5 +1,8 @@
 # xavier-agent
 
+[![npm version](https://img.shields.io/npm/v/xavier-agent?color=cb3837&logo=npm&logoColor=white)](https://www.npmjs.com/package/xavier-agent)
+[![npm downloads](https://img.shields.io/npm/dm/xavier-agent)](https://www.npmjs.com/package/xavier-agent)
+
 Wrapper npm pour l'agent candidat Cerebro (Xavier). Ne contient aucun code de Cerebro : à
 l'installation, `postinstall` télécharge le binaire natif correspondant à votre plateforme
 depuis les [Releases publiques de xavier-releases](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases)
