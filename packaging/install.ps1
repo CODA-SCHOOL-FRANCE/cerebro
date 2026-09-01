@@ -1,0 +1,81 @@
+#Requires -Version 5.1
+<#
+Installe le binaire natif de Xavier (agent candidat Cerebro) pour Windows.
+
+    irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.ps1 | iex
+
+Variables d'environnement optionnelles :
+  XAVIER_VERSION     version précise à installer (ex: 0.1.0) ; par défaut, la dernière release.
+  XAVIER_INSTALL_DIR dossier d'installation ; par défaut %LOCALAPPDATA%\Xavier\bin.
+#>
+
+$ErrorActionPreference = "Stop"
+
+$Repo = "CODA-SCHOOL-FRANCE/cerebro"
+$InstallDir = if ($env:XAVIER_INSTALL_DIR) { $env:XAVIER_INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Xavier\bin" }
+
+function Fail($Message) {
+    Write-Error $Message
+    Write-Host "Installation manuelle : téléchargez l'archive correspondante sur https://github.com/$Repo/releases"
+    exit 1
+}
+
+if (-not [Environment]::Is64BitOperatingSystem) {
+    Fail "Windows 32 bits non supporté — seul win-x64 est publié."
+}
+$Rid = "win-x64"
+
+try {
+    if ($env:XAVIER_VERSION) {
+        $Release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/tags/agent-v$($env:XAVIER_VERSION)"
+    } else {
+        # cerebro publie aussi des releases serveur (tags vX.Y.Z, sans binaire agent) entrelacées
+        # avec celles de l'agent (tags agent-vX.Y.Z) : /releases/latest pourrait renvoyer l'une
+        # d'elles. On liste donc les releases récentes et on garde la première taguée agent-v*.
+        $Releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases?per_page=30"
+        $Release = $Releases | Where-Object { $_.tag_name -like "agent-v*" } | Select-Object -First 1
+        if (-not $Release) {
+            Fail "Aucune release agent (agent-vX.Y.Z) trouvée."
+        }
+    }
+} catch {
+    Fail "Impossible de récupérer la release ($($_.Exception.Message))."
+}
+
+$Asset = $Release.assets | Where-Object { $_.name -like "*-$Rid.zip" } | Select-Object -First 1
+if (-not $Asset) {
+    Fail "Aucune archive '*-$Rid.zip' trouvée dans la release $($Release.tag_name)."
+}
+
+Write-Host "Téléchargement de $($Asset.name) ($($Release.tag_name))..."
+
+$TmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid())
+New-Item -ItemType Directory -Path $TmpDir | Out-Null
+try {
+    $ZipPath = Join-Path $TmpDir "xavier.zip"
+    Invoke-WebRequest -Uri $Asset.browser_download_url -OutFile $ZipPath
+
+    $ExtractDir = Join-Path $TmpDir "extracted"
+    Expand-Archive -Path $ZipPath -DestinationPath $ExtractDir
+
+    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+    Copy-Item -Path (Join-Path $ExtractDir "xavier.exe") -Destination (Join-Path $InstallDir "xavier.exe") -Force
+} finally {
+    Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
+}
+
+Write-Host ""
+Write-Host "Xavier installé dans $InstallDir\xavier.exe"
+
+$UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if (-not ($UserPath -split ";" -contains $InstallDir)) {
+    Write-Host ""
+    Write-Host "$InstallDir n'est pas dans votre PATH. Pour l'ajouter :"
+    Write-Host "  [Environment]::SetEnvironmentVariable('Path', `"`$env:Path;$InstallDir`", 'User')"
+    Write-Host "  (puis rouvrir le terminal)"
+}
+
+Write-Host ""
+Write-Host "Usage : xavier <serverUrl> <sessionCode> <candidateId> [certThumbprint]"
+Write-Host "Si votre surveillant vous a fourni un xavier.config.json prérempli, placez-le dans"
+Write-Host "$InstallDir\ avant de lancer xavier."

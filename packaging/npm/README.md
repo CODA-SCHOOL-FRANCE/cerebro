@@ -5,7 +5,7 @@
 
 Wrapper npm pour l'agent candidat Cerebro (Xavier). Ne contient aucun code de Cerebro : à
 l'installation, `postinstall` télécharge le binaire natif correspondant à votre plateforme
-depuis les [Releases de xavier-releases](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases).
+depuis les [Releases de cerebro](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases).
 
 ## Utilisation
 

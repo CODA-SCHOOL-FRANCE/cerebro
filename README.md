@@ -1,9 +1,9 @@
 # Cerebro
 
-[![Release Xavier](https://img.shields.io/github/v/release/CODA-SCHOOL-FRANCE/xavier-releases?label=xavier&color=blue)](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases)
+[![Release Xavier](https://img.shields.io/github/v/release/CODA-SCHOOL-FRANCE/cerebro?filter=agent-v*&label=xavier&color=blue)](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases)
 [![npm](https://img.shields.io/npm/v/xavier-agent?label=npm&logo=npm&logoColor=white)](https://www.npmjs.com/package/xavier-agent)
 [![Homebrew](https://img.shields.io/badge/homebrew-brew%20install-fbb040?logo=homebrew&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro)
-[![Scoop](https://img.shields.io/badge/scoop-scoop%20install-blue?logo=powershell&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/tree/main/bucket)
+[![Scoop](https://img.shields.io/badge/scoop-scoop%20install-blue?logo=powershell&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/cerebro/tree/main/bucket)
 
 Outil anti-fraude pour la surveillance d'épreuves à distance (BYOD, multi-OS).
 Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur sa propre machine ; l'agent capture des screenshots à intervalles aléatoires et les transmet en temps réel à un serveur central, consulté par le surveillant via un dashboard web.
@@ -46,14 +46,14 @@ Détail complet (provisioning, mot de passe dashboard, TLS) : [Déploiement du s
 
 | Canal | Commande |
 |---|---|
-| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.sh \| sh` |
-| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.ps1 \| iex` |
+| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.sh \| sh` |
+| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.ps1 \| iex` |
 | Homebrew (macOS/Linux) | `brew install coda-school-france/cerebro/xavier` |
-| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/xavier-releases && scoop install xavier/xavier` |
+| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/cerebro && scoop install xavier/xavier` |
 | npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
-| Manuel | archive `Xavier-<version>-<rid>.zip` depuis la [Release GitHub](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases) |
+| Manuel | archive `Xavier-<version>-<rid>.zip` depuis la [Release GitHub](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases) |
 
-Détail complet (mise en place initiale, mirroring automatique des canaux) :
+Détail complet (mise en place initiale, mise à jour automatique des canaux) :
 [Déploiement §2 — Agent, distribution multi-canal](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal).
 
 ## Prérequis (développement local)

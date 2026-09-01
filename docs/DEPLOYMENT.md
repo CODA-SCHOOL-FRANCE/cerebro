@@ -157,39 +157,31 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 ```
 
 **Via GitHub Actions** : un tag `agent-vX.Y.Z` poussé sur un commit `main` déclenche `.github/workflows/agent-release.yml`
-- build obfusqué pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
-- création directe d'une **Release GitHub publiée**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
+- build pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
+- création directe d'une **Release GitHub publiée sur ce dépôt**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
 
-Le job `mirror-public-release` (même workflow, `needs: release`) miroir automatiquement les mêmes
-archives vers [`xavier-releases`](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases) — un
-dépôt dédié aux binaires, sans code source — et y régénère le bucket Scoop et la formule
+Le job `update-distribution-channels` (même workflow, `needs: release`) régénère ensuite le bucket
+Scoop (`bucket/xavier.json`, dans ce dépôt, commit direct sur `main`) et la formule
 [`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
-hachages (les taps Homebrew doivent vivre dans un dépôt séparé nommé `homebrew-<nom>`, une
-contrainte de Homebrew indépendante de la visibilité du dépôt principal). Canaux disponibles pour
-les étudiants (détail dans `docs/USER-DOC.txt`) :
+hachages — Homebrew impose qu'un tap vive dans un dépôt séparé nommé `homebrew-<nom>`,
+indépendamment de la visibilité du dépôt principal, donc ce dépôt-là reste distinct. Le script
+d'installation et le wrapper npm résolvent la dernière release agent directement sur ce dépôt (voir
+`packaging/install.sh`, `install.ps1`, `packaging/npm/scripts/postinstall.js`) : rien à mirorer
+pour eux. Canaux disponibles pour les étudiants (détail dans `docs/USER-DOC.txt`) :
 
 | Canal | Commande |
 |---|---|
-| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.sh \| sh` |
-| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.ps1 \| iex` |
+| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.sh \| sh` |
+| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.ps1 \| iex` |
 | Homebrew (macOS/Linux) | `brew install coda-school-france/cerebro/xavier` |
-| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/xavier-releases && scoop install xavier/xavier` |
+| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/cerebro && scoop install xavier/xavier` |
 | npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
 | Manuel | archive `Xavier-<version>-<rid>.zip` sur la Release GitHub |
 
 Ces canaux n'embarquent volontairement pas de `xavier.config.json` préempli (contrairement à
 l'archive manuelle) : ce fichier est à éditer par le surveillant avant une distribution
-individuelle (voir §4 et `docs/USER-DOC.txt`) ; sans lui, l'agent retombe simplement sur les
+individuelle (voir §4 et `docs/USER-DOC.txt`); sans lui, l'agent retombe simplement sur les
 prompts interactifs.
-
-Mise en place initiale (à faire une seule fois, avant le premier tag) :
-1. Créer les deux dépôts publics `xavier-releases` et `homebrew-cerebro` sous l'organisation
-   `CODA-SCHOOL-FRANCE`, y pousser les fichiers statiques (`install.sh`, `install.ps1`,
-   `bucket/xavier.json` et `Formula/xavier.rb` placeholders, `README.md`).
-2. Générer un PAT classique (scope `repo`) et l'ajouter comme secret `XAVIER_RELEASES_PAT` sur le
-   dépôt `cerebro` (le `GITHUB_TOKEN` par défaut ne peut pas écrire sur un autre dépôt).
-3. Le package npm (`packaging/npm/`) se publie séparément via `.github/workflows/npm-publish.yml`
-   (déclenchement manuel, secret `NPM_TOKEN`) — pas couplé aux tags `agent-vX.Y.Z`.
 
 ## 3. Provisionner une épreuve
 

@@ -116,27 +116,24 @@ jobs:
             | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
             | `*-linux-x64.zip` | Linux 64 bits |
 
-  # On miroir les mêmes archives vers xavier-releases (dépôt dédié aux binaires, sans code source)
-  # et on y régénère le bucket Scoop et la formule Homebrew avec les nouveaux hachages — les taps
-  # Homebrew doivent vivre dans un dépôt séparé nommé homebrew-<nom> — voir docs/DEPLOYMENT.md §2.
-  mirror-public-release:
+  # Le script d'installation, le wrapper npm et le bucket Scoop (bucket/xavier.json, ce dépôt)
+  # résolvent la dernière release agent directement depuis ce dépôt, désormais public - rien à
+  # mirorer. Seule la formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) :
+  # Homebrew impose qu'un tap vive dans un dépôt nommé homebrew-<nom>, indépendamment de la
+  # visibilité de ce dépôt - voir docs/DEPLOYMENT.md §2.
+  update-distribution-channels:
     needs: release
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.XAVIER_RELEASES_PAT }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
       - uses: actions/download-artifact@v8
         with:
           pattern: xavier-*
           path: artifacts
           merge-multiple: true
-
-      - name: Publier la Release miroir (xavier-releases, dépôt public)
-        run: |
-          gh release create "${GITHUB_REF_NAME}" artifacts/*.zip \
-            --repo CODA-SCHOOL-FRANCE/xavier-releases \
-            --title "Xavier ${GITHUB_REF_NAME}" \
-            --generate-notes
 
       - name: Calculer les sha256 de chaque archive
         id: sums
@@ -148,37 +145,34 @@ jobs:
             echo "sha_${rid//-/_}=${sha}" >> "$GITHUB_OUTPUT"
           done
 
-      # Un seul manifest (win-x64, seul RID Windows publié) : voir bucket/xavier.json dans
-      # xavier-releases. Commit direct sur main (pas de PR) : fichier généré à usage unique, sans
-      # valeur de revue humaine.
-      - name: Mettre à jour le bucket Scoop (xavier-releases)
+      # Un seul manifest (win-x64, seul RID Windows publié). Commit direct sur main (pas de PR) :
+      # fichier généré à usage unique, sans valeur de revue humaine.
+      - name: Mettre à jour le bucket Scoop (bucket/xavier.json)
         env:
           VERSION: ${{ steps.sums.outputs.version }}
           SHA_WIN_X64: ${{ steps.sums.outputs.sha_win_x64 }}
         run: |
-          git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/CODA-SCHOOL-FRANCE/xavier-releases.git" scoop-repo
-          cd scoop-repo
           mkdir -p bucket
           cat > bucket/xavier.json <<EOF
           {
               "version": "${VERSION}",
               "description": "Agent candidat Cerebro (Xavier)",
               "homepage": "https://github.com/CODA-SCHOOL-FRANCE/cerebro",
-              "license": "Proprietary",
+              "license": "MIT",
               "architecture": {
                   "64bit": {
-                      "url": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-win-x64.zip",
+                      "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-win-x64.zip",
                       "hash": "${SHA_WIN_X64}"
                   }
               },
               "bin": "xavier.exe",
               "checkver": {
-                  "github": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases"
+                  "github": "https://github.com/CODA-SCHOOL-FRANCE/cerebro"
               },
               "autoupdate": {
                   "architecture": {
                       "64bit": {
-                          "url": "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/agent-v\$version/Xavier-\$version-win-x64.zip"
+                          "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/agent-v\$version/Xavier-\$version-win-x64.zip"
                       }
                   }
               }
@@ -188,10 +182,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add bucket/xavier.json
           git diff --cached --quiet || git commit -m "xavier ${GITHUB_REF_NAME}"
-          git push
+          git push origin HEAD:main
 
       - name: Mettre à jour le tap Homebrew (homebrew-cerebro)
         env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_PAT }}
           VERSION: ${{ steps.sums.outputs.version }}
           SHA_OSX_ARM64: ${{ steps.sums.outputs.sha_osx_arm64 }}
           SHA_OSX_X64: ${{ steps.sums.outputs.sha_osx_x64 }}
@@ -205,21 +200,21 @@ jobs:
             desc "Agent candidat Cerebro (surveillance d'épreuves)"
             homepage "https://github.com/CODA-SCHOOL-FRANCE/cerebro"
             version "${VERSION}"
-            license "Proprietary"
+            license "MIT"
 
             on_macos do
               on_arm do
-                url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-arm64.zip"
+                url "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-arm64.zip"
                 sha256 "${SHA_OSX_ARM64}"
               end
               on_intel do
-                url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-x64.zip"
+                url "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-osx-x64.zip"
                 sha256 "${SHA_OSX_X64}"
               end
             end
 
             on_linux do
-              url "https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-linux-x64.zip"
+              url "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/${GITHUB_REF_NAME}/Xavier-${VERSION}-linux-x64.zip"
               sha256 "${SHA_LINUX_X64}"
             end
 

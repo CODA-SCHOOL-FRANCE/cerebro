@@ -1,6 +1,5 @@
 // Télécharge le binaire natif de Xavier correspondant à la plateforme courante, depuis les
-// Releases du dépôt xavier-releases (voir docs/DEPLOYMENT.md §2 : ce dépôt miroir ne contient
-// aucun code source, seulement les archives déjà publiées par .github/workflows/agent-release.yml).
+// Releases du dépôt cerebro (voir docs/DEPLOYMENT.md §2).
 //
 // N'extrait volontairement QUE le binaire (jamais xavier.config.json ni USER-DOC.txt) : le
 // fichier de config livré dans l'archive n'est qu'un placeholder à remplir par le surveillant
@@ -12,7 +11,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const AdmZip = require("adm-zip");
 
-const RELEASES_REPO = "CODA-SCHOOL-FRANCE/xavier-releases";
+const REPO = "CODA-SCHOOL-FRANCE/cerebro";
 const NATIVE_DIR = path.join(__dirname, "..", "native");
 
 const RID_BY_PLATFORM_ARCH = {
@@ -26,16 +25,12 @@ function fail(message) {
   console.error(`\n[xavier-agent] ${message}`);
   console.error(
     "[xavier-agent] Installation manuelle possible : téléchargez l'archive correspondant à " +
-      "votre système sur https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases\n",
+      "votre système sur https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases\n",
   );
   process.exit(1);
 }
 
-async function resolveRelease(version) {
-  const url = version
-    ? `https://api.github.com/repos/${RELEASES_REPO}/releases/tags/agent-v${version}`
-    : `https://api.github.com/repos/${RELEASES_REPO}/releases/latest`;
-
+async function fetchJson(url) {
   const response = await fetch(url, {
     headers: { Accept: "application/vnd.github+json", "User-Agent": "xavier-agent-postinstall" },
   });
@@ -45,6 +40,24 @@ async function resolveRelease(version) {
   }
 
   return response.json();
+}
+
+async function resolveRelease(version) {
+  if (version) {
+    return fetchJson(`https://api.github.com/repos/${REPO}/releases/tags/agent-v${version}`);
+  }
+
+  // cerebro publie aussi des releases serveur (tags vX.Y.Z, sans binaire agent) entrelacées avec
+  // celles de l'agent (tags agent-vX.Y.Z) : /releases/latest pourrait renvoyer l'une d'elles. On
+  // liste donc les releases récentes et on garde la première taguée agent-v* (l'API les renvoie
+  // triées du plus récent au plus ancien).
+  const releases = await fetchJson(`https://api.github.com/repos/${REPO}/releases?per_page=100`);
+  const release = releases.find((r) => r.tag_name.startsWith("agent-v"));
+  if (!release) {
+    fail("Aucune release agent (agent-vX.Y.Z) trouvée.");
+  }
+
+  return release;
 }
 
 async function downloadAsset(asset) {
