@@ -1,0 +1,41 @@
+README.md
+  s_347d16a866ffe9::t_be7fc64e72005a 54,57-59
+tools/Cerebro.LoadSim/RosterBuilder.cs
+  s_347d16a866ffe9::t_6102492b524fcb 6-7,17,19
+TESTING.md
+  s_347d16a866ffe9::t_0fcf7e8614172f 57
+  s_347d16a866ffe9::t_fcde104c34e76b 207
+  s_347d16a866ffe9::t_cb2f0d55223278 35-38
+tests/Cerebro.Tests/Integration/AdminCliProvisionIntegrationTests.cs
+  s_347d16a866ffe9::t_e1973a2f2fa41e 16-19
+docs/FEATURES.md
+  s_347d16a866ffe9::t_aa4416bbf34e14 21-23
+  s_347d16a866ffe9::t_45776a78c3b5ed 31
+src/Cerebro.Server/Dashboard/index.html
+  s_347d16a866ffe9::t_088dc94f8e7c75 80
+src/Cerebro.Server/Admin/ExamProvisioner.cs
+  s_347d16a866ffe9::t_bb38f8b38405b7 50,53
+  s_347d16a866ffe9::t_8c7c811d88d4bc 25
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_b7478ddc805a0a 209-210,214-217
+src/Cerebro.Server/Admin/ExamRoster.cs
+  s_347d16a866ffe9::t_b7718813fb90d1 3-6,8
+src/Cerebro.Server/Admin/AdminCli.cs
+  s_347d16a866ffe9::t_35161e87b45c18 57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "82ba9d4cd46a95ccd8d56420ef5dc35b5ba50829",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
