@@ -1,7 +1,6 @@
 // Télécharge le binaire natif de Xavier correspondant à la plateforme courante, depuis les
-// Releases du dépôt public xavier-releases (cerebro, lui, est privé — voir docs/DEPLOYMENT.md
-// §2 : ce dépôt miroir ne contient aucun code source, seulement les archives déjà publiées par
-// .github/workflows/agent-release.yml).
+// Releases du dépôt xavier-releases (voir docs/DEPLOYMENT.md §2 : ce dépôt miroir ne contient
+// aucun code source, seulement les archives déjà publiées par .github/workflows/agent-release.yml).
 //
 // N'extrait volontairement QUE le binaire (jamais xavier.config.json ni USER-DOC.txt) : le
 // fichier de config livré dans l'archive n'est qu'un placeholder à remplir par le surveillant

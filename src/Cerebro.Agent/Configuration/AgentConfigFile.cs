@@ -10,10 +10,6 @@ public sealed record AgentConfigFile(
 {
     public const string FileName = "xavier.config.json";
 
-    // Noms de propriétés explicites ci-dessus : le build Release obfusque aussi l'API publique
-    // (voir obfuscar.xml, KeepPublicApi=false) et renomme ServerUrl/CertThumbprint. Sans
-    // [JsonPropertyName], System.Text.Json (réflexif) ne retrouve alors plus la correspondance
-    // avec les clés JSON du fichier écrit par le surveillant, et laisse tout à null en silence.
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     public static AgentConfigFile? Load(string directory)

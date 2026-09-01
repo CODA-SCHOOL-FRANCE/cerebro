@@ -10,12 +10,56 @@ Chaque candidat lance un agent léger (nommé **Xavier** une fois publié) sur s
 
 ![Cerebro by Charles Thirion](img/cerebro.webp)
 
-## Prérequis
+## Architecture
+
+Deux composants : l'**agent** (installé sur la machine de chaque candidat) capture l'écran et le
+transmet en temps réel au **serveur**, qui maintient l'état des sessions et alimente le dashboard
+du surveillant.
+
+```mermaid
+flowchart LR
+    Candidat(["Candidat"]) -->|lance| Agent["Agent Xavier<br/>capture d'écran à intervalle aléatoire"]
+    Agent -->|SignalR<br/>screenshots · ping · statut| Server[("Cerebro.Server<br/>ASP.NET Core + SignalR")]
+    Server -->|SignalR<br/>mises à jour temps réel| Dashboard["Dashboard web"]
+    Dashboard --> Surveillant(["Surveillant"])
+    Server -.->|persiste| Storage[("Screenshots + SQLite")]
+```
+
+Détail complet (composants internes, flux de données) : [Architecture](docs/ARCHITECTURE.md).
+
+## Installation
+
+Deux installations séparées : le **serveur** (une fois, côté établissement) et l'**agent** (sur la
+machine de chaque candidat).
+
+**Serveur** — se déploie via Docker + Caddy (TLS auto-signé inclus), image publiée sur GHCR :
+
+```bash
+docker pull ghcr.io/coda-school-france/cerebro-server:<version>
+CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
+  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+```
+
+Détail complet (provisioning, mot de passe dashboard, TLS) : [Déploiement du serveur](docs/DEPLOYMENT.md).
+
+**Agent** — un seul exécutable, pas de runtime à installer, disponible sur plusieurs canaux :
+
+| Canal | Commande |
+|---|---|
+| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.sh \| sh` |
+| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/xavier-releases/main/install.ps1 \| iex` |
+| Homebrew (macOS/Linux) | `brew install coda-school-france/cerebro/xavier` |
+| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/xavier-releases && scoop install xavier/xavier` |
+| npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
+| Manuel | archive `Xavier-<version>-<rid>.zip` depuis la [Release GitHub](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases/releases) |
+
+Détail complet (mise en place initiale, mirroring automatique des canaux) :
+[Déploiement §2 — Agent, distribution multi-canal](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal).
+
+## Prérequis (développement local)
 
 - [.NET SDK 10.0+](https://dotnet.microsoft.com/download)
 - `Node.js` / `npm`
-- Pour le déploiement multi-OS de l'agent : aucune dépendance supplémentaire (publication self-contained, voir [Déploiement pour une épreuve](docs/DEPLOYMENT.md))
-- Pour l'installation de l'agent côté étudiant (npm/Homebrew/Scoop/script) : voir [Déploiement §2](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal)
 
 ## Structure du dépôt
 

@@ -1,8 +1,8 @@
 name: Release Xavier (agent)
 
 # Un tag agent-vX.Y.Z posé sur un commit de main construit un exécutable autonome par OS (Windows,
-# macOS Intel/Apple Silicon, Linux), obfusqué en Release, et publie directement une Release GitHub
-# (le job `test` en amont sert de garde-fou : la release n'est créée que si la suite de tests passe).
+# macOS Intel/Apple Silicon, Linux) et publie directement une Release GitHub (le job `test` en
+# amont sert de garde-fou : la release n'est créée que si la suite de tests passe).
 #
 # Espace de tags séparé de celui du backend (voir server-release.yml, tags vX.Y.Z) : Agent et
 # Server évoluent et se publient indépendamment l'un de l'autre.
@@ -41,16 +41,10 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      # Obfuscation du binaire publié : un candidat qui décompile l'agent (dnSpy/ILSpy) ne doit pas
-      # retrouver directement la structure du code. Voir Cerebro.Agent.csproj (cible ObfuscateAgent,
-      # désactivée par défaut, activée ici via -p:ObfuscateAgent=true) et obfuscar.xml.
-      - name: Installer Obfuscar
-        run: dotnet tool install --global Obfuscar.GlobalTool --version 2.2.50
-
-      - name: Publier (self-contained, fichier unique, obfusqué)
+      - name: Publier (self-contained, fichier unique)
         run: >
           dotnet publish src/Cerebro.Agent -c Release -r ${{ matrix.rid }}
-          --self-contained -p:PublishSingleFile=true -p:ObfuscateAgent=true
+          --self-contained -p:PublishSingleFile=true
           -o publish/${{ matrix.rid }}
 
       - name: Ajouter les instructions d'installation
@@ -122,10 +116,9 @@ jobs:
             | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
             | `*-linux-x64.zip` | Linux 64 bits |
 
-  # cerebro est privé : ses assets de Release exigent une authentification GitHub, incompatible
-  # avec un `curl`/gestionnaire de paquets anonyme depuis la machine d'un candidat. On miroir donc
-  # les mêmes archives vers xavier-releases (dépôt public, sans aucun code source) et on y régénère
-  # le bucket Scoop et la formule Homebrew avec les nouveaux hachages — voir docs/DEPLOYMENT.md §2.
+  # On miroir les mêmes archives vers xavier-releases (dépôt dédié aux binaires, sans code source)
+  # et on y régénère le bucket Scoop et la formule Homebrew avec les nouveaux hachages — les taps
+  # Homebrew doivent vivre dans un dépôt séparé nommé homebrew-<nom> — voir docs/DEPLOYMENT.md §2.
   mirror-public-release:
     needs: release
     runs-on: ubuntu-latest

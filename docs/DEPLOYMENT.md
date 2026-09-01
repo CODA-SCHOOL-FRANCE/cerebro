@@ -7,19 +7,13 @@
 - `cerebro-server` et Caddy tournent dans deux conteneurs séparés sur un réseau Docker interne : 
   - `cerebro-server` ne publie aucun port (joignable uniquement par Caddy, via le nom de service `cerebro-server:8080` résolu par le DNS interne de Docker), seul Caddy expose `8443` vers l'extérieur
 
-**1. Se logger sur GHCR**, requis tant que le dépôt reste privé (le package en hérite la visibilité — `docker pull` échoue sinon avec `unauthorized`), avec un[Personal Access Token](https://github.com/settings/tokens) portant le scope `read:packages` :
-
-```bash
-echo "$GHCR_PAT" | docker login ghcr.io -u <user> --password-stdin
-```
-
-**2. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main` (`.github/workflows/server-release.yml`, qui fait tourner les tests avant de publier) :
+**1. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main` (`.github/workflows/server-release.yml`, qui fait tourner les tests avant de publier) :
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<version>
 ```
 
-**3. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:` local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
+**2. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:` local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
 
 ```bash
 CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
@@ -166,13 +160,13 @@ dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:Pub
 - build obfusqué pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
 - création directe d'une **Release GitHub publiée**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
 
-`cerebro` étant privé, cette Release exige une authentification GitHub — incompatible avec un
-`curl`/gestionnaire de paquets anonyme depuis la machine d'un candidat. Le job `mirror-public-release`
-(même workflow, `needs: release`) miroir donc automatiquement les mêmes archives vers
-[`xavier-releases`](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases) — un dépôt public sans
-aucun code source — et y régénère le bucket Scoop et la formule
+Le job `mirror-public-release` (même workflow, `needs: release`) miroir automatiquement les mêmes
+archives vers [`xavier-releases`](https://github.com/CODA-SCHOOL-FRANCE/xavier-releases) — un
+dépôt dédié aux binaires, sans code source — et y régénère le bucket Scoop et la formule
 [`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
-hachages. Canaux disponibles pour les étudiants (détail dans `docs/USER-DOC.txt`) :
+hachages (les taps Homebrew doivent vivre dans un dépôt séparé nommé `homebrew-<nom>`, une
+contrainte de Homebrew indépendante de la visibilité du dépôt principal). Canaux disponibles pour
+les étudiants (détail dans `docs/USER-DOC.txt`) :
 
 | Canal | Commande |
 |---|---|
@@ -193,7 +187,7 @@ Mise en place initiale (à faire une seule fois, avant le premier tag) :
    `CODA-SCHOOL-FRANCE`, y pousser les fichiers statiques (`install.sh`, `install.ps1`,
    `bucket/xavier.json` et `Formula/xavier.rb` placeholders, `README.md`).
 2. Générer un PAT classique (scope `repo`) et l'ajouter comme secret `XAVIER_RELEASES_PAT` sur le
-   dépôt privé `cerebro` (le `GITHUB_TOKEN` par défaut ne peut pas écrire sur un autre dépôt).
+   dépôt `cerebro` (le `GITHUB_TOKEN` par défaut ne peut pas écrire sur un autre dépôt).
 3. Le package npm (`packaging/npm/`) se publie séparément via `.github/workflows/npm-publish.yml`
    (déclenchement manuel, secret `NPM_TOKEN`) — pas couplé aux tags `agent-vX.Y.Z`.
 
