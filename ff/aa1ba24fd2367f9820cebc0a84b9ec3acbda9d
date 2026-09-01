@@ -1,0 +1,43 @@
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_ba2385dc086e79 160-161,163-164,166-170,174-175,177
+packaging/install.sh
+  s_347d16a866ffe9::t_349251b5ab8a89 46-47,49-55,58-59,61,63
+  s_347d16a866ffe9::t_bf25e2352f3512 1-45,48,56-57,60,62,64-95
+packaging/npm/scripts/postinstall.js
+  s_347d16a866ffe9::t_f5c6e4e92c9d05 2,14,28,33,45-60
+  s_347d16a866ffe9::t_cfc2f917535212 61-62
+docs/USER-DOC.txt
+  s_347d16a866ffe9::t_3a7e9189651859 13,16,22
+packaging/npm/README.md
+  s_347d16a866ffe9::t_402b4dda363fa0 8
+packaging/install.ps1
+  s_347d16a866ffe9::t_d4ad169441bb9c 1-81
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_7f572fdd4a67a8 119-124,128-131,148-150,161,164,170,175,185,189,203,207,211,217
+README.md
+  s_347d16a866ffe9::t_8e6e8d4e105931 3,6
+  s_347d16a866ffe9::t_f09bcb53ffc5c9 49-50,52,54,56
+bucket/xavier.json
+  s_347d16a866ffe9::t_dcab1e19501c7c 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ffaa1ba24fd2367f9820cebc0a84b9ec3acbda9d",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
