@@ -1,0 +1,80 @@
+docs/ARCHITECTURE.md
+  s_347d16a866ffe9::t_a43d6ebfb136ff 8
+src/Cerebro.Agent/Program.cs
+  s_347d16a866ffe9::t_b89747ad854fdf 38
+.github/workflows/server-release.yml
+  s_347d16a866ffe9::t_ce633090c5e4d5 55
+packaging/npm/package.json
+  s_347d16a866ffe9::t_296210a6865be3 23
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_3d580772372d65 103
+  s_347d16a866ffe9::t_e19af65013ccdf 202,210-211,213-214
+  s_347d16a866ffe9::t_c913774b2ecfcd 96
+  s_347d16a866ffe9::t_43ba8de0c33d13 40
+  s_347d16a866ffe9::t_8697d2877ed02c 29
+  s_347d16a866ffe9::t_02e91e4024945b 236
+  s_347d16a866ffe9::t_4cf7c83853747d 250
+  s_347d16a866ffe9::t_d904b14a0dda15 33
+  s_347d16a866ffe9::t_6ff9e1c5abe9bb 100
+  s_347d16a866ffe9::t_9f65ad444ee353 222
+  s_347d16a866ffe9::t_2f6456375868d9 124,219,233,247,249
+README.md
+  s_347d16a866ffe9::t_e2068ae6c5d62c 8
+  s_347d16a866ffe9::t_e436904b52df25 17
+src/Cerebro.Server/Cerebro.Server.csproj
+  s_347d16a866ffe9::t_752041f07ebed2 40
+tools/Cerebro.LoadSim/README.md
+  s_347d16a866ffe9::t_ceb6e8f0174345 29
+  s_347d16a866ffe9::t_c349f2bc7848ea 45
+src/Cerebro.Server/Hubs/CerebroHub.cs
+  s_347d16a866ffe9::t_81ab29296552d7 69
+LICENSE
+  s_347d16a866ffe9::t_7f642185db56c1 1-2,4-21
+  h_0a88d9aba8622a 3
+src/Cerebro.Agent/Realtime/SignalRCerebroConnection.cs
+  s_347d16a866ffe9::t_26a6eb9a7676c4 14
+deploy/Dockerfile.caddy
+  s_347d16a866ffe9::t_d918b66f069a88 3
+deploy/Caddyfile
+  s_347d16a866ffe9::t_2575956634ce6b 66
+  s_347d16a866ffe9::t_294270ac9475c2 39
+  s_347d16a866ffe9::t_23e3aeb6d1cf28 51-53
+  s_347d16a866ffe9::t_6457c65a305bb3 1
+  s_347d16a866ffe9::t_ebed62da78611f 34
+TESTING.md
+  s_347d16a866ffe9::t_686515dd4c125b 3
+  s_347d16a866ffe9::t_a2998968ecfae8 222
+src/Cerebro.Agent/Realtime/CertificateThumbprintValidator.cs
+  s_347d16a866ffe9::t_e2c7d7364b1e82 3
+deploy/docker-compose.yml
+  s_347d16a866ffe9::t_dec332f62555d8 1
+  s_347d16a866ffe9::t_563862d9e1075f 43
+  s_347d16a866ffe9::t_5a314640e88b8b 9
+  s_347d16a866ffe9::t_640659f6746cb5 20
+tests/Cerebro.Tests/Integration/AdminCliProvisionIntegrationTests.cs
+  s_347d16a866ffe9::t_699a8d5a926850 20-21,26-27,34,36
+src/Cerebro.Server/Admin/AdminCli.cs
+  s_347d16a866ffe9::t_61ecefae48d181 41
+  s_347d16a866ffe9::t_35389bd99ab4bd 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "0662fc540e938a1134ab457b33ceef185520c7b9",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
