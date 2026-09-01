@@ -1,0 +1,33 @@
+packaging/npm/scripts/postinstall.js
+  s_347d16a866ffe9::t_5553c43268ef8c 1-105
+.github/workflows/npm-publish.yml
+  s_347d16a866ffe9::t_b889c1ef5ad642 1-23,25-31
+  h_0a88d9aba8622a 24
+packaging/npm/package.json
+  s_347d16a866ffe9::t_9a764daa12e702 1-28
+packaging/npm/.npmignore
+  s_347d16a866ffe9::t_1aed0b0a5f3a4d 1-2
+packaging/npm/README.md
+  s_347d16a866ffe9::t_7e65dd7985c02d 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "1c7cecfca48ff4171b237b0960bb30561256de36",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
