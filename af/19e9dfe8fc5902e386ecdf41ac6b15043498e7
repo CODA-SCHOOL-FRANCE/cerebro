@@ -1,0 +1,14 @@
+.github/workflows/agent-release.yml
+  h_0a88d9aba8622a 71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "af19e9dfe8fc5902e386ecdf41ac6b15043498e7",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
