@@ -68,7 +68,7 @@ jobs:
           (cd publish/${{ matrix.rid }} && zip -r "../../${archive}" .)
           echo "ARCHIVE_PATH=${archive}" >> "$GITHUB_ENV"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: xavier-${{ matrix.rid }}
           path: ${{ env.ARCHIVE_PATH }}
