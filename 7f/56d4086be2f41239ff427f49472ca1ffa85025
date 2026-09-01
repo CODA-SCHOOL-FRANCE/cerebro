@@ -1,0 +1,25 @@
+.github/workflows/npm-publish.yml
+  s_347d16a866ffe9::t_f426a33ffea77d 3-6,13-21
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_98080a190fb0dd 80-81,96-100
+  s_347d16a866ffe9::t_8ff9cd2f663433 127-140
+  s_347d16a866ffe9::t_e1ea643130d573 101
+docs/DEPLOYMENT.md
+  s_347d16a866ffe9::t_1e5221085c6454 163-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "7f56d4086be2f41239ff427f49472ca1ffa85025",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
