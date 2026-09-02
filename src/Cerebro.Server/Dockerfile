@@ -59,8 +59,15 @@ USER app
 # à monter en volume nommé ou bind mount en prod.
 VOLUME ["/app/db", "/app/screenshots"]
 
-ENV ASPNETCORE_URLS=http://+:8080 \
-    ASPNETCORE_ENVIRONMENT=Production
-EXPOSE 8080
+# Kestrel termine le TLS lui-même sur 8443 (certificat auto-signé généré au premier démarrage,
+# voir Program.cs / ServerCertificateProvisioner) - pas de reverse proxy séparé (voir
+# docs/DEPLOYMENT-SERVER.md). ASPNETCORE_URLS n'est volontairement pas défini ici : l'endpoint HTTPS
+# est configuré en code (builder.WebHost.ConfigureKestrel), pas par cette variable.
+# CEREBRO_SERVER_TLS_PORT est le signal que lit Program.cs pour activer ce bootstrap TLS : seule
+# cette image la définit, ce qui laisse un simple `dotnet run` en développement local sur le
+# comportement Kestrel par défaut (port de dev habituel, HTTP, voir README - Développement local).
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    CEREBRO_SERVER_TLS_PORT=8443
+EXPOSE 8443
 
 ENTRYPOINT ["dotnet", "Cerebro.Server.dll"]

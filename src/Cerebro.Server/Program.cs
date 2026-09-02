@@ -5,22 +5,48 @@ using Cerebro.Server.Data;
 using Cerebro.Server.Hubs;
 using Cerebro.Server.Services;
 using Cerebro.Server.Telemetry;
+using Cerebro.Server.Tls;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.HttpOverrides;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 // Mode admin (provisioning hors ligne, n'a pas besoin d'héberger le serveur web) :
-// `dotnet Cerebro.Server.dll provision --session ... --candidates ...`, `start --session ...`
-// ou `set-password --username ...`.
-if (args.Length > 0 && args[0] is "provision" or "start" or "set-password")
+// `dotnet Cerebro.Server.dll provision --session ... --candidates ...`, `start --session ...`,
+// `set-password --username ...` ou `generate-cert --address ...`.
+if (args.Length > 0 && args[0] is "provision" or "start" or "set-password" or "generate-cert")
 {
     return await AdminCli.RunAsync(args);
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Kestrel termine le TLS lui-même, mais seulement si CEREBRO_SERVER_TLS_PORT est défini (voir
+// src/Cerebro.Server/Dockerfile - c'est le seul endroit qui la positionne, à 8443). Sans elle -
+// notamment un simple `dotnet run` en développement local, sans conteneur - Kestrel garde son
+// comportement par défaut (port de dev habituel, HTTP). Certificat auto-signé généré une seule
+// fois puis persisté dans le même volume nommé que la base SQLite (db/cerebro.pfx par défaut),
+// pour ne pas faire changer l'empreinte communiquée aux candidats à chaque redéploiement.
+var tlsPortValue = builder.Configuration["CEREBRO_SERVER_TLS_PORT"];
+if (!string.IsNullOrEmpty(tlsPortValue))
+{
+    var tlsPort = int.Parse(tlsPortValue);
+    var certPath = builder.Configuration["Tls:CertificatePath"] ?? "db/cerebro.pfx";
+    var certAddress = builder.Configuration["CEREBRO_SERVER_ADDRESS"] ?? "localhost";
+    var certificate = ServerCertificateProvisioner.EnsureCertificate(certPath, certAddress);
+
+    Console.WriteLine("==================================================================");
+    Console.WriteLine(" Empreinte SHA-256 du certificat serveur (CEREBRO_SERVER_CERT_THUMBPRINT) :");
+    Console.WriteLine($" {ServerCertificateProvisioner.Sha256Thumbprint(certificate)}");
+    Console.WriteLine(" À communiquer aux agents candidats en même temps que l'URL et le code de session.");
+    Console.WriteLine("==================================================================");
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(tlsPort, listenOptions => listenOptions.UseHttps(certificate));
+    });
+}
 
 builder.Services.AddSignalR(options =>
 {
@@ -95,26 +121,6 @@ builder.Services.AddOpenTelemetry()
         .AddConsoleExporter());
 
 var app = builder.Build();
-
-// Le serveur tourne en HTTP derrière un reverse proxy TLS (Caddy) ; ces en-têtes restaurent le
-// schéma/l'IP d'origine transmis par le proxy (sans ça, les redirections générées par l'auth par
-// cookie, ex. vers /login.html, gardent le schéma "http" vu par Kestrel - symptôme observé :
-// redirection vers http://<ip>:8443/login.html au lieu de https://).
-//
-// KnownNetworks/KnownProxies vidés (défaut : loopback uniquement) car en déploiement
-// docker-compose.yml, Caddy tourne dans un conteneur séparé sur le réseau Docker interne, avec
-// une IP qui n'est PAS loopback - ForwardedHeadersMiddleware ignore alors silencieusement les
-// en-têtes X-Forwarded-* d'un expéditeur hors de sa liste de confiance (défaut restreint à
-// 127.0.0.0/8 et ::1, pensé pour un proxy natif sur le même hôte, voir Caddyfile modes A/B, où
-// le bug ne se produit pas). Sûr ici : cerebro-server ne publie aucun port, seul Caddy peut
-// l'atteindre (voir docker-compose.yml), donc rien d'autre ne peut usurper ces en-têtes.
-var forwardedHeadersOptions = new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-};
-forwardedHeadersOptions.KnownIPNetworks.Clear();
-forwardedHeadersOptions.KnownProxies.Clear();
-app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

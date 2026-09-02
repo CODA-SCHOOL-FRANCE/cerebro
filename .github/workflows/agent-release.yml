@@ -139,7 +139,7 @@ jobs:
   # dernière release agent directement depuis ce dépôt, désormais public - rien à mirorer. Seule
   # la formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) :
   # Homebrew impose qu'un tap vive dans un dépôt nommé homebrew-<nom>, indépendamment de la
-  # visibilité de ce dépôt - voir docs/DEPLOYMENT.md §2.
+  # visibilité de ce dépôt - voir docs/DEPLOYMENT-AGENT.md.
   update-distribution-channels:
     needs: release
     runs-on: ubuntu-latest

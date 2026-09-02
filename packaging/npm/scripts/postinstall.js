@@ -1,5 +1,5 @@
 // Télécharge le binaire natif de Xavier correspondant à la plateforme courante, depuis les
-// Releases du dépôt cerebro (voir docs/DEPLOYMENT.md §2).
+// Releases du dépôt cerebro (voir docs/DEPLOYMENT-AGENT.md).
 //
 // N'extrait volontairement QUE le binaire (jamais xavier.config.json ni USER-DOC.txt) : le
 // fichier de config livré dans l'archive n'est qu'un placeholder à remplir par le surveillant

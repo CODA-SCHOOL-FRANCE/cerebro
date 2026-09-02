@@ -51,7 +51,7 @@ internal static class DashboardSessionProvisioner
             .WithUrl(new Uri(new Uri(serverUrl), "hubs/cerebro"), options =>
             {
                 // options.Cookies seul ne suffit pas ici (vérifié empiriquement contre un vrai
-                // déploiement HTTPS/Caddy : le cookie n'était jamais transmis, CreateSession
+                // déploiement HTTPS : le cookie n'était jamais transmis, CreateSession
                 // échouait avec "user is unauthorized") - on le rattache donc à la main sur chaque
                 // requête via CookieForwardingHandler. Transport forcé en long polling : cette
                 // connexion ne sert qu'à un seul appel ponctuel (CreateSession), la latence

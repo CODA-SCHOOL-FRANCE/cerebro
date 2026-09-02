@@ -1,5 +1,6 @@
 using System.Text;
 using Cerebro.Server.Data;
+using Cerebro.Server.Tls;
 using ConsoleAppFramework;
 using static System.Environment;
 
@@ -97,6 +98,25 @@ internal sealed class AdminCommands
         await credentials.SetCredentialsAsync(username, password, CancellationToken.None);
 
         Console.WriteLine($"Mot de passe défini pour '{username}'.");
+    }
+
+    /// <summary>Régénère le certificat TLS auto-signé du serveur (généré automatiquement au premier démarrage sinon).</summary>
+    /// <param name="address">IP ou nom d'hôte du poste serveur sur le réseau d'épreuve (inclus comme SAN du certificat).</param>
+    /// <param name="output">Chemin du fichier .pfx à écrire.</param>
+    /// <param name="force">Écraser un certificat existant (change l'empreinte SHA-256 à recommuniquer aux agents).</param>
+    public void GenerateCert(string address, string output = "db/cerebro.pfx", bool force = false)
+    {
+        if (File.Exists(output) && !force)
+        {
+            throw new InvalidOperationException(
+                $"Un certificat existe déjà ('{output}'). Utiliser --force pour le régénérer " +
+                "(l'empreinte à recommuniquer aux agents candidats changera alors).");
+        }
+
+        var certificate = ServerCertificateProvisioner.GenerateAndSave(output, address);
+
+        Console.WriteLine($"Certificat généré : {output}");
+        Console.WriteLine($"Empreinte SHA-256 (CEREBRO_SERVER_CERT_THUMBPRINT) : {ServerCertificateProvisioner.Sha256Thumbprint(certificate)}");
     }
 
     // Saisie masquée (aucun echo, ni dans le terminal ni dans l'historique shell) : contrairement

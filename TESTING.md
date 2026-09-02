@@ -215,6 +215,6 @@ laisser traîner les données de ce test sur le disque.)
 ## Ce que ce scénario ne couvre pas
 
 - Capture d'écran réelle sur Windows et Linux (à rejouer sur du matériel réel)
-- Le TLS/reverse proxy Caddy (voir [Sécurisation du transport](docs/DEPLOYMENT.md#sécurisation-du-transport-tls)
+- Le TLS natif (Kestrel) en conteneur (voir [Sécurisation du transport](docs/DEPLOYMENT-SERVER.md#sécurisation-du-transport-tls)
   pour un scénario dédié avec certificat auto-signé et épinglage d'empreinte)
 - La montée en charge avec un grand nombre de candidats simultanés

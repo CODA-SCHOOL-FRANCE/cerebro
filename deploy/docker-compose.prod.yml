@@ -2,7 +2,5 @@ services:
   cerebro-server:
     build: !reset null
     image: ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}
-
-  caddy:
     environment:
-      CEREBRO_SERVER_ADDRESS: ${CEREBRO_SERVER_ADDRESS:?Définir CEREBRO_SERVER_ADDRESS=<ip-ou-hostname-du-poste-serveur> avant de lancer docker-compose.prod.yml (voir docs/DEPLOYMENT.md, section Serveur)}
+      CEREBRO_SERVER_ADDRESS: ${CEREBRO_SERVER_ADDRESS:?Définir CEREBRO_SERVER_ADDRESS=<ip-ou-hostname-du-poste-serveur> avant de lancer docker-compose.prod.yml (voir docs/DEPLOYMENT-SERVER.md)}

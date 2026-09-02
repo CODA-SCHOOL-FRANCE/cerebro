@@ -18,7 +18,7 @@ télécharge le binaire natif correspondant à votre plateforme depuis les
 [Releases de cerebro](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases), puis l'expose comme
 commande `xavier`. C'est l'un des cinq canaux d'installation de l'agent (avec Homebrew, Scoop, un
 script d'installation, et le téléchargement manuel de l'archive) — voir la
-[documentation de déploiement](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal)
+[documentation de déploiement de l'agent](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT-AGENT.md#canaux-dinstallation-pour-les-étudiants)
 du dépôt principal pour le détail des autres canaux et de l'architecture globale.
 
 Un candidat n'a normalement pas besoin d'installer ce package lui-même : c'est fait pour lui, en

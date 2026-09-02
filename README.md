@@ -32,7 +32,7 @@ Détail complet (composants internes, flux de données) : [Architecture](docs/AR
 Deux installations séparées : le **serveur** (une fois, côté établissement) et l'**agent** (sur la
 machine de chaque candidat).
 
-**Serveur** — se déploie via Docker + Caddy (TLS auto-signé inclus), image publiée sur GHCR :
+**Serveur** — un seul conteneur Docker (TLS auto-signé généré automatiquement), image publiée sur GHCR :
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<version>
@@ -40,7 +40,7 @@ CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 
-Détail complet (provisioning, mot de passe dashboard, TLS) : [Déploiement du serveur](docs/DEPLOYMENT.md).
+Détail complet (provisioning, mot de passe dashboard, TLS) : [Déployer le serveur](docs/DEPLOYMENT-SERVER.md).
 
 **Agent** — un seul exécutable, pas de runtime à installer, disponible sur plusieurs canaux :
 
@@ -54,7 +54,7 @@ Détail complet (provisioning, mot de passe dashboard, TLS) : [Déploiement du s
 | Manuel | archive `Xavier-<version>-<rid>.zip` depuis la [Release GitHub](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases) |
 
 Détail complet (mise en place initiale, mise à jour automatique des canaux) :
-[Déploiement §2 — Agent, distribution multi-canal](docs/DEPLOYMENT.md#2-agent-xavier-distribution-multi-canal).
+[Déployer l'agent](docs/DEPLOYMENT-AGENT.md#canaux-dinstallation-pour-les-étudiants).
 
 ## Prérequis (développement local)
 
@@ -130,6 +130,7 @@ Pour un test manuel de bout en bout (serveur + plusieurs agents, dashboard, scé
 ## Autres documentations
 - [Architecture](docs/ARCHITECTURE.md)
 - [Fonctionnalités supportées](docs/FEATURES.md)
-- [Déploiement](docs/DEPLOYMENT.md)
+- [Déployer le serveur](docs/DEPLOYMENT-SERVER.md)
+- [Déployer l'agent](docs/DEPLOYMENT-AGENT.md)
 - [Documentation candidat](docs/USER-DOC.txt)
 - [Protocole de test manuel de bout en bout](TESTING.md) 

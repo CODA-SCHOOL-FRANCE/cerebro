@@ -1,11 +1,13 @@
-# Déploiement
+# Déployer le serveur
 
-## 1. Serveur (`Docker` + `Caddy`)
+- Image publiée sur GHCR, un seul conteneur (`cerebro-server`) lancé via `deploy/docker-compose.yml`
+- Kestrel (le serveur web intégré à ASP.NET Core) termine le TLS lui-même sur `8443`, avec un
+  certificat auto-signé généré automatiquement au tout premier démarrage — rien à installer ni à
+  configurer en plus (voir [Sécurisation du transport](#sécurisation-du-transport-tls) ci-dessous)
 
-- Image publiée sur GHCR
-  - lancée via `deploy/docker-compose.yml` avec [Caddy](https://caddyserver.com/) devant un reverse proxy TLS
-- `cerebro-server` et Caddy tournent dans deux conteneurs séparés sur un réseau Docker interne : 
-  - `cerebro-server` ne publie aucun port (joignable uniquement par Caddy, via le nom de service `cerebro-server:8080` résolu par le DNS interne de Docker), seul Caddy expose `8443` vers l'extérieur
+Pour déployer l'agent candidat (Xavier), voir [Déployer l'agent](DEPLOYMENT-AGENT.md) — document séparé.
+
+## Lancer le serveur
 
 **1. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main` (`.github/workflows/server-release.yml`, qui fait tourner les tests avant de publier) :
 
@@ -21,7 +23,8 @@ CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
 ```
 
 - remplacer `server-ip` par l'IP ou le nom d'hôte réel du poste serveur sur le réseau d'épreuve
-  - utilisée uniquement par Caddy pour générer son certificat auto-signé, voir `deploy/Caddyfile`
+  - optionnelle (défaut `localhost`), incluse comme SAN (Subject Alternative Name) du certificat
+    auto-généré
 - Les candidats et le surveillant se connectent alors sur `https://<server-ip>:8443`.
 
 Pré-pull l'image (étapes 1-2) la veille de l'épreuve : le réseau d'épreuve est volontairement isolé (pas d'accès internet le jour J), et `docker-compose.prod.yml` ne force jamais un re-pull au démarrage.
@@ -29,12 +32,12 @@ Pré-pull l'image (étapes 1-2) la veille de l'épreuve : le réseau d'épreuve 
 - `db/` et `screenshots/` sont persistés dans des volumes nommés (`cerebro-db`,
   `cerebro-screenshots`) : ils survivent à un redéploiement, tant qu'on ne fait pas
   `docker compose down -v`.
-- Le volume `caddy_data` contient la CA locale et le certificat générés par `tls internal` — sans
-  lui, ils sont régénérés à chaque recréation du conteneur Caddy, ce qui change l'empreinte SHA-256
-  à recommuniquer aux agents (à ne surtout pas perdre en cours d'épreuve, donc éviter
-  `docker compose down -v` une fois une session commencée).
+- Le certificat TLS auto-signé (`db/cerebro.pfx`) vit dans le même volume `cerebro-db` que la base
+  SQLite — sans lui, un nouveau certificat serait généré à chaque recréation du conteneur, ce qui
+  changerait l'empreinte SHA-256 à recommuniquer aux agents (à ne surtout pas perdre en cours
+  d'épreuve, donc éviter `docker compose down -v` une fois une session commencée).
 
-### Récupérer les screenshots depuis le conteneur
+## Récupérer les screenshots depuis le conteneur
 
 **Le plus simple : depuis le dashboard**, sur l'écran de détail d'une épreuve, bouton
 "⬇ Télécharger Session (ZIP)" — télécharge un zip de la session complète (tous les screenshots,
@@ -61,7 +64,7 @@ docker ps --filter "ancestor=ghcr.io/coda-school-france/cerebro-server" --format
 docker cp <nom-du-conteneur>:/app/screenshots ./screenshots-export
 ```
 
-### Mettre à jour le serveur (nouvelle image)
+## Mettre à jour le serveur (nouvelle image)
 
 Le `db/` (SQLite) et les `screenshots/` vivent dans des volumes nommés, indépendants du conteneur :
 recréer `cerebro-server` sur une nouvelle image ne perd donc ni les sessions provisionnées ni les screenshots déjà reçus.
@@ -72,7 +75,7 @@ recréer `cerebro-server` sur une nouvelle image ne perd donc ni les sessions pr
 docker pull ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>
 ```
 
-**2. Relancer la pile avec ce tag** — seul `cerebro-server` est recréé, Caddy continue de tourner sans interruption (même certificat, même empreinte, rien à recommuniquer aux agents) :
+**2. Relancer la pile avec ce tag** — le certificat TLS (`db/cerebro.pfx`, volume `cerebro-db`) survit à la recréation du conteneur : même certificat, même empreinte, rien à recommuniquer aux agents :
 
 ```bash
 CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_SERVER_VERSION=<nouvelle-version> \
@@ -89,29 +92,45 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml im
 
 > À faire la veille d'une épreuve, jamais le jour J (réseau isolé, voir plus haut) — et jamais pendant qu'une session est en cours (les candidats connectés perdraient leur connexion SignalR le temps que`cerebro-server` redémarre).
 
-### Sécurisation du transport (TLS)
+## Sécurisation du transport (TLS)
 
-Sur un réseau d'épreuve isolé, il n'y a pas de CA publique disponible pour obtenir un certificat classique (type Let's Encrypt) : 
-- Caddy génère et sert automatiquement un certificat auto-signé via sa CA interne
-- rien à configurer manuellement, c'est déjà réglé par `deploy/Caddyfile`
-- la CA interne est personnalisée (`pki` global option) : le champ **Issuer** du certificat affiche "Cerebro Intermediate CA" (Caddy ne permet pas de renseigner un champ Organization sur le certificat serveur lui-même)
-- le certificat serveur est valide **5 ans** (`lifetime 43800h`, au lieu des 12h par défaut) : le renouvellement automatique n'a donc quasiment jamais lieu, ce qui évite qu'une empreinte déjà distribuée aux candidats change silencieusement entre deux sessions
+Sur un réseau d'épreuve isolé, il n'y a pas de CA publique disponible pour obtenir un certificat classique (type Let's Encrypt) :
+- Kestrel (le serveur web intégré, pas de reverse proxy séparé) génère et sert automatiquement un
+  certificat auto-signé au tout premier démarrage — rien à configurer manuellement, voir
+  `Program.cs` et `Tls/ServerCertificateProvisioner.cs`
+- le certificat est écrit dans `db/cerebro.pfx` (volume `cerebro-db`, voir plus haut) : il survit
+  aux redémarrages et redéploiements, régénéré uniquement si ce fichier est absent
+- le certificat serveur est valide **5 ans** : un renouvellement automatique fréquent n'apporterait
+  rien ici (l'agent épingle l'empreinte, pas la chaîne de confiance, voir plus bas) et casserait
+  silencieusement une empreinte déjà distribuée aux candidats entre deux sessions
 
-**Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants. 
-Caddy l'affiche en clair dans ses propres logs au démarrage (voir `deploy/caddy-entrypoint.sh`) — pas besoin d'appeler `openssl` à la main :
+**Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants.
+`cerebro-server` l'affiche en clair dans ses propres logs à chaque démarrage — pas besoin d'appeler `openssl` à la main :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml logs caddy | grep -A2 "Empreinte SHA-256"
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml logs cerebro-server | grep -A2 "Empreinte SHA-256"
 ```
 
-En dehors de ce mode de déploiement (Caddy natif sur l'hôte, ou pour la retrouver après une purge des logs), la récupérer directement sur le certificat :
+Pour la retrouver après une purge des logs, ou en dehors de Docker, la récupérer directement sur le certificat :
 
 ```bash
 openssl s_client -connect 192.168.1.10:8443 </dev/null 2>/dev/null \
   | openssl x509 -noout -fingerprint -sha256
 ```
 
-**Communiquer cette empreinte** aux candidats en même temps que l'URL du serveur et le code de session (annonce orale/écran en début de session, voir[Provisionner une épreuve](#3-provisionner-une-épreuve)). 
+**Changer d'adresse ou forcer un nouveau certificat** (ex. le poste serveur change d'IP entre deux
+sessions) sans perdre la base SQLite (donc sans `docker compose down -v`) — commande admin
+`generate-cert`, même usage que `set-password` (voir plus bas) :
+
+```bash
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
+  exec cerebro-server dotnet Cerebro.Server.dll generate-cert --address 192.168.1.20 --force
+```
+
+Redémarrer ensuite le conteneur pour que Kestrel charge le nouveau certificat, et recommuniquer la
+nouvelle empreinte affichée aux candidats.
+
+**Communiquer cette empreinte** aux candidats en même temps que l'URL du serveur et le code de session (annonce orale/écran en début de session, voir [Provisionner une épreuve](#provisionner-une-épreuve)). 
 Elle se passe en 4ᵉ argument positionnel de l'agent (après l'identifiant candidat) ou via la variable d'environnement `CEREBRO_SERVER_CERT_THUMBPRINT` :
 
 ```bash
@@ -124,7 +143,7 @@ L'agent valide alors le certificat du serveur par **épinglage d'empreinte** plu
 
 Le **navigateur du surveillant**, lui, affichera un avertissement pour ce certificat auto-signé : à accepter une fois manuellement sur ce seul poste (bouton "Continuer quand même" / "Avancé...").
 
-### Compte du dashboard (surveillant)
+## Compte du dashboard (surveillant)
 
 Le dashboard n'a qu'un seul compte, protégé par cookie de session (`/login.html`, `/account/login`) — les identifiants sont définis via la commande admin `set-password`, jamais en clair dans un fichier de config.
 
@@ -144,52 +163,7 @@ docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
 
 Le surveillant se connecte ensuite sur `https://<server-ip>:8443/login.html` avec ce couple identifiant/mot de passe.
 
-## 2. Agent (Xavier), distribution multi-canal
-
-`dotnet publish` en mode self-contained + fichier unique : l'étudiant n'a pas besoin du runtime .NET installé.
-Le projet source reste `src/Cerebro.Agent`, mais l'exécutable publié (`AssemblyName` dans le `.csproj`) s'appelle `xavier` (`xavier.exe` sous Windows).
-
-```bash
-dotnet publish src/Cerebro.Agent -c Release -r win-x64   --self-contained -p:PublishSingleFile=true -o ./publish/agent-win-x64
-dotnet publish src/Cerebro.Agent -c Release -r osx-x64   --self-contained -p:PublishSingleFile=true -o ./publish/agent-osx-x64
-dotnet publish src/Cerebro.Agent -c Release -r osx-arm64 --self-contained -p:PublishSingleFile=true -o ./publish/agent-osx-arm64
-dotnet publish src/Cerebro.Agent -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true -o ./publish/agent-linux-x64
-```
-
-**Via GitHub Actions** : un tag `agent-vX.Y.Z` poussé sur un commit `main` déclenche `.github/workflows/agent-release.yml`
-- build pour les 4 OS ci-dessus, empaqueté avec les instructions d'installation (`docs/USER-DOC.txt`, contournement SmartScreen/Gatekeeper inclus)
-- création directe d'une **Release GitHub publiée sur ce dépôt**, nommée `Xavier agent-vX.Y.Z` (le job de tests en amont sert de garde-fou : la release n'est créée que s'il passe)
-
-Deux jobs se déclenchent ensuite en parallèle (même workflow, `needs: release`) :
-- `publish-npm` republie le wrapper npm (`packaging/npm/`) avec le même numéro de version, via
-  `npm-publish.yml` appelé en workflow réutilisable (`workflow_dispatch` y reste disponible pour
-  republier le wrapper seul, sans nouvelle release agent).
-- `update-distribution-channels` régénère le bucket Scoop (`bucket/xavier.json`, dans ce dépôt,
-  commit direct sur `main`) et la formule
-  [`homebrew-cerebro`](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro) avec les nouveaux
-  hachages — Homebrew impose qu'un tap vive dans un dépôt séparé nommé `homebrew-<nom>`,
-  indépendamment de la visibilité du dépôt principal, donc ce dépôt-là reste distinct.
-
-Le script d'installation et le postinstall npm résolvent la dernière release agent directement sur
-ce dépôt (voir `packaging/install.sh`, `install.ps1`, `packaging/npm/scripts/postinstall.js`) :
-rien à mirorer côté binaire. Canaux disponibles pour les étudiants (détail dans
-`docs/USER-DOC.txt`) :
-
-| Canal | Commande |
-|---|---|
-| Script (macOS/Linux) | `curl -fsSL https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.sh \| sh` |
-| Script (Windows) | `irm https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/packaging/install.ps1 \| iex` |
-| Homebrew (macOS/Linux) | `brew install coda-school-france/cerebro/xavier` |
-| Scoop (Windows) | `scoop bucket add xavier https://github.com/CODA-SCHOOL-FRANCE/cerebro && scoop install xavier/xavier` |
-| npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
-| Manuel | archive `Xavier-<version>-<rid>.zip` sur la Release GitHub |
-
-Ces canaux n'embarquent volontairement pas de `xavier.config.json` préempli (contrairement à
-l'archive manuelle) : ce fichier est à éditer par le surveillant avant une distribution
-individuelle (voir §4 et `docs/USER-DOC.txt`); sans lui, l'agent retombe simplement sur les
-prompts interactifs.
-
-## 3. Provisionner une épreuve
+## Provisionner une épreuve
 
 **Depuis le dashboard, sans fichier JSON** : bouton **"+ NOUVELLE SESSION"**, onglet **"Saisie
 manuelle"** — coller la liste des étudiants (un nom par ligne) et saisir le code de session. Le
@@ -239,16 +213,10 @@ dotnet Cerebro.Server.dll start --session SESSION-2026-A --db ./cerebro.db
 
 Pour l'instant, cette commande se contente d'horodater le démarrage en base (utile pour l'audit) — elle ne bloque pas encore les connexions tardives ni ne débloque automatiquement le sujet de l'épreuve.
 
-## 4. Instructions à donner aux étudiants (à faire la veille, pas le jour J)
-
-- **Windows** : au premier lancement, SmartScreen affichera "Windows a protégé votre PC" → cliquer sur *Informations complémentaires* puis *Exécuter quand même*.
-- **macOS** : Gatekeeper bloquera l'app (pas de compte Apple Developer) → **clic droit sur l'exécutable → Ouvrir** (une seule fois). Accorder ensuite la permission **Enregistrement de l'écran** dans *Réglages Système → Confidentialité et sécurité* quand macOS la demande.
-- **Linux** : vérifier qu'un outil de capture est installé (`grim` sous Wayland, ou `scrot` / ImageMagick `import` / `gnome-screenshot` sous X11) — sinon `sudo apt install scrot` (ou équivalent selon la distribution).
-
 ## Utilisation le jour J
 
-1. Annoncer une fois à toute la salle l'URL du serveur, le code de session et, si TLS est activé, l'empreinte du certificat (voir [provisioning](#3-provisionner-une-épreuve)).
-2. Chaque candidat lance l'agent avec ces valeurs et son propre id (déjà connu de lui), par exemple `xavier https://192.168.1.10:8443 SESSION-2026-A FFFB5AB1 "19D497B5...3B5E"` — ou répond simplement aux invites interactives s'il lance l'agent sans argument.
+1. Annoncer une fois à toute la salle l'URL du serveur, le code de session et, si TLS est activé, l'empreinte du certificat (voir [Provisionner une épreuve](#provisionner-une-épreuve)).
+2. Chaque candidat lance l'agent avec ces valeurs et son propre id (déjà connu de lui), par exemple `xavier https://192.168.1.10:8443 SESSION-2026-A FFFB5AB1 "19D497B5...3B5E"` — ou répond simplement aux invites interactives s'il lance l'agent sans argument (voir [Déployer l'agent](DEPLOYMENT-AGENT.md)).
 3. Le surveillant ouvre le dashboard : il voit la liste des épreuves planifiées et **sélectionne** celle du jour, puis attend que tous les candidats apparaissent avec le statut **Prêt** (pas juste connectés — un statut **Échec** indique un problème de permission macOS ou d'outil manquant sous Linux, à résoudre avant de démarrer).
 4. Le surveillant clique sur **Démarrer l'épreuve** dans le dashboard une fois tout le monde prêt (équivalent CLI : `dotnet Cerebro.Server.dll start --session SESSION-2026-A`).
 5. En fin d'épreuve, il clique sur **Arrêter l'épreuve** : le hub refuse alors toute nouvelle connexion candidat pour cette session (les candidats déjà connectés ne sont pas coupés de force).

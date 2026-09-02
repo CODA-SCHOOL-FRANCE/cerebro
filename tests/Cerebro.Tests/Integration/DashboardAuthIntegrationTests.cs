@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Cerebro.Server.Auth;
 using Cerebro.Server.Data;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -111,41 +110,6 @@ public sealed class DashboardAuthIntegrationTests : IAsyncLifetime
         Check.That(html).Contains("Cerebro");
     }
 
-    [Fact]
-    public async Task GetIndex_BehindReverseProxyOverHttps_ShouldRedirectToLoginWithHttpsScheme()
-    {
-        // TestServer (transport en mémoire, pas de vraie socket) laisse Connection.RemoteIpAddress
-        // à null par défaut - hors IStartupFilter, ce test resterait vert même sans le correctif,
-        // car ForwardedHeadersMiddleware ne rejette les en-têtes X-Forwarded-* qu'en comparant
-        // RemoteIpAddress à KnownNetworks/KnownProxies (vérifié empiriquement). On force donc une IP
-        // non loopback ici, pour reproduire fidèlement Caddy en conteneur séparé sur le réseau
-        // Docker interne (docker-compose.yml) - à l'inverse du mode "Caddy natif sur le même hôte"
-        // (Caddyfile, modes A/B), où le proxy est en loopback et n'a jamais déclenché ce bug.
-        using var factory = _factory.WithWebHostBuilder(builder =>
-            builder.ConfigureServices(services =>
-                services.AddTransient<IStartupFilter, FakeRemoteIpStartupFilter>()));
-        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-        client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
-        client.DefaultRequestHeaders.Add("X-Forwarded-For", "203.0.113.7");
-
-        var response = await client.GetAsync("/index.html");
-
-        Check.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
-        Check.That(response.Headers.Location!.Scheme).IsEqualTo("https");
-    }
-
-    private sealed class FakeRemoteIpStartupFilter : IStartupFilter
-    {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
-        {
-            app.Use((context, nextMiddleware) =>
-            {
-                context.Connection.RemoteIpAddress = IPAddress.Parse("10.0.0.5");
-                return nextMiddleware();
-            });
-            next(app);
-        };
-    }
 
     [Fact]
     public async Task LoginPage_ShouldBePubliclyAccessibleWithoutAuthentication()
