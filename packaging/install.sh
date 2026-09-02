@@ -68,13 +68,22 @@ trap 'rm -rf "${tmp_dir}"' EXIT
 curl -fsSL "${asset_url}" -o "${tmp_dir}/xavier.zip" || fail "téléchargement échoué"
 
 mkdir -p "${INSTALL_DIR}"
-unzip -o -q "${tmp_dir}/xavier.zip" xavier -d "${tmp_dir}/extracted" || fail "extraction échouée (unzip requis)"
+unzip -o -q "${tmp_dir}/xavier.zip" xavier xavier.config.json -d "${tmp_dir}/extracted" || fail "extraction échouée (unzip requis)"
 mv "${tmp_dir}/extracted/xavier" "${INSTALL_DIR}/xavier"
 chmod +x "${INSTALL_DIR}/xavier"
 
 # Retire l'attribut quarantine macOS si présent (no-op silencieux sous Linux ou si absent) : sans
 # ça, Gatekeeper bloquerait le premier lancement comme documenté dans USER-DOC.txt.
 xattr -d com.apple.quarantine "${INSTALL_DIR}/xavier" 2>/dev/null || true
+
+# Ne jamais écraser un xavier.config.json déjà présent : le surveillant a pu le remplir avec les
+# vraies valeurs de la session (voir docs/DEPLOYMENT-AGENT.md) - un ré-lancement de ce script (mise
+# à jour de version, par exemple) ne doit pas silencieusement le réinitialiser. Le fichier livré
+# dans l'archive a des champs à null par défaut (docs/xavier.config.json) : tant qu'il n'est pas
+# édité, l'agent retombe sur les prompts interactifs exactement comme en son absence.
+if [ ! -f "${INSTALL_DIR}/xavier.config.json" ]; then
+  mv "${tmp_dir}/extracted/xavier.config.json" "${INSTALL_DIR}/xavier.config.json"
+fi
 
 echo
 echo "Xavier installé dans ${INSTALL_DIR}/xavier"
@@ -91,5 +100,6 @@ esac
 
 echo
 echo "Usage : xavier <serverUrl> <sessionCode> <candidateId> [certThumbprint]"
-echo "Si votre surveillant vous a fourni un xavier.config.json prérempli, placez-le dans"
-echo "${INSTALL_DIR}/ avant de lancer xavier."
+echo "Un xavier.config.json a été déposé dans ${INSTALL_DIR}/ : si votre surveillant vous a"
+echo "communiqué les valeurs de la session, éditez-le pour ne plus avoir à les saisir à chaque"
+echo "lancement (sinon, laissez-le tel quel — xavier les redemandera simplement)."

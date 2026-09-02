@@ -60,6 +60,17 @@ try {
 
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
     Copy-Item -Path (Join-Path $ExtractDir "xavier.exe") -Destination (Join-Path $InstallDir "xavier.exe") -Force
+
+    # Ne jamais écraser un xavier.config.json déjà présent : le surveillant a pu le remplir avec
+    # les vraies valeurs de la session (voir docs/DEPLOYMENT-AGENT.md) - un ré-lancement de ce
+    # script (mise à jour de version, par exemple) ne doit pas silencieusement le réinitialiser. Le
+    # fichier livré dans l'archive a des champs à null par défaut (docs/xavier.config.json) : tant
+    # qu'il n'est pas édité, l'agent retombe sur les prompts interactifs exactement comme en son
+    # absence.
+    $ConfigDestination = Join-Path $InstallDir "xavier.config.json"
+    if (-not (Test-Path $ConfigDestination)) {
+        Copy-Item -Path (Join-Path $ExtractDir "xavier.config.json") -Destination $ConfigDestination
+    }
 } finally {
     Remove-Item -Recurse -Force $TmpDir -ErrorAction SilentlyContinue
 }
@@ -77,5 +88,6 @@ if (-not ($UserPath -split ";" -contains $InstallDir)) {
 
 Write-Host ""
 Write-Host "Usage : xavier <serverUrl> <sessionCode> <candidateId> [certThumbprint]"
-Write-Host "Si votre surveillant vous a fourni un xavier.config.json prérempli, placez-le dans"
-Write-Host "$InstallDir\ avant de lancer xavier."
+Write-Host "Un xavier.config.json a été déposé dans $InstallDir\ : si votre surveillant vous a"
+Write-Host "communiqué les valeurs de la session, éditez-le pour ne plus avoir à les saisir à chaque"
+Write-Host "lancement (sinon, laissez-le tel quel - xavier les redemandera simplement)."

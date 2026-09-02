@@ -1,10 +1,10 @@
 // Télécharge le binaire natif de Xavier correspondant à la plateforme courante, depuis les
 // Releases du dépôt cerebro (voir docs/DEPLOYMENT-AGENT.md).
 //
-// N'extrait volontairement QUE le binaire (jamais xavier.config.json ni USER-DOC.txt) : le
-// fichier de config livré dans l'archive n'est qu'un placeholder à remplir par le surveillant
-// avant une distribution manuelle (voir docs/USER-DOC.txt) — l'embarquer ici casserait
-// silencieusement la connexion des candidats qui installent via npm.
+// N'extrait volontairement QUE le binaire et xavier.config.json (jamais USER-DOC.txt, qui n'a pas
+// sa place dans un package npm). Le config.json livré dans l'archive a des champs à null par
+// défaut (docs/xavier.config.json) : tant qu'il n'est pas édité par le surveillant, l'agent
+// retombe simplement sur les prompts interactifs (voir Program.cs, `serverUrl ??= configFile?.ServerUrl`).
 "use strict";
 
 const fs = require("node:fs");
@@ -104,13 +104,25 @@ async function main() {
     fs.chmodSync(path.join(NATIVE_DIR, binaryName), 0o755);
   }
 
+  // Ne jamais écraser un xavier.config.json déjà présent : le surveillant a pu le remplir avec les
+  // vraies valeurs de la session (voir docs/DEPLOYMENT-AGENT.md) - une réinstallation (mise à jour
+  // de version, par exemple) ne doit pas silencieusement le réinitialiser.
+  const configDestination = path.join(NATIVE_DIR, "xavier.config.json");
+  if (!fs.existsSync(configDestination)) {
+    const configEntry = zip.getEntries().find((e) => e.entryName === "xavier.config.json");
+    if (configEntry) {
+      fs.writeFileSync(configDestination, configEntry.getData());
+    }
+  }
+
   console.log(`[xavier-agent] Installé (${release.tag_name}, ${rid}).`);
   console.log(
     "[xavier-agent] Usage : xavier <serverUrl> <sessionCode> <candidateId> [certThumbprint]",
   );
   console.log(
-    "[xavier-agent] Si votre surveillant vous a fourni un xavier.config.json prérempli, " +
-      `placez-le dans ${NATIVE_DIR} avant de lancer xavier.`,
+    `[xavier-agent] Un xavier.config.json a été déposé dans ${NATIVE_DIR} : si votre surveillant ` +
+      "vous a communiqué les valeurs de la session, éditez-le pour ne plus avoir à les saisir à " +
+      "chaque lancement (sinon, laissez-le tel quel — xavier les redemandera simplement).",
   );
 }
 

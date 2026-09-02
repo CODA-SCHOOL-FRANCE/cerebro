@@ -1,4 +1,4 @@
 {
-  "serverUrl": "https://192.168.1.10:8443",
-  "certThumbprint": "A1B2C3D4E5F60718293A4B5C6D7E8F901234567"
+  "serverUrl": null,
+  "certThumbprint": null
 }

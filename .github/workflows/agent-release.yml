@@ -239,6 +239,19 @@ jobs:
 
             def install
               bin.install "xavier"
+              # Champs à null par défaut (docs/xavier.config.json) : tant qu'il n'est pas édité par
+              # le surveillant, l'agent retombe sur les prompts interactifs (voir Program.cs,
+              # AgentConfigFile.Load(AppContext.BaseDirectory) - même dossier que le binaire).
+              bin.install "xavier.config.json"
+            end
+
+            def caveats
+              <<~EOS
+                Un xavier.config.json a été déposé à côté du binaire (#{bin}) : si votre
+                surveillant vous a communiqué les valeurs de la session, éditez-le pour ne plus
+                avoir à les saisir à chaque lancement (sinon, laissez-le tel quel - xavier les
+                redemandera simplement).
+              EOS
             end
 
             test do

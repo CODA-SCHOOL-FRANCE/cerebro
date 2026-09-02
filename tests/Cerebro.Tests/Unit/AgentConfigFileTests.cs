@@ -33,6 +33,28 @@ public class AgentConfigFileTests
     }
 
     [Fact]
+    public void Load_ShouldReturnNullFields_WhenValuesAreJsonNull()
+    {
+        // C'est le contenu par défaut déployé par tous les canaux d'installation (docs/xavier.config.json) :
+        // des champs à null, pas des placeholders factices - Program.cs retombe alors sur les prompts
+        // interactifs exactement comme en l'absence de fichier (voir `serverUrl ??= configFile?.ServerUrl`).
+        File.WriteAllText(
+            Path.Combine(_directory, AgentConfigFile.FileName),
+            """
+            {
+              "serverUrl": null,
+              "certThumbprint": null
+            }
+            """);
+
+        var result = AgentConfigFile.Load(_directory);
+
+        Check.That(result).IsNotNull();
+        Check.That(result!.ServerUrl).IsNull();
+        Check.That(result.CertThumbprint).IsNull();
+    }
+
+    [Fact]
     public void Load_ShouldThrowWithClearMessage_WhenFileIsNotValidJson()
     {
         File.WriteAllText(Path.Combine(_directory, AgentConfigFile.FileName), "not json");

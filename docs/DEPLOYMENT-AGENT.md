@@ -44,10 +44,22 @@ rien à mirorer côté binaire. Canaux disponibles pour les étudiants (détail 
 | npm (tous OS) | `npx xavier-agent <serverUrl> <sessionCode> <candidateId>` |
 | Manuel | archive `Xavier-<version>-<rid>.zip` sur la Release GitHub |
 
-Ces canaux n'embarquent volontairement pas de `xavier.config.json` préempli (contrairement à
-l'archive manuelle) : ce fichier est à éditer par le surveillant avant une distribution
+Tous ces canaux déposent aussi un `xavier.config.json` à côté du binaire installé — c'est le même
+fichier que celui embarqué dans l'archive manuelle (`docs/xavier.config.json`, copié dans chaque
+publication par `agent-release.yml`), avec des champs `serverUrl`/`certThumbprint` à `null` par
+défaut. Un `null` se comporte exactement comme un fichier absent : `Program.cs` retombe sur les
+prompts interactifs (`serverUrl ??= configFile?.ServerUrl`, etc.) — rien ne casse pour un candidat
+qui installe sans y toucher. Ce fichier existe pour que le surveillant ait un seul et même endroit
+à éditer, quelle que soit la méthode d'installation choisie par l'étudiant, avant une distribution
 individuelle (voir [Instructions à donner aux étudiants](#instructions-à-donner-aux-étudiants-à-faire-la-veille-pas-le-jour-j)
-et `docs/USER-DOC.txt`) ; sans lui, l'agent retombe simplement sur les prompts interactifs.
+et `docs/USER-DOC.txt`, section "Configuration").
+
+Chaque installeur protège un fichier déjà présent : réinstaller/mettre à jour l'agent (nouvelle
+version via `brew upgrade`, ré-exécution du script, etc.) n'écrase jamais un `xavier.config.json`
+que le surveillant aurait déjà rempli sur la machine d'un candidat — sauf Homebrew et Scoop, qui
+installent chaque version dans un dossier dédié et repartent donc toujours du fichier par défaut
+(`null`) à la mise à jour ; cohérent avec le comportement déjà existant de ces deux gestionnaires
+de paquets pour tout le reste de l'installation.
 
 ## Lancer l'agent
 

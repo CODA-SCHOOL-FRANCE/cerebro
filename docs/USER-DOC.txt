@@ -25,12 +25,13 @@ raccourcis selon votre système :
   Tous OS (npm, si Node.js est déjà installé) :
       npx xavier-agent <serverUrl> <sessionCode> <candidateId>
 
-Si votre surveillant vous a transmis un fichier xavier.config.json prérempli, placez-le dans le
-même dossier que l'exécutable installé avant de le lancer (voir "Configuration" ci-dessous) — ces
-méthodes d'installation n'incluent volontairement pas de configuration préremplie.
+Chacune de ces méthodes dépose aussi un fichier xavier.config.json à côté de l'exécutable installé
+(voir "Configuration" ci-dessous) : vide par défaut, à éditer par votre surveillant s'il souhaite
+pré-remplir l'URL du serveur et l'empreinte du certificat pour toute la session.
 
 Le téléchargement manuel de l'archive (ci-dessous) reste disponible et fonctionne toujours,
-notamment si le surveillant préfère distribuer l'exécutable et sa configuration ensemble.
+notamment si le surveillant préfère distribuer l'exécutable et sa configuration déjà remplie
+ensemble.
 
 Ce que le système d'exploitation va afficher au premier lancement
 -------------------------------------------------------------------
@@ -61,17 +62,18 @@ Configuration (pour le surveillant)
 L'URL du serveur et l'empreinte du certificat sont les mêmes pour tous les candidats d'une session
 — les faire saisir à la main est source d'erreurs (l'empreinte est un long code hexadécimal).
 
-Pour les pré-remplir : éditer xavier.config.json (déjà présent à côté de l'exécutable dans
-l'archive) et y indiquer l'URL et l'empreinte réelles du serveur pour la session du jour :
+Pour les pré-remplir : éditer xavier.config.json (déjà présent à côté de l'exécutable, quelle que
+soit la méthode d'installation utilisée par le candidat — ses champs valent null par défaut) et y
+indiquer l'URL et l'empreinte réelles du serveur pour la session du jour :
 
   {
     "serverUrl": "https://192.168.1.10:8443",
     "certThumbprint": "A1B2C3D4E5F60718293A4B5C6D7E8F901234567"
   }
 
-Distribuer ensuite l'exécutable accompagné de ce fichier xavier.config.json aux candidats.
-Si le fichier est absent, l'agent redemande ces informations comme avant (rien de cassé pour un
-usage sans configuration préalable).
+Si vous distribuez l'archive manuellement, penser à y inclure ce fichier une fois rempli. Si le
+fichier est absent, ou si ses champs valent null (valeur par défaut), l'agent redemande ces
+informations comme avant (rien de cassé pour un usage sans configuration préalable).
 
 Utilisation
 -----------
