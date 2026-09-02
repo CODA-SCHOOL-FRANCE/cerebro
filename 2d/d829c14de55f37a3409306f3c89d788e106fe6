@@ -1,0 +1,39 @@
+packaging/install.ps1
+  s_347d16a866ffe9::t_a1c012d3572527 63-73
+  s_347d16a866ffe9::t_2372d5b8243532 91-93
+docs/USER-DOC.txt
+  s_347d16a866ffe9::t_7ee94a0c510e5a 65-67,74-76
+  s_347d16a866ffe9::t_9ca9d5a5211e41 28-30,33-34
+docs/DEPLOYMENT-AGENT.md
+  s_347d16a866ffe9::t_3ac9ab94e5b919 47-53,55-62
+tests/Cerebro.Tests/Unit/AgentConfigFileTests.cs
+  s_347d16a866ffe9::t_0365e7d0247584 36-56
+  s_347d16a866ffe9::t_7738a6a7e7140e 35
+.github/workflows/agent-release.yml
+  s_347d16a866ffe9::t_bb056a14869f49 242-254
+packaging/npm/scripts/postinstall.js
+  s_347d16a866ffe9::t_8f8b3e7eb3c33a 107-117,123-125
+  s_347d16a866ffe9::t_63fb63dd9ead20 4-7
+packaging/install.sh
+  s_347d16a866ffe9::t_3e66005714bd01 71,79-86
+  s_347d16a866ffe9::t_2e33e9b2190677 103-105
+  s_347d16a866ffe9::t_3f5da03badd408 87
+docs/xavier.config.json
+  s_347d16a866ffe9::t_971f74ad8697d8 2-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2dd829c14de55f37a3409306f3c89d788e106fe6",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
