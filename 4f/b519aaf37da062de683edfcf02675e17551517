@@ -1,0 +1,24 @@
+docs/DEPLOYMENT-SERVER.md
+  s_347d16a866ffe9::t_896759ff0e8359 84
+  s_347d16a866ffe9::t_8e8aae74273901 21,25-31
+deploy/docker-compose.prod.yml
+  s_347d16a866ffe9::t_3a7d64c15279d7 5-11
+README.md
+  s_347d16a866ffe9::t_682aa285be4dc9 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4fb519aaf37da062de683edfcf02675e17551517",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
