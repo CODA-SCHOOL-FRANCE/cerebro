@@ -4,6 +4,8 @@
 [![npm downloads](https://img.shields.io/npm/dm/xavier-agent)](https://www.npmjs.com/package/xavier-agent)
 [![Cerebro](https://img.shields.io/badge/cerebro-d%C3%A9p%C3%B4t%20principal-blueviolet)](https://github.com/CODA-SCHOOL-FRANCE/cerebro)
 
+![Cerebro by Charles Thirion](https://raw.githubusercontent.com/CODA-SCHOOL-FRANCE/cerebro/main/img/cerebro.webp)
+
 ## À quoi sert ce package ?
 
 [Cerebro](https://github.com/CODA-SCHOOL-FRANCE/cerebro) est un outil anti-fraude pour la
