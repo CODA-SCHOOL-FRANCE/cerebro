@@ -26,17 +26,13 @@ if (-not [Environment]::Is64BitOperatingSystem) {
 $Rid = "win-x64"
 
 try {
+    # Un seul tag vX.Y.Z publie à la fois l'image Docker du serveur et les archives agent (voir
+    # release.yml) : /releases/latest pointe donc toujours vers une release contenant les archives
+    # recherchées ci-dessous, pas besoin de filtrer par nom de tag.
     if ($env:XAVIER_VERSION) {
-        $Release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/tags/agent-v$($env:XAVIER_VERSION)"
+        $Release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/tags/v$($env:XAVIER_VERSION)"
     } else {
-        # cerebro publie aussi des releases serveur (tags vX.Y.Z, sans binaire agent) entrelacées
-        # avec celles de l'agent (tags agent-vX.Y.Z) : /releases/latest pourrait renvoyer l'une
-        # d'elles. On liste donc les releases récentes et on garde la première taguée agent-v*.
-        $Releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases?per_page=30"
-        $Release = $Releases | Where-Object { $_.tag_name -like "agent-v*" } | Select-Object -First 1
-        if (-not $Release) {
-            Fail "Aucune release agent (agent-vX.Y.Z) trouvée."
-        }
+        $Release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest"
     }
 } catch {
     Fail "Impossible de récupérer la release ($($_.Exception.Message))."

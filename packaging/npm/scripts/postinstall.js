@@ -43,21 +43,14 @@ async function fetchJson(url) {
 }
 
 async function resolveRelease(version) {
+  // Un seul tag vX.Y.Z publie à la fois l'image Docker du serveur et les archives agent (voir
+  // release.yml) : /releases/latest pointe donc toujours vers une release contenant les archives
+  // recherchées ci-dessous, pas besoin de filtrer par nom de tag.
   if (version) {
-    return fetchJson(`https://api.github.com/repos/${REPO}/releases/tags/agent-v${version}`);
+    return fetchJson(`https://api.github.com/repos/${REPO}/releases/tags/v${version}`);
   }
 
-  // cerebro publie aussi des releases serveur (tags vX.Y.Z, sans binaire agent) entrelacées avec
-  // celles de l'agent (tags agent-vX.Y.Z) : /releases/latest pourrait renvoyer l'une d'elles. On
-  // liste donc les releases récentes et on garde la première taguée agent-v* (l'API les renvoie
-  // triées du plus récent au plus ancien).
-  const releases = await fetchJson(`https://api.github.com/repos/${REPO}/releases?per_page=100`);
-  const release = releases.find((r) => r.tag_name.startsWith("agent-v"));
-  if (!release) {
-    fail("Aucune release agent (agent-vX.Y.Z) trouvée.");
-  }
-
-  return release;
+  return fetchJson(`https://api.github.com/repos/${REPO}/releases/latest`);
 }
 
 async function downloadAsset(asset) {

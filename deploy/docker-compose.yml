@@ -15,7 +15,7 @@ services:
       dockerfile: src/Cerebro.Server/Dockerfile
     # En prod, ne pas éditer ce fichier : utiliser l'override deploy/docker-compose.prod.yml, qui
     # remplace "build:" par l'image publiée par la Release GitHub Actions
-    # (.github/workflows/server-release.yml) pour ne pas avoir à reconstruire sur la machine
+    # (.github/workflows/release.yml) pour ne pas avoir à reconstruire sur la machine
     # d'épreuve (voir les commentaires en tête de ce fichier).
     restart: unless-stopped
     environment:

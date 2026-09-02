@@ -29,7 +29,7 @@
          install.sh/.ps1) perdaient alors silencieusement la compression WebP - ScreenshotCompressor.Compress
          retombe sur le PNG non compressé faute de bibliothèque native trouvable (repro : ~9,2 Mo par
          screenshot au lieu de ~170 Ko). N'a d'effet qu'en self-contained + single-file (voir
-         .github/workflows/agent-release.yml) ; ignoré par "dotnet run"/"dotnet build" en développement. -->
+         .github/workflows/release.yml) ; ignoré par "dotnet run"/"dotnet build" en développement. -->
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 

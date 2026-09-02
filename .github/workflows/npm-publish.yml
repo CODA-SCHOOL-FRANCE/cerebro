@@ -1,9 +1,9 @@
 name: Publier xavier-agent (npm)
 
-# Déclenché automatiquement par agent-release.yml (job publish-npm, needs: release) à chaque tag
-# agent-vX.Y.Z, avec la même version - le wrapper npm reste ainsi toujours publié en même temps que
-# le binaire qu'il télécharge au postinstall. workflow_dispatch reste disponible pour republier le
-# wrapper seul (ex: fix du script postinstall) sans couper une nouvelle release de l'agent.
+# Déclenché automatiquement par release.yml (job publish-npm, needs: release) à chaque tag vX.Y.Z,
+# avec la même version - le wrapper npm reste ainsi toujours publié en même temps que le binaire
+# qu'il télécharge au postinstall. workflow_dispatch reste disponible pour republier le wrapper
+# seul (ex: fix du script postinstall) sans couper une nouvelle release.
 on:
   workflow_dispatch:
     inputs:

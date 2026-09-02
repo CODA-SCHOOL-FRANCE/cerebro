@@ -1,6 +1,6 @@
 # Cerebro
 
-[![Release Xavier](https://img.shields.io/github/v/release/CODA-SCHOOL-FRANCE/cerebro?filter=agent-v*&label=xavier&color=blue)](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases)
+[![Release](https://img.shields.io/github/v/release/CODA-SCHOOL-FRANCE/cerebro?color=blue)](https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases)
 [![npm](https://img.shields.io/npm/v/xavier-agent?label=npm&logo=npm&logoColor=white)](https://www.npmjs.com/package/xavier-agent)
 [![Homebrew](https://img.shields.io/badge/homebrew-brew%20install-fbb040?logo=homebrew&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/homebrew-cerebro)
 [![Scoop](https://img.shields.io/badge/scoop-scoop%20install-blue?logo=powershell&logoColor=white)](https://github.com/CODA-SCHOOL-FRANCE/cerebro/tree/main/bucket)

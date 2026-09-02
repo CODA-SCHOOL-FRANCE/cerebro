@@ -1,18 +1,19 @@
-name: Release Xavier (agent)
+name: Release Cerebro (serveur + agent)
 
-# Un tag agent-vX.Y.Z posé sur un commit de main construit un exécutable autonome par OS (Windows,
-# macOS Intel/Apple Silicon, Linux) et publie directement une Release GitHub (le job `test` en
-# amont sert de garde-fou : la release n'est créée que si la suite de tests passe).
-#
-# Espace de tags séparé de celui du backend (voir server-release.yml, tags vX.Y.Z) : Agent et
-# Server évoluent et se publient indépendamment l'un de l'autre.
+# Un seul tag vX.Y.Z posé sur un commit de main déclenche tout : l'image Docker du serveur
+# (publiée sur GHCR) ET les 4 exécutables candidat Xavier (Windows, macOS Intel/Apple Silicon,
+# Linux), regroupés dans une seule Release GitHub - serveur et agent partagent désormais le même
+# numéro de version (fusion d'anciens workflows séparés, agent-release.yml/server-release.yml, qui
+# écoutaient deux espaces de tags distincts, agent-vX.Y.Z et vX.Y.Z). Le job `test` en amont sert
+# de garde-fou commun : rien n'est publié si la suite de tests ne passe pas.
 on:
   push:
     tags:
-      - "agent-v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   test:
@@ -28,8 +29,27 @@ jobs:
       - run: dotnet build --no-restore -c Release
       - run: dotnet test --no-build -c Release
 
-  build:
+  # Partagé par build-agent et build-server : le déclencheur "push tags" accepte un tag posé sur
+  # n'importe quelle branche, donc on vérifie explicitement que le commit tagué est bien un
+  # ancêtre de main avant de publier quoi que ce soit (image Docker comme binaires agent).
+  verify-tag-on-main:
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Vérifier que le tag est sur main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Le tag ${GITHUB_REF_NAME} ne pointe pas vers un commit de main."
+            exit 1
+          fi
+
+  build-agent:
+    needs: verify-tag-on-main
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -63,7 +83,7 @@ jobs:
       - name: Empaqueter
         shell: bash
         run: |
-          version="${GITHUB_REF_NAME#agent-v}"
+          version="${GITHUB_REF_NAME#v}"
           archive="Xavier-${version}-${{ matrix.rid }}.zip"
           (cd publish/${{ matrix.rid }} && zip -r "../../${archive}" .)
           echo "ARCHIVE_PATH=${archive}" >> "$GITHUB_ENV"
@@ -74,31 +94,61 @@ jobs:
           path: ${{ env.ARCHIVE_PATH }}
           retention-days: 7
 
-  release:
-    needs: build
+  build-server:
+    needs: verify-tag-on-main
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      image: ${{ steps.image.outputs.name }}
+      version: ${{ steps.image.outputs.version }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
-      # Même garde-fou que server-release.yml : refuser un tag posé ailleurs que sur main.
-      - name: Vérifier que le tag est sur main
+      - name: Nom d'image (GHCR exige des minuscules)
+        id: image
         run: |
-          git fetch origin main
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
-            echo "::error::Le tag ${GITHUB_REF_NAME} ne pointe pas vers un commit de main."
-            exit 1
-          fi
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "name=ghcr.io/${owner}/cerebro-server" >> "$GITHUB_OUTPUT"
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      # Réutilisée par le job publish-npm (needs: release) pour publier le wrapper npm avec le
-      # même numéro de version que le binaire qui vient d'être publié.
-      - name: Extraire la version
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#agent-v}" >> "$GITHUB_OUTPUT"
+      # Requis pour builder linux/arm64 depuis un runner amd64 (émulation) — l'image doit tourner
+      # aussi bien sur un poste d'épreuve classique que sur un serveur ARM (ex: Raspberry Pi).
+      - uses: docker/setup-qemu-action@v4
 
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build et push de l'image Docker
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: src/Cerebro.Server/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ steps.image.outputs.name }}:${{ steps.image.outputs.version }}
+            ${{ steps.image.outputs.name }}:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.image.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Une seule Release GitHub par tag (contrainte GitHub) : ce job attend build-agent ET
+  # build-server pour la créer une fois, avec les deux à l'intérieur - deux jobs séparés qui
+  # tenteraient chacun de créer/modifier la Release du même tag en parallèle se marcheraient
+  # dessus (nom/description de l'un écrasant l'autre selon l'ordre d'arrivée, non déterministe).
+  release:
+    needs: [build-agent, build-server]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ needs.build-server.outputs.version }}
+    steps:
       - uses: actions/download-artifact@v8
         with:
           pattern: xavier-*
@@ -109,13 +159,22 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           draft: false
-          name: Xavier ${{ github.ref_name }}
+          name: Cerebro ${{ github.ref_name }}
           generate_release_notes: true
           files: artifacts/*.zip
           body: |
-            Exécutable candidat autonome (Windows, macOS Intel/Apple Silicon, Linux) — aucune
-            installation requise, un seul fichier par OS. Instructions d'installation et d'usage
-            incluses dans chaque archive (`USER-DOC.txt`).
+            **Serveur** — image Docker : `${{ needs.build-server.outputs.image }}:${{ needs.build-server.outputs.version }}`
+
+            Déploiement recommandé (via `deploy/docker-compose.yml`, gère volumes et TLS) : voir
+            [Déployer le serveur](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT-SERVER.md).
+
+            ```bash
+            docker pull ${{ needs.build-server.outputs.image }}:${{ needs.build-server.outputs.version }}
+            ```
+
+            **Agent (Xavier)** — exécutable candidat autonome (Windows, macOS Intel/Apple Silicon,
+            Linux) — aucune installation requise, un seul fichier par OS. Instructions
+            d'installation et d'usage incluses dans chaque archive (`USER-DOC.txt`).
 
             | Archive | Système |
             |---|---|
@@ -124,9 +183,12 @@ jobs:
             | `*-osx-arm64.zip` | macOS Apple Silicon (M1/M2/M3/M4) |
             | `*-linux-x64.zip` | Linux 64 bits |
 
-  # Republie le wrapper npm (packaging/npm) avec le même numéro de version que le binaire qui vient
-  # d'être publié - voir npm-publish.yml (workflow_dispatch y reste disponible pour republier le
-  # wrapper seul, sans nouvelle release agent).
+            Autres canaux d'installation de l'agent (npm, Homebrew, Scoop, script) : voir
+            [Déployer l'agent](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT-AGENT.md).
+
+  # Republie le wrapper npm (packaging/npm) avec le même numéro de version que ce qui vient d'être
+  # publié - voir npm-publish.yml (workflow_dispatch y reste disponible pour republier le wrapper
+  # seul, sans nouvelle release).
   publish-npm:
     needs: release
     uses: ./.github/workflows/npm-publish.yml
@@ -136,10 +198,10 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # Le script d'installation et le bucket Scoop (bucket/xavier.json, ce dépôt) résolvent la
-  # dernière release agent directement depuis ce dépôt, désormais public - rien à mirorer. Seule
-  # la formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) :
-  # Homebrew impose qu'un tap vive dans un dépôt nommé homebrew-<nom>, indépendamment de la
-  # visibilité de ce dépôt - voir docs/DEPLOYMENT-AGENT.md.
+  # dernière release directement depuis ce dépôt, désormais public - rien à mirorer. Seule la
+  # formule Homebrew reste à régénérer dans un dépôt séparé (homebrew-cerebro) : Homebrew impose
+  # qu'un tap vive dans un dépôt nommé homebrew-<nom>, indépendamment de la visibilité de ce dépôt
+  # - voir docs/DEPLOYMENT-AGENT.md.
   update-distribution-channels:
     needs: release
     runs-on: ubuntu-latest
@@ -157,7 +219,7 @@ jobs:
       - name: Calculer les sha256 de chaque archive
         id: sums
         run: |
-          version="${GITHUB_REF_NAME#agent-v}"
+          version="${GITHUB_REF_NAME#v}"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           for rid in win-x64 osx-x64 osx-arm64 linux-x64; do
             sha=$(sha256sum "artifacts/Xavier-${version}-${rid}.zip" | cut -d' ' -f1)
@@ -191,7 +253,7 @@ jobs:
               "autoupdate": {
                   "architecture": {
                       "64bit": {
-                          "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/agent-v\$version/Xavier-\$version-win-x64.zip"
+                          "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/v\$version/Xavier-\$version-win-x64.zip"
                       }
                   }
               }

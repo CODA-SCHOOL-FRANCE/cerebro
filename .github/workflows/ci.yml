@@ -1,9 +1,9 @@
 name: CI
 
 # Build + tests à chaque push sur une branche (build/tests-agent/serveur/partagé, via Cerebro.sln).
-# Les tags de release (agent-vX.Y.Z, vX.Y.Z) ont leur propre job "test" équivalent en amont de la
-# publication (voir agent-release.yml, server-release.yml) - on exclut donc les tags ici pour ne
-# pas faire tourner la suite deux fois lors d'une release.
+# Les tags de release (vX.Y.Z) ont leur propre job "test" équivalent en amont de la publication
+# (voir release.yml) - on exclut donc les tags ici pour ne pas faire tourner la suite deux fois
+# lors d'une release.
 on:
   push:
     branches:

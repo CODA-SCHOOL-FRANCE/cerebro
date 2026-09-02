@@ -42,23 +42,20 @@ esac
 
 command -v curl >/dev/null 2>&1 || fail "curl est requis"
 
+# Un seul tag vX.Y.Z publie à la fois l'image Docker du serveur et les archives agent (voir
+# release.yml) : /releases/latest pointe donc toujours vers une release contenant les archives
+# recherchées ci-dessous, pas besoin de filtrer par nom de tag.
 if [ -n "${XAVIER_VERSION:-}" ]; then
-  release_url="https://api.github.com/repos/${REPO}/releases/tags/agent-v${XAVIER_VERSION}"
-  release_json="$(curl -fsSL "${release_url}")" || fail "impossible de récupérer la release (${release_url})"
+  release_url="https://api.github.com/repos/${REPO}/releases/tags/v${XAVIER_VERSION}"
 else
-  # cerebro publie aussi des releases serveur (tags vX.Y.Z, sans binaire agent - le serveur se
-  # distribue via une image Docker) entrelacées avec celles de l'agent (tags agent-vX.Y.Z) :
-  # /releases/latest pourrait renvoyer l'une d'elles. Seules les releases agent ont des assets, donc
-  # chercher directement la première correspondance dans la liste (triée du plus récent au plus
-  # ancien par l'API) suffit à isoler la bonne release, en un seul appel.
-  releases_url="https://api.github.com/repos/${REPO}/releases?per_page=100"
-  release_json="$(curl -fsSL "${releases_url}")" || fail "impossible de récupérer les releases (${releases_url})"
+  release_url="https://api.github.com/repos/${REPO}/releases/latest"
 fi
+release_json="$(curl -fsSL "${release_url}")" || fail "impossible de récupérer la release (${release_url})"
 
 asset_url="$(printf '%s' "${release_json}" | grep -o "\"browser_download_url\": *\"[^\"]*-${rid}\\.zip\"" | head -1 | sed -E 's/.*"(https:[^"]+)"/\1/')"
 [ -n "${asset_url}" ] || fail "aucune archive '*-${rid}.zip' trouvée"
 
-tag_name="$(printf '%s' "${release_json}" | grep -o '"tag_name": *"agent-v[^"]*"' | head -1 | sed -E 's/.*"(agent-v[^"]+)"$/\1/')"
+tag_name="$(printf '%s' "${release_json}" | grep -o '"tag_name": *"v[^"]*"' | head -1 | sed -E 's/.*"(v[^"]+)"$/\1/')"
 
 echo "Téléchargement de $(basename "${asset_url}") (${tag_name})..."
 

@@ -9,7 +9,10 @@ Pour déployer l'agent candidat (Xavier), voir [Déployer l'agent](DEPLOYMENT-AG
 
 ## Lancer le serveur
 
-**1. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main` (`.github/workflows/server-release.yml`, qui fait tourner les tests avant de publier) :
+**1. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main`
+(`.github/workflows/release.yml`, qui fait tourner les tests avant de publier — **même tag, même
+pipeline que l'agent** : un seul `vX.Y.Z` publie à la fois cette image et les archives Xavier, voir
+[Déployer l'agent](DEPLOYMENT-AGENT.md)) :
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<version>
@@ -22,10 +25,10 @@ docker pull ghcr.io/coda-school-france/cerebro-server:<version>
 > → *Package settings* → *Danger Zone* → *Change visibility* → *Public*.
 >
 > ⚠️ `<version>` = le tag Git **sans le préfixe `v`** (ex. le tag `v0.1.2` publie l'image sous
-> `0.1.2`, pas `v0.1.2` — voir `steps.image.outputs.version` dans `server-release.yml`). Le nom de
-> la Release GitHub, lui, garde le `v` (`Cerebro.Server v0.1.2`) : ne pas copier ce nom tel quel
-> comme tag d'image. Pour lister les tags réellement publiés (vérifie au passage que le package est
-> bien public — la commande échoue sinon) :
+> `0.1.2`, pas `v0.1.2` — voir `steps.image.outputs.version` dans `release.yml`). Le nom de la
+> Release GitHub, lui, garde le `v` (`Cerebro v0.1.2`) : ne pas copier ce nom tel quel comme tag
+> d'image. Pour lister les tags réellement publiés (vérifie au passage que le package est bien
+> public — la commande échoue sinon) :
 > ```bash
 > TOKEN=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:coda-school-france/cerebro-server:pull" | jq -r .token)
 > curl -s -H "Authorization: Bearer $TOKEN" https://ghcr.io/v2/coda-school-france/cerebro-server/tags/list
