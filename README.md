@@ -36,7 +36,7 @@ machine de chaque candidat).
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<version>
-CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
+CEREBRO_SERVER_VERSION=<version> \
   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 

@@ -2,5 +2,10 @@ services:
   cerebro-server:
     build: !reset null
     image: ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}
-    environment:
-      CEREBRO_SERVER_ADDRESS: ${CEREBRO_SERVER_ADDRESS:?Définir CEREBRO_SERVER_ADDRESS=<ip-ou-hostname-du-poste-serveur> avant de lancer docker-compose.prod.yml (voir docs/DEPLOYMENT-SERVER.md)}
+    # CEREBRO_SERVER_ADDRESS reste optionnelle ici (héritée du défaut "localhost" de
+    # docker-compose.yml, fusion clé par clé de "environment" entre fichiers compose) : elle ne
+    # sert qu'à peupler le SAN du certificat auto-signé (voir Tls/ServerCertificateProvisioner.cs)
+    # - l'agent candidat épingle l'empreinte SHA-256 du certificat, jamais son SAN, donc omettre
+    # cette variable n'empêche aucune connexion. La définir évite juste, en plus de l'avertissement
+    # "certificat auto-signé" habituel, un avertissement de nom de certificat invalide dans le
+    # navigateur du surveillant (voir docs/DEPLOYMENT-SERVER.md, section Sécurisation du transport).

@@ -18,14 +18,17 @@ docker pull ghcr.io/coda-school-france/cerebro-server:<version>
 **2. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:` local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
 
 ```bash
-CEREBRO_SERVER_ADDRESS=<server-ip> CEREBRO_SERVER_VERSION=<version> \
+CEREBRO_SERVER_VERSION=<version> \
   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 
-- remplacer `server-ip` par l'IP ou le nom d'hôte réel du poste serveur sur le réseau d'épreuve
-  - optionnelle (défaut `localhost`), incluse comme SAN (Subject Alternative Name) du certificat
-    auto-généré
-- Les candidats et le surveillant se connectent alors sur `https://<server-ip>:8443`.
+- Les candidats et le surveillant se connectent alors sur `https://<server-ip>:8443` (`server-ip` =
+  IP ou nom d'hôte réel du poste serveur sur le réseau d'épreuve).
+- `CEREBRO_SERVER_ADDRESS=<server-ip>` est optionnelle (défaut `localhost`) : elle ne fait
+  qu'inclure `<server-ip>` comme SAN (Subject Alternative Name) du certificat auto-signé. L'agent
+  candidat n'en a pas besoin — il épingle l'empreinte SHA-256 du certificat, jamais son SAN (voir
+  [Sécurisation du transport](#sécurisation-du-transport-tls)) — la définir évite juste un
+  avertissement de nom de certificat invalide en plus dans le navigateur du surveillant.
 
 Pré-pull l'image (étapes 1-2) la veille de l'épreuve : le réseau d'épreuve est volontairement isolé (pas d'accès internet le jour J), et `docker-compose.prod.yml` ne force jamais un re-pull au démarrage.
 
@@ -78,7 +81,7 @@ docker pull ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>
 **2. Relancer la pile avec ce tag** — le certificat TLS (`db/cerebro.pfx`, volume `cerebro-db`) survit à la recréation du conteneur : même certificat, même empreinte, rien à recommuniquer aux agents :
 
 ```bash
-CEREBRO_SERVER_ADDRESS=192.168.1.10 CEREBRO_SERVER_VERSION=<nouvelle-version> \
+CEREBRO_SERVER_VERSION=<nouvelle-version> \
   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 
