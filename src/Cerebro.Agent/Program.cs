@@ -5,6 +5,8 @@ using Cerebro.Agent.Realtime;
 using ConsoleAppFramework;
 using Microsoft.AspNetCore.SignalR;
 
+PrintBanner();
+
 // Pas de gestion spéciale pour args.Length == 0 : RunAgentAsync a déjà tous ses paramètres
 // optionnels et gère elle-même le repli (fichier de config, variable d'env, prompt) — un bloc
 // séparé ici forcerait un prompt pour serverUrl/sessionCode/candidateId avant même que
@@ -107,4 +109,26 @@ static void LogColored(ConsoleColor color, string message)
     Console.ForegroundColor = color;
     Log(message);
     Console.ForegroundColor = previousColor;
+}
+
+// Premier repère visuel pour le candidat au lancement (terminal souvent peu familier pour un
+// public non technique) : confirme d'un coup d'œil qu'il a bien lancé Xavier, avant même les
+// invites interactives ou les logs de connexion.
+static void PrintBanner()
+{
+    const string art = """
+        __   __     __      _______ ______ _____
+        \ \ / /    /\ \    / /_   _|  ____|  __ \
+         \ V /    /  \ \  / /  | | | |__  | |__) |
+          > <    / /\ \ \/ /   | | |  __| |  _  /
+         / . \  / ____ \  /   _| |_| |____| | \ \
+        /_/ \_\/_/    \_\/   |_____|______|_|  \_\
+        """;
+
+    var previousColor = Console.ForegroundColor;
+    Console.ForegroundColor = ConsoleColor.Cyan;
+    Console.WriteLine(art);
+    Console.ForegroundColor = previousColor;
+    Console.WriteLine("Agent candidat Cerebro");
+    Console.WriteLine();
 }
