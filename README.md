@@ -40,7 +40,9 @@ CEREBRO_SERVER_VERSION=<version> \
   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
 ```
 
-Détail complet (provisioning, mot de passe dashboard, TLS) : [Déployer le serveur](docs/DEPLOYMENT-SERVER.md).
+`<version>` = tag Git **sans le préfixe `v`** (ex. `0.1.2`, pas `v0.1.2`) — détail complet
+(provisioning, mot de passe dashboard, TLS, visibilité du package GHCR) :
+[Déployer le serveur](docs/DEPLOYMENT-SERVER.md).
 
 **Agent** — un seul exécutable, pas de runtime à installer, disponible sur plusieurs canaux :
 

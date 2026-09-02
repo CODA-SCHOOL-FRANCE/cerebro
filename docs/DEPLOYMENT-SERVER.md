@@ -15,6 +15,22 @@ Pour déployer l'agent candidat (Xavier), voir [Déployer l'agent](DEPLOYMENT-AG
 docker pull ghcr.io/coda-school-france/cerebro-server:<version>
 ```
 
+> ⚠️ `docker pull` échoue avec `denied: denied` si le package GHCR (`cerebro-server`) est resté
+> **privé** — publier via `GITHUB_TOKEN` ne le rend pas public automatiquement, indépendamment de
+> la visibilité du dépôt lui-même. À faire une bonne fois manuellement :
+> [Packages de l'organisation](https://github.com/orgs/CODA-SCHOOL-FRANCE/packages/container/package/cerebro-server)
+> → *Package settings* → *Danger Zone* → *Change visibility* → *Public*.
+>
+> ⚠️ `<version>` = le tag Git **sans le préfixe `v`** (ex. le tag `v0.1.2` publie l'image sous
+> `0.1.2`, pas `v0.1.2` — voir `steps.image.outputs.version` dans `server-release.yml`). Le nom de
+> la Release GitHub, lui, garde le `v` (`Cerebro.Server v0.1.2`) : ne pas copier ce nom tel quel
+> comme tag d'image. Pour lister les tags réellement publiés (vérifie au passage que le package est
+> bien public — la commande échoue sinon) :
+> ```bash
+> TOKEN=$(curl -s "https://ghcr.io/token?service=ghcr.io&scope=repository:coda-school-france/cerebro-server:pull" | jq -r .token)
+> curl -s -H "Authorization: Bearer $TOKEN" https://ghcr.io/v2/coda-school-france/cerebro-server/tags/list
+> ```
+
 **2. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:` local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
 
 ```bash
@@ -72,7 +88,7 @@ docker cp <nom-du-conteneur>:/app/screenshots ./screenshots-export
 Le `db/` (SQLite) et les `screenshots/` vivent dans des volumes nommés, indépendants du conteneur :
 recréer `cerebro-server` sur une nouvelle image ne perd donc ni les sessions provisionnées ni les screenshots déjà reçus.
 
-**1. Pull la nouvelle version** (répéter le login GHCR si le token a expiré) :
+**1. Pull la nouvelle version** (`<nouvelle-version>` sans le préfixe `v`, voir la note plus haut) :
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>

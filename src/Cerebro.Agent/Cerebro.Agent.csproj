@@ -23,6 +23,14 @@
     <!-- Nom de l'exécutable publié aux candidats (voir docs/USER-DOC.txt, docs/ARCHITECTURE.md) :
          distinct du nom du projet/namespace (Cerebro.Agent), qui reste inchangé côté code source. -->
     <AssemblyName>xavier</AssemblyName>
+    <!-- Sans ce flag, "dotnet publish ... -p:PublishSingleFile=true" laisse libSkiaSharp.{dylib,so,dll}
+         (ScreenshotCompressor) comme fichier séparé à côté de l'exécutable au lieu de l'embarquer dans
+         le fichier unique. Les canaux d'installation qui n'extraient que le binaire (npm, Homebrew,
+         install.sh/.ps1) perdaient alors silencieusement la compression WebP - ScreenshotCompressor.Compress
+         retombe sur le PNG non compressé faute de bibliothèque native trouvable (repro : ~9,2 Mo par
+         screenshot au lieu de ~170 Ko). N'a d'effet qu'en self-contained + single-file (voir
+         .github/workflows/agent-release.yml) ; ignoré par "dotnet run"/"dotnet build" en développement. -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
 </Project>

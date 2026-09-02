@@ -88,10 +88,16 @@ jobs:
           body: |
             Image Docker : `${{ steps.image.outputs.name }}:${{ steps.image.outputs.version }}`
 
+            Déploiement recommandé (via `deploy/docker-compose.yml`, gère volumes et TLS) : voir
+            [Déployer le serveur](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT-SERVER.md).
+
+            Équivalent en `docker run` (Kestrel termine le TLS lui-même sur 8443, certificat
+            auto-signé généré au premier démarrage) :
+
             ```bash
             docker pull ${{ steps.image.outputs.name }}:${{ steps.image.outputs.version }}
             docker run -d \
-              -p 8080:8080 \
+              -p 8443:8443 \
               -v cerebro-db:/app/db \
               -v cerebro-screenshots:/app/screenshots \
               --name cerebro-server \
