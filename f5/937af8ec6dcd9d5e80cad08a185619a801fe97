@@ -1,0 +1,20 @@
+src/Cerebro.Agent/Program.cs
+  s_347d16a866ffe9::t_9ffad54f23822c 8-9
+  s_347d16a866ffe9::t_afad278c669977 112-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f5937af8ec6dcd9d5e80cad08a185619a801fe97",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
