@@ -178,8 +178,8 @@ serveur génère un identifiant de connexion unique et non devinable pour chaque
 affiché **une seule fois** juste après la création — à noter ou copier (bouton "Copier la liste")
 pour le communiquer aux candidats, il n'est pas ré-affiché ensuite ailleurs dans le dashboard.
 
-**Avec un fichier JSON existant** (une liste `etudiants`, chacun avec `nom` et `id` — c'est tout ce
-qu'`ExamProvisioner` utilise, voir `Admin/ExamRoster.cs`) :
+**Avec un fichier JSON existant** (un champ `etudiants`, chaque étudiant avec `nom` et `id` — c'est
+tout ce qu'`ExamProvisioner` utilise, voir `Admin/ExamRoster.cs`) :
 
 ```json
 {
@@ -189,6 +189,21 @@ qu'`ExamProvisioner` utilise, voir `Admin/ExamRoster.cs`) :
   ]
 }
 ```
+
+`etudiants` accepte aussi un objet indexé par une clé libre (l'export d'un outil tiers utilise
+souvent l'email comme clé) — la clé de chaque entrée est ignorée, seuls `nom`/`id` comptent :
+
+```json
+{
+  "etudiants": {
+    "jean.dupont@ecole.fr": { "nom": "Jean Dupont", "id": "FFFB5AB1" },
+    "marie.durand@ecole.fr": { "nom": "Marie Durand", "id": "0770F2DB" }
+  }
+}
+```
+
+Tout champ en plus au niveau racine (nom de l'épreuve, date, rattrapage, correcteurs...) est
+silencieusement ignoré — seul `etudiants` est lu.
 
 ```bash
 dotnet Cerebro.Server.dll provision --session SESSION-2026-A --input epreuve-e01.json --db ./cerebro.db
