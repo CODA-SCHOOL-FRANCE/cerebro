@@ -11,10 +11,10 @@ internal sealed class LinuxScreenCapturer : IScreenCapturer
 
     private static readonly ToolCandidate[] Candidates =
     [
-        new("grim", file => $"\"{file}\""),
-        new("scrot", file => $"\"{file}\""),
+        new("gnome-screenshot", file => $"-f \"{file}\""),
         new("import", file => $"-window root \"{file}\""),
-        new("gnome-screenshot", file => $"-f \"{file}\"")
+        new("grim", file => $"\"{file}\""),
+        new("scrot", file => $"\"{file}\"")
     ];
 
     public Result<byte[], CaptureError> Capture()
@@ -27,7 +27,7 @@ internal sealed class LinuxScreenCapturer : IScreenCapturer
                 return CaptureResult.Fail(
                     CaptureFailureReason.ToolMissing,
                     "Aucun outil de capture d'écran trouvé. Installez-en un selon votre environnement : " +
-                    "'sudo apt install grim' (Wayland) ou 'sudo apt install scrot' (X11), puis relancez l'agent.");
+                    "'sudo apt install gnome-screenshot' ou 'sudo apt install grim' (Wayland) ou 'sudo apt install scrot' (X11), puis relancez l'agent.");
 
             return CaptureResult.Ok(
                 File.ReadAllBytes(tempFile)
