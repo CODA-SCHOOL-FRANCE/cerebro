@@ -1,0 +1,15 @@
+src/Cerebro.Agent/Capture/LinuxScreenCapturer.cs
+  h_0a88d9aba8622a 14,30
+  h_0a88d9aba8622a 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "f8ddf36b2910f76b2f7a093aa75d7bcb6d2b9ec2",
+  "prompts": {},
+  "humans": {
+    "h_0a88d9aba8622a": {
+      "author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
