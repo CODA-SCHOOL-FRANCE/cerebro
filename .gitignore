@@ -4,6 +4,14 @@ obj/
 publish/
 node_modules/
 
+# packaging/npm/bin/ n'est PAS un artefact de build .NET (contrairement à tous les autres bin/ du
+# dépôt) : c'est le shim npm réel (bin/xavier.js), du code source à publier avec le package. Sans
+# cette exception, la règle "bin/" ci-dessus l'ignore silencieusement - jamais committé, donc absent
+# de chaque publication npm en CI (checkout propre) malgré sa présence en local. Symptôme observé :
+# "xavier"/"npx xavier-agent" introuvable après installation (aucune erreur, juste aucune commande
+# créée - le bin déclaré dans package.json pointe vers un fichier qui n'existe pas dans le tarball).
+!packaging/npm/bin/
+
 # Dashboard TypeScript compilé (régénéré automatiquement au build, voir
 # BuildDashboardTypeScript dans Cerebro.Server.csproj)
 src/Cerebro.Server/wwwroot/js/
