@@ -1,12 +1,12 @@
 {
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Agent candidat Cerebro (Xavier)",
     "homepage": "https://github.com/CODA-SCHOOL-FRANCE/cerebro",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/v0.2.2/Xavier-0.2.2-win-x64.zip",
-            "hash": "11e6c387c0217c1c19e7a4391f14e423afe812b419d4188e143235994337745e"
+            "url": "https://github.com/CODA-SCHOOL-FRANCE/cerebro/releases/download/v0.2.3/Xavier-0.2.3-win-x64.zip",
+            "hash": "23fb742f6864205b42a9d5e2432dd43e23556e0e5e97898306860fffbbfac4ae"
         }
     },
     "bin": "xavier.exe",
