@@ -1,0 +1,31 @@
+docs/USER-DOC.txt
+  s_347d16a866ffe9::t_8ebcf2241111bd 89-90
+docs/DEPLOYMENT-AGENT.md
+  s_347d16a866ffe9::t_cd4dcf49c49d7f 78-80
+src/Cerebro.Agent/Program.cs
+  s_347d16a866ffe9::t_43fc9bb185f6c6 15
+  s_347d16a866ffe9::t_4f0042b44a25bd 124-137
+  s_347d16a866ffe9::t_85709ab8c25cd5 1,9-14,16
+  s_347d16a866ffe9::t_5442618eac5695 17
+.github/workflows/release.yml
+  s_347d16a866ffe9::t_31a24892c6eae7 64-66,68-73
+src/Cerebro.Agent/Cerebro.Agent.csproj
+  s_347d16a866ffe9::t_a14abd3eb90cc6 26-29
+  s_347d16a866ffe9::t_b4c1e65706fcb7 30-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "d6bb29b7d9bf83f66841a25a30a68ac973d8bafd",
+  "prompts": {},
+  "sessions": {
+    "s_347d16a866ffe9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b3603c1b-1b5f-4f08-b63f-e412c980dbef",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
