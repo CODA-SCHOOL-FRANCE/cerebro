@@ -1,9 +1,19 @@
+using System.Reflection;
 using Cerebro.Agent;
 using Cerebro.Agent.Capture;
 using Cerebro.Agent.Configuration;
 using Cerebro.Agent.Realtime;
 using ConsoleAppFramework;
 using Microsoft.AspNetCore.SignalR;
+
+// Interceptée avant ConsoleAppFramework (même logique que "provision"/"start" côté Cerebro.Server) :
+// RunAgentAsync attend serverUrl en 1er argument positionnel, donc laisser le framework parser
+// "-v"/"--version" risquerait de le confondre avec une valeur d'argument plutôt qu'une vraie option.
+if (args.Length > 0 && args[0] is "-v" or "--version")
+{
+    PrintVersion();
+    return;
+}
 
 PrintBanner();
 
@@ -109,6 +119,20 @@ static void LogColored(ConsoleColor color, string message)
     Console.ForegroundColor = color;
     Log(message);
     Console.ForegroundColor = previousColor;
+}
+
+// "xavier -v" / "xavier --version" : utile au surveillant pour vérifier en un coup d'œil quelle
+// version tourne sur le poste d'un candidat (support/débogage le jour J), sans lancer une vraie
+// tentative de connexion. La version affichée vient de "-p:Version=<tag>" passé au dotnet publish
+// en CI (voir .github/workflows/release.yml) - "0.0.0-local" par défaut sur un build de dev.
+static void PrintVersion()
+{
+    var version = Assembly.GetExecutingAssembly()
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? "version inconnue";
+
+    Console.WriteLine($"xavier {version}");
+    Console.WriteLine("by Yoan Thirion");
 }
 
 // Premier repère visuel pour le candidat au lancement (terminal souvent peu familier pour un

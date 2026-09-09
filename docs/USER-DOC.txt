@@ -86,4 +86,6 @@ Lancer l'exécutable sans argument : il demande successivement :
      xavier.config.json — laisser vide si demandée et non applicable)
 
 Une fois connecté, l'agent tourne en arrière-plan pendant toute la durée de l'épreuve : ne pas le fermer avant la fin annoncée par le surveillant.
+
+Pour vérifier quelle version est installée (sans se connecter à rien) : xavier -v
 En cas de problème (message d'erreur, refus de connexion), contactez immédiatement le surveillant avant de continuer l'épreuve.

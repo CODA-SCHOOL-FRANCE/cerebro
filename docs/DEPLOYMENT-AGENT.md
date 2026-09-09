@@ -75,6 +75,9 @@ Sans argument, l'agent demande ces informations interactivement. `serverUrl`, `s
 `certThumbprint` sont les mêmes pour tous les candidats d'une session (voir [Provisionner une épreuve](DEPLOYMENT-SERVER.md#provisionner-une-épreuve) et [Sécurisation du transport](DEPLOYMENT-SERVER.md#sécurisation-du-transport-tls) côté serveur);
 `candidateId` est propre à chaque étudiant. Détail complet des invites, du fichier de configuration `xavier.config.json` et des messages d'erreur : `docs/USER-DOC.txt`.
 
+`xavier -v` (ou `--version`) affiche la version installée sans tenter de connexion — utile pour
+vérifier à distance/au support quelle build tourne sur le poste d'un candidat le jour J.
+
 ## Instructions à donner aux étudiants (à faire la veille, pas le jour J)
 
 - **Windows** : au premier lancement, SmartScreen affichera "Windows a protégé votre PC" → cliquer sur *Informations complémentaires* puis *Exécuter quand même*.

@@ -23,6 +23,14 @@
     <!-- Nom de l'exécutable publié aux candidats (voir docs/USER-DOC.txt, docs/ARCHITECTURE.md) :
          distinct du nom du projet/namespace (Cerebro.Agent), qui reste inchangé côté code source. -->
     <AssemblyName>xavier</AssemblyName>
+    <!-- Repris en CI via "-p:Version=<version-du-tag>" (voir .github/workflows/release.yml) et lu au
+         runtime par "xavier -v" (Program.cs, AssemblyInformationalVersionAttribute). Suffixe "-local"
+         par défaut pour qu'un build de dev ne ressemble jamais à une vraie version publiée. -->
+    <Version>0.0.0-local</Version>
+    <!-- Sans ce flag, le SDK ajoute automatiquement "+<sha-du-commit>" à l'InformationalVersion dès
+         qu'il détecte un dépôt git - "xavier -v" afficherait "0.2.1+f8ddf36b291..." au lieu de
+         "0.2.1". -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- Sans ce flag, "dotnet publish ... -p:PublishSingleFile=true" laisse libSkiaSharp.{dylib,so,dll}
          (ScreenshotCompressor) comme fichier séparé à côté de l'exécutable au lieu de l'embarquer dans
          le fichier unique. Les canaux d'installation qui n'extraient que le binaire (npm, Homebrew,

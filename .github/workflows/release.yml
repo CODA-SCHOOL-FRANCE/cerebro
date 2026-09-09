@@ -61,11 +61,16 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      # -p:Version grave le numéro de version réel dans le binaire (AssemblyInformationalVersionAttribute) :
+      # sans lui, "xavier -v" afficherait le défaut de développement du csproj (0.0.0-local) même sur
+      # un build publié. Voir Program.cs, PrintVersion.
       - name: Publier (self-contained, fichier unique)
-        run: >
-          dotnet publish src/Cerebro.Agent -c Release -r ${{ matrix.rid }}
-          --self-contained -p:PublishSingleFile=true
-          -o publish/${{ matrix.rid }}
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          dotnet publish src/Cerebro.Agent -c Release -r ${{ matrix.rid }} \
+            --self-contained -p:PublishSingleFile=true -p:Version="${version}" \
+            -o publish/${{ matrix.rid }}
 
       - name: Ajouter les instructions d'installation
         run: cp docs/USER-DOC.txt publish/${{ matrix.rid }}/USER-DOC.txt
