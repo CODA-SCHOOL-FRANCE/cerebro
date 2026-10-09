@@ -6,7 +6,7 @@ namespace Cerebro.Server.Tls;
 
 // Kestrel termine le TLS lui-même (plus de reverse proxy devant, voir Program.cs) : le certificat
 // auto-signé qu'exigeait auparavant Caddy ("tls internal") est généré ici, une seule fois, puis
-// persisté sur disque - dans le même volume nommé que la base SQLite (voir deploy/docker-compose.yml)
+// persisté sur disque - dans le même volume nommé que la base SQLite (cerebro-db, voir docs/DEPLOYMENT-SERVER.md)
 // pour survivre aux redéploiements sans faire changer l'empreinte SHA-256 déjà communiquée aux
 // candidats.
 public static class ServerCertificateProvisioner

@@ -1,6 +1,7 @@
 # Déployer le serveur
 
-- Image publiée sur GHCR, un seul conteneur (`cerebro-server`) lancé via `deploy/docker-compose.yml`
+- Image publiée sur GHCR, un seul conteneur (`cerebro`) lancé avec un simple `docker run` (ou
+  `docker compose up -d` avec le `docker-compose.yml` à la racine du dépôt)
 - Kestrel (le serveur web intégré à ASP.NET Core) termine le TLS lui-même sur `8443`, avec un
   certificat auto-signé généré automatiquement au tout premier démarrage — rien à installer ni à
   configurer en plus (voir [Sécurisation du transport](#sécurisation-du-transport-tls) ci-dessous)
@@ -9,39 +10,61 @@ Pour déployer l'agent candidat (Xavier), voir [Déployer l'agent](DEPLOYMENT-AG
 
 ## Lancer le serveur
 
-**1. Récupérer l'image**, publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main`
+L'image est publiée à chaque tag `vX.Y.Z` poussé sur un commit de `main`
 (`.github/workflows/release.yml`, qui fait tourner les tests avant de publier — **même tag, même
 pipeline que l'agent** : un seul `vX.Y.Z` publie à la fois cette image et les archives Xavier, voir
-[Déployer l'agent](DEPLOYMENT-AGENT.md)) :
+[Déployer l'agent](DEPLOYMENT-AGENT.md)). `<version>` = tag Git **sans le préfixe `v`** (ex. `0.2.3`).
 
 ```bash
-docker pull ghcr.io/coda-school-france/cerebro-server:<version>
+docker run -d --name cerebro --restart unless-stopped \
+  -p 8443:8443 \
+  -v cerebro-db:/app/db \
+  -v cerebro-screenshots:/app/screenshots \
+  ghcr.io/coda-school-france/cerebro-server:<version>
 ```
 
-**2. Lancer la pile**, avec l'override `deploy/docker-compose.prod.yml` qui remplace le `build:` local du fichier de base par cette image (voir les commentaires en tête de ce fichier) :
+Ou, depuis la racine du dépôt, avec le `docker-compose.yml` fourni (exactement équivalent : même
+conteneur `cerebro`, mêmes volumes, donc toutes les commandes ci-dessous restent valables) :
 
 ```bash
-CEREBRO_SERVER_VERSION=<version> \
-  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+docker compose pull   # récupère la dernière release (tag latest)
+docker compose up -d
 ```
+
+- Sans rien préciser, c'est l'image `latest` (dernière release) qui est lancée. `docker compose up`
+  ne la retélécharge jamais si elle est déjà présente : d'où le `docker compose pull` avant, à faire
+  la veille de l'épreuve (réseau isolé le jour J).
+- Pour figer une version précise (ou revenir en arrière) : `CEREBRO_SERVER_VERSION=<version>
+  docker compose up -d` (`<version>` sans le préfixe `v`, ex. `0.2.3`).
 
 - Les candidats et le surveillant se connectent alors sur `https://<server-ip>:8443` (`server-ip` =
   IP ou nom d'hôte réel du poste serveur sur le réseau d'épreuve).
-- `CEREBRO_SERVER_ADDRESS=<server-ip>` est optionnelle (défaut `localhost`) : elle ne fait
-  qu'inclure `<server-ip>` comme SAN (Subject Alternative Name) du certificat auto-signé. L'agent
-  candidat n'en a pas besoin — il épingle l'empreinte SHA-256 du certificat, jamais son SAN (voir
-  [Sécurisation du transport](#sécurisation-du-transport-tls)) — la définir évite juste un
-  avertissement de nom de certificat invalide en plus dans le navigateur du surveillant.
+- Option `-e CEREBRO_SERVER_ADDRESS=<server-ip>` (défaut `localhost`), inutile en pratique : elle
+  ne fait qu'inclure `<server-ip>` comme SAN (Subject Alternative Name) du certificat auto-signé,
+  lu uniquement à sa génération (premier démarrage). L'agent candidat épingle l'empreinte SHA-256,
+  jamais le SAN (voir [Sécurisation du transport](#sécurisation-du-transport-tls)), et le
+  navigateur du surveillant affiche de toute façon un avertissement pour un certificat auto-signé.
+- Les deux `-v` sont **indispensables** : sans eux, Docker crée des volumes anonymes, perdus (base,
+  screenshots ET certificat) dès que le conteneur est recréé, par exemple lors d'une mise à jour.
 
-Pré-pull l'image (étapes 1-2) la veille de l'épreuve : le réseau d'épreuve est volontairement isolé (pas d'accès internet le jour J), et `docker-compose.prod.yml` ne force jamais un re-pull au démarrage.
+Lancer cette commande (ou au moins `docker pull` de l'image) la veille de l'épreuve : le réseau
+d'épreuve est volontairement isolé (pas d'accès internet le jour J). Une fois l'image présente
+localement, `docker run` ne la re-télécharge jamais.
 
-- `db/` et `screenshots/` sont persistés dans des volumes nommés (`cerebro-db`,
-  `cerebro-screenshots`) : ils survivent à un redéploiement, tant qu'on ne fait pas
-  `docker compose down -v`.
+- `db/` et `screenshots/` sont persistés dans les volumes nommés `cerebro-db` et
+  `cerebro-screenshots` : ils survivent à la suppression et à la recréation du conteneur, tant
+  qu'on ne les supprime pas explicitement (`docker volume rm`).
 - Le certificat TLS auto-signé (`db/cerebro.pfx`) vit dans le même volume `cerebro-db` que la base
   SQLite — sans lui, un nouveau certificat serait généré à chaque recréation du conteneur, ce qui
   changerait l'empreinte SHA-256 à recommuniquer aux agents (à ne surtout pas perdre en cours
-  d'épreuve, donc éviter `docker compose down -v` une fois une session commencée).
+  d'épreuve, donc ne jamais supprimer ces volumes une fois une session commencée).
+
+> **Migration depuis l'ancien déploiement `docker compose`** : les données existantes vivent dans
+> les volumes `deploy_cerebro-db` et `deploy_cerebro-screenshots` (préfixés par le nom du projet
+> compose). Pour les conserver (base, compte surveillant, certificat donc même empreinte), supprimer
+> l'ancien conteneur (`docker rm -f deploy-cerebro-server-1` — supprime le conteneur, pas les
+> volumes) puis lancer la commande ci-dessus en remplaçant `cerebro-db`/`cerebro-screenshots` par
+> ces deux noms.
 
 ## Récupérer les screenshots depuis le conteneur
 
@@ -52,51 +75,50 @@ serveur. Ne nécessite aucun accès au disque du serveur. Ce qui suit (`docker c
 pour un accès direct au disque (script, sauvegarde de plusieurs sessions d'un coup, session dont la
 base a été perdue mais dont les fichiers survivent encore).
 
-Les screenshots vivent dans le volume nommé `cerebro-screenshots`, monté sur `/app/screenshots` dans le conteneur `cerebro-server`
-- Les copier vers l'hôte avec `docker compose cp` (référence le service par son nom, pas besoin de connaître le nom réel du conteneur ni du volume — ni l'un ni l'autre ne sont fixes, ils dépendent du nom du projet compose) :
+Les screenshots vivent dans le volume nommé `cerebro-screenshots`, monté sur `/app/screenshots` dans le conteneur `cerebro`. Les copier vers l'hôte avec `docker cp` :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
-  cp cerebro-server:/app/screenshots ./screenshots-export
+docker cp cerebro:/app/screenshots ./screenshots-export
 ```
 
 Organisés par session puis par candidat : `screenshots-export/{session}/{candidat}/*.webp`. 
-Cette commande fonctionne conteneur démarré ou arrêté (tant qu'il n'a pas été supprimé) ; en cas de suppression du conteneur (`docker compose down` sans `-v`), le volume et son contenu survivent — seul `docker compose down -v` les détruit.
-
-Si pas d'accès au `docker-compose.yml`, utiliser `docker cp` directement sur le conteneur :
-
-```bash
-docker ps --filter "ancestor=ghcr.io/coda-school-france/cerebro-server" --format "{{.Names}}"
-docker cp <nom-du-conteneur>:/app/screenshots ./screenshots-export
-```
+Cette commande fonctionne conteneur démarré ou arrêté (tant qu'il n'a pas été supprimé) ; en cas de suppression du conteneur (`docker rm`), le volume et son contenu survivent — seul `docker volume rm cerebro-screenshots` les détruit.
 
 ## Mettre à jour le serveur (nouvelle image)
 
 Le `db/` (SQLite) et les `screenshots/` vivent dans des volumes nommés, indépendants du conteneur :
-recréer `cerebro-server` sur une nouvelle image ne perd donc ni les sessions provisionnées ni les screenshots déjà reçus.
+recréer le conteneur sur une nouvelle image ne perd donc ni les sessions provisionnées ni les screenshots déjà reçus.
 
-**1. Pull la nouvelle version** (`<nouvelle-version>` sans le préfixe `v`, voir la note plus haut) :
+**1. Pull la nouvelle version** (`<nouvelle-version>` sans le préfixe `v`) :
 
 ```bash
 docker pull ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>
 ```
 
-**2. Relancer la pile avec ce tag** — le certificat TLS (`db/cerebro.pfx`, volume `cerebro-db`) survit à la recréation du conteneur : même certificat, même empreinte, rien à recommuniquer aux agents :
+**2. Remplacer le conteneur** — le certificat TLS (`db/cerebro.pfx`, volume `cerebro-db`) survit à la recréation : même certificat, même empreinte, rien à recommuniquer aux agents :
 
 ```bash
-CEREBRO_SERVER_VERSION=<nouvelle-version> \
-  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+docker rm -f cerebro
+docker run -d --name cerebro --restart unless-stopped \
+  -p 8443:8443 \
+  -v cerebro-db:/app/db \
+  -v cerebro-screenshots:/app/screenshots \
+  ghcr.io/coda-school-france/cerebro-server:<nouvelle-version>
 ```
+
+Avec le `docker-compose.yml` : `docker compose pull && docker compose up -d` (dernière release),
+ou `CEREBRO_SERVER_VERSION=<nouvelle-version> docker compose up -d` pour une version précise —
+recrée le conteneur sur la nouvelle image, volumes conservés.
 
 **3. Vérifier la version effectivement lancée** :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml images cerebro-server
+docker inspect cerebro --format '{{.Config.Image}}'
 ```
 
-**Rollback** : même procédure en repointant `CEREBRO_SERVER_VERSION` sur le tag précédent (déjà présent localement s'il a été pull une fois, pas besoin de réseau pour revenir en arrière).
+**Rollback** : même procédure avec le tag précédent (déjà présent localement s'il a été pull une fois, pas besoin de réseau pour revenir en arrière).
 
-> À faire la veille d'une épreuve, jamais le jour J (réseau isolé, voir plus haut) — et jamais pendant qu'une session est en cours (les candidats connectés perdraient leur connexion SignalR le temps que`cerebro-server` redémarre).
+> À faire la veille d'une épreuve, jamais le jour J (réseau isolé, voir plus haut) — et jamais pendant qu'une session est en cours (les candidats connectés perdraient leur connexion SignalR le temps que le conteneur `cerebro` redémarre).
 
 ## Sécurisation du transport (TLS)
 
@@ -111,10 +133,10 @@ Sur un réseau d'épreuve isolé, il n'y a pas de CA publique disponible pour ob
   silencieusement une empreinte déjà distribuée aux candidats entre deux sessions
 
 **Récupérer l'empreinte SHA-256 du certificat**, à communiquer aux agents étudiants.
-`cerebro-server` l'affiche en clair dans ses propres logs à chaque démarrage — pas besoin d'appeler `openssl` à la main :
+Le serveur l'affiche en clair dans ses propres logs à chaque démarrage — pas besoin d'appeler `openssl` à la main :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml logs cerebro-server | grep -A2 "Empreinte SHA-256"
+docker logs cerebro 2>&1 | grep -A2 "Empreinte SHA-256"
 ```
 
 Pour la retrouver après une purge des logs, ou en dehors de Docker, la récupérer directement sur le certificat :
@@ -125,15 +147,14 @@ openssl s_client -connect 192.168.1.10:8443 </dev/null 2>/dev/null \
 ```
 
 **Changer d'adresse ou forcer un nouveau certificat** (ex. le poste serveur change d'IP entre deux
-sessions) sans perdre la base SQLite (donc sans `docker compose down -v`) — commande admin
+sessions) sans perdre la base SQLite (donc sans supprimer le volume `cerebro-db`) — commande admin
 `generate-cert`, même usage que `set-password` (voir plus bas) :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
-  exec cerebro-server dotnet Cerebro.Server.dll generate-cert --address 192.168.1.20 --force
+docker exec cerebro dotnet Cerebro.Server.dll generate-cert --address 192.168.1.20 --force
 ```
 
-Redémarrer ensuite le conteneur pour que Kestrel charge le nouveau certificat, et recommuniquer la
+Redémarrer ensuite le conteneur (`docker restart cerebro`) pour que Kestrel charge le nouveau certificat, et recommuniquer la
 nouvelle empreinte affichée aux candidats.
 
 **Communiquer cette empreinte** aux candidats en même temps que l'URL du serveur et le code de session (annonce orale/écran en début de session, voir [Provisionner une épreuve](#provisionner-une-épreuve)). 
@@ -153,19 +174,18 @@ Le **navigateur du surveillant**, lui, affichera un avertissement pour ce certif
 
 Le dashboard n'a qu'un seul compte, protégé par cookie de session (`/login.html`, `/account/login`) — les identifiants sont définis via la commande admin `set-password`, jamais en clair dans un fichier de config.
 
-Le conteneur `cerebro-server` tourne par défaut en mode serveur web (pas en mode admin) : la commande s'exécute donc dans le conteneur déjà démarré, avec `docker compose exec` :
+Le conteneur `cerebro` tourne par défaut en mode serveur web (pas en mode admin) : la commande s'exécute donc dans le conteneur déjà démarré, avec `docker exec` :
 
 ```bash
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml \
-  exec -it cerebro-server dotnet Cerebro.Server.dll set-password --username surveillant
+docker exec -it cerebro dotnet Cerebro.Server.dll set-password --username surveillant
 ```
 
 - `-it` est indispensable : la saisie du mot de passe est masquée (aucun echo, ni terminal ni historique shell), ce qui a besoin d'un vrai terminal interactif.
 - `surveillant` est un nom d'utilisateur libre (un seul compte supporté pour l'instant).
-- Pas besoin de préciser `--db` : le chemin par défaut (`db/cerebro.db`, relatif au `WORKDIR /app` du conteneur) correspond déjà au volume nommé `cerebro-db` monté par `docker-compose.yml`.
+- Pas besoin de préciser `--db` : le chemin par défaut (`db/cerebro.db`, relatif au `WORKDIR /app` du conteneur) correspond déjà au volume nommé `cerebro-db` monté par `docker run`.
 - Le mot de passe est demandé deux fois (saisie + confirmation).
 
-À faire une seule fois (la base SQLite étant dans un volume nommé, les identifiants survivent aux redéploiements — voir plus haut) ; à refaire uniquement après un `docker compose down -v` ou un changement de mot de passe voulu.
+À faire une seule fois (la base SQLite étant dans un volume nommé, les identifiants survivent aux redéploiements — voir plus haut) ; à refaire uniquement après suppression du volume `cerebro-db` ou un changement de mot de passe voulu.
 
 Le surveillant se connecte ensuite sur `https://<server-ip>:8443/login.html` avec ce couple identifiant/mot de passe.
 

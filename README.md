@@ -35,10 +35,14 @@ machine de chaque candidat).
 **Serveur** — un seul conteneur Docker (TLS auto-signé généré automatiquement), image publiée sur GHCR :
 
 ```bash
-docker pull ghcr.io/coda-school-france/cerebro-server:<version>
-CEREBRO_SERVER_VERSION=<version> \
-  docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+docker run -d --name cerebro --restart unless-stopped \
+  -p 8443:8443 \
+  -v cerebro-db:/app/db \
+  -v cerebro-screenshots:/app/screenshots \
+  ghcr.io/coda-school-france/cerebro-server:<version>
 ```
+
+Ou, depuis la racine du dépôt : `docker compose pull && docker compose up -d` (dernière release).
 
 `<version>` = tag Git **sans le préfixe `v`** (ex. `0.1.2`, pas `v0.1.2`) — détail complet
 (provisioning, mot de passe dashboard, TLS, visibilité du package GHCR) :

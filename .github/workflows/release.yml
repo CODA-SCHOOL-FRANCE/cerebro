@@ -170,11 +170,16 @@ jobs:
           body: |
             **Serveur** — image Docker : `${{ needs.build-server.outputs.image }}:${{ needs.build-server.outputs.version }}`
 
-            Déploiement recommandé (via `deploy/docker-compose.yml`, gère volumes et TLS) : voir
+            Un seul conteneur, TLS auto-signé généré au premier démarrage — détail (mot de passe
+            dashboard, empreinte TLS, mise à jour) : voir
             [Déployer le serveur](https://github.com/CODA-SCHOOL-FRANCE/cerebro/blob/main/docs/DEPLOYMENT-SERVER.md).
 
             ```bash
-            docker pull ${{ needs.build-server.outputs.image }}:${{ needs.build-server.outputs.version }}
+            docker run -d --name cerebro --restart unless-stopped \
+              -p 8443:8443 \
+              -v cerebro-db:/app/db \
+              -v cerebro-screenshots:/app/screenshots \
+              ${{ needs.build-server.outputs.image }}:${{ needs.build-server.outputs.version }}
             ```
 
             **Agent (Xavier)** — exécutable candidat autonome (Windows, macOS Intel/Apple Silicon,

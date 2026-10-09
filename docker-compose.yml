@@ -1,0 +1,33 @@
+# Raccourci pour lancer le serveur, depuis la racine du dépôt :
+#   docker compose pull && docker compose up -d
+#
+# Strictement équivalent au `docker run` documenté dans docs/DEPLOYMENT-SERVER.md : même nom de
+# conteneur (cerebro) et mêmes volumes (cerebro-db, cerebro-screenshots), donc toutes les autres
+# commandes de la doc (docker exec/logs/cp cerebro ...) s'appliquent telles quelles, et on peut
+# passer de l'un à l'autre sans perdre la base, les screenshots ni le certificat TLS.
+#
+# Image "latest" (dernière release) par défaut ; "up" ne la retélécharge jamais si elle est déjà
+# présente, d'où le "pull" avant - à faire la veille de l'épreuve (réseau isolé le jour J).
+# Pour figer une version ou revenir en arrière : CEREBRO_SERVER_VERSION=0.2.3 docker compose up -d
+name: cerebro
+
+services:
+  cerebro:
+    image: ghcr.io/coda-school-france/cerebro-server:${CEREBRO_SERVER_VERSION:-latest}
+    container_name: cerebro
+    restart: unless-stopped
+    ports:
+      - "8443:8443"
+    volumes:
+      # db/ contient la base SQLite ET le certificat TLS (cerebro.pfx) : le perdre change
+      # l'empreinte à communiquer aux candidats - ne jamais faire "docker compose down -v".
+      - cerebro-db:/app/db
+      - cerebro-screenshots:/app/screenshots
+
+volumes:
+  # Noms fixés explicitement : sans "name:", compose les préfixerait du nom du projet
+  # (cerebro_cerebro-db), ce qui les séparerait de ceux créés par le `docker run` documenté.
+  cerebro-db:
+    name: cerebro-db
+  cerebro-screenshots:
+    name: cerebro-screenshots
