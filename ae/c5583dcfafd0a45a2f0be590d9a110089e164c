@@ -1,0 +1,35 @@
+.github/workflows/release.yml
+  s_8bf8d876531261::t_e628f029ac7312 173-174,178-182
+docker-compose.yml
+  s_8bf8d876531261::t_7c65b2738f518a 2,9-11
+  s_8bf8d876531261::t_2fca7f075e58c2 1,3-8,12-33
+docs/DEPLOYMENT-SERVER.md
+  s_8bf8d876531261::t_b0eed7b80659e1 42-46
+  s_8bf8d876531261::t_e628f029ac7312 13,16,19-23,47-56,60-63,78,81,85,90,92,98,101-106,116,119,121,136,139,150,154,157,177,180,185,188
+  s_8bf8d876531261::t_b1436e3fbf39f8 64-67
+  s_8bf8d876531261::t_7c65b2738f518a 30-31,34-39,109-111
+  s_8bf8d876531261::t_e21037c15e4f98 3-4,26-27
+  s_8bf8d876531261::t_2bba2fe0046901 112
+src/Cerebro.Server/Tls/ServerCertificateProvisioner.cs
+  s_8bf8d876531261::t_e628f029ac7312 9
+README.md
+  s_8bf8d876531261::t_e21037c15e4f98 46
+  s_8bf8d876531261::t_e628f029ac7312 38-42
+  s_8bf8d876531261::t_7c65b2738f518a 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aec5583dcfafd0a45a2f0be590d9a110089e164c",
+  "prompts": {},
+  "sessions": {
+    "s_8bf8d876531261": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7acc2d2a-c9dd-464a-a188-009b559520a8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yoan Thirion <yoan.thirion@gmail.com>"
+    }
+  }
+}
