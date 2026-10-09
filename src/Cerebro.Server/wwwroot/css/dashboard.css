@@ -289,8 +289,20 @@ h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: .01em; color:
 
 .candidate-name { font-size: 14px; color: #fff; }
 .candidate-lastseen { font-size: 12.5px; color: var(--text-muted); }
-.candidate-screenshot { font-size: 12.5px; color: var(--text-dim); }
+.candidate-screenshot { font-size: 12.5px; color: var(--text-dim); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .candidate-screenshot.fresh { color: var(--teal); }
+
+.screenshot-view-btn {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: .06em;
+  color: var(--teal);
+  background: none;
+  border: 1px solid var(--teal);
+  padding: 3px 8px;
+}
+.screenshot-view-btn:hover { background: rgba(63, 224, 208, .12); }
 
 .activity-overlay {
   position: fixed;
@@ -314,6 +326,25 @@ h1 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: .01em; color:
 .drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .drawer-close { cursor: pointer; color: var(--text-muted); font-size: 16px; background: none; border: none; font-family: inherit; }
 .drawer-close:hover { color: var(--text); }
+
+.screenshot-viewer-overlay { justify-content: center; align-items: center; padding: 24px; }
+
+.screenshot-viewer {
+  max-width: min(1320px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--drawer-bg);
+  border: 4px solid var(--teal);
+  padding: 20px 22px;
+  overflow: auto;
+}
+
+.screenshot-viewer-title { font-size: 16px; color: #fff; }
+.screenshot-viewer-time { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.screenshot-viewer-image { display: block; max-width: 100%; max-height: calc(100vh - 170px); object-fit: contain; }
+.screenshot-viewer-image[hidden] { display: none; }
+.screenshot-viewer-empty { font-size: 13px; color: var(--text-muted); padding: 30px 0; }
 
 .activity-entry { font-size: 12px; line-height: 1.8; color: #c9baf0; border-bottom: 1px solid var(--divider); padding: 8px 0; }
 .activity-entry .time { color: var(--text-muted); }

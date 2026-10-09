@@ -19,6 +19,16 @@ public sealed class ScreenshotStore(IWebHostEnvironment environment) : IScreensh
         return fullPath;
     }
 
+    // Les noms de fichiers (yyyyMMdd_HHmmssfff.webp, voir SaveAsync) se trient chronologiquement :
+    // le plus grand nom est donc la capture la plus récente, sans avoir à lire les dates du disque.
+    public string? FindLatestScreenshotPath(string sessionCode, string candidateId)
+    {
+        var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode), SanitizeSegment(candidateId));
+        return Directory.Exists(directory)
+            ? Directory.EnumerateFiles(directory, "*.webp").Max(StringComparer.Ordinal)
+            : null;
+    }
+
     public bool HasExportableContent(string sessionCode)
     {
         var directory = Path.Combine(_rootPath, SanitizeSegment(sessionCode));

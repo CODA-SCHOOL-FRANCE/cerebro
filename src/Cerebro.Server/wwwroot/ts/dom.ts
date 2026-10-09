@@ -49,6 +49,13 @@ export const activityOverlay = required<HTMLElement>("activityOverlay");
 export const closeActivityButton = required<HTMLButtonElement>("closeActivityButton");
 export const activityListEl = required<HTMLDivElement>("activityList");
 
+export const screenshotViewerOverlay = required<HTMLElement>("screenshotViewerOverlay");
+export const screenshotViewerTitle = required<HTMLElement>("screenshotViewerTitle");
+export const screenshotViewerTime = required<HTMLElement>("screenshotViewerTime");
+export const screenshotViewerImage = required<HTMLImageElement>("screenshotViewerImage");
+export const screenshotViewerEmpty = required<HTMLElement>("screenshotViewerEmpty");
+export const closeScreenshotViewerButton = required<HTMLButtonElement>("closeScreenshotViewerButton");
+
 export const hudSessionCount = required<HTMLElement>("hudSessionCount");
 export const hudOnlineCount = required<HTMLElement>("hudOnlineCount");
 export const logoutButton = required<HTMLButtonElement>("logoutButton");

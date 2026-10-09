@@ -137,6 +137,23 @@
         </aside>
     </div>
 
+    <div class="activity-overlay screenshot-viewer-overlay" hidden id="screenshotViewerOverlay">
+        <div aria-labelledby="screenshotViewerTitle" aria-modal="true" class="screenshot-viewer" role="dialog">
+            <div class="drawer-head">
+                <div>
+                    <span class="eyebrow">▚ DERNIER SCREENSHOT</span>
+                    <div class="screenshot-viewer-title" id="screenshotViewerTitle"></div>
+                    <div class="screenshot-viewer-time" id="screenshotViewerTime"></div>
+                </div>
+                <button aria-label="Fermer" class="drawer-close" id="closeScreenshotViewerButton">✕</button>
+            </div>
+            <img alt="Dernier screenshot du candidat" class="screenshot-viewer-image" hidden
+                 id="screenshotViewerImage"/>
+            <div class="screenshot-viewer-empty" hidden id="screenshotViewerEmpty">Aucun screenshot reçu pour ce
+                candidat.</div>
+        </div>
+    </div>
+
     <footer class="page-footer">
         <span>© <span id="footerYear"></span> Cerebro - Surveillance des épreuves</span>
         <span class="footer-status">SYSTÈME OPÉRATIONNEL</span>

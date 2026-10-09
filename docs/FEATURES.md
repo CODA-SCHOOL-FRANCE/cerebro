@@ -9,6 +9,7 @@
 - **Dashboard temps réel** : liste des épreuves planifiées (provisionnées) à sélectionner
   - liste des candidats avec statut
   - horodatage du dernier screenshot reçu
+  - aperçu du dernier screenshot reçu (bouton "👁 VOIR" sur la ligne du candidat), mis à jour en direct à chaque nouvelle capture tant que l'aperçu reste ouvert
   - mise à jour instantanée (SignalR)
 - **Suivi de connexion en direct** : chaque agent envoie un battement (`Ping`) toutes les 60 secondes par défaut, indépendamment des screenshots.
   - le dashboard affiche le statut de connexion et l'horodatage du dernier signal reçu par candidat; si un agent se déconnecte (perte réseau, fermeture de l'application, machine éteinte...), sa ligne reste visible mais passe **en rouge**

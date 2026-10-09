@@ -97,6 +97,22 @@ public sealed class ScreenshotStoreIntegrationTests : IDisposable
     }
 
     [Fact]
+    public async Task FindLatestScreenshotPath_ShouldReturnMostRecentCapture_OfThatCandidateOnly()
+    {
+        var capturedAt = new DateTimeOffset(2026, 10, 9, 10, 0, 0, TimeSpan.Zero);
+        await _store.SaveAsync("SESSION-A", "alice", [1], capturedAt);
+        var latest = await _store.SaveAsync("SESSION-A", "alice", [2], capturedAt.AddMinutes(5));
+        await _store.SaveAsync("SESSION-A", "alice", [3], capturedAt.AddMinutes(-5));
+        await _store.SaveAsync("SESSION-A", "bob", [4], capturedAt.AddMinutes(10));
+
+        Check.That(_store.FindLatestScreenshotPath("SESSION-A", "alice")).IsEqualTo(latest);
+    }
+
+    [Fact]
+    public void FindLatestScreenshotPath_ShouldReturnNull_WhenCandidateHasNoScreenshot()
+        => Check.That(_store.FindLatestScreenshotPath("SESSION-A", "alice")).IsNull();
+
+    [Fact]
     public void HasExportableContent_ShouldReturnFalse_WhenSessionDirectoryDoesNotExist()
         => Check.That(_store.HasExportableContent("UNKNOWN-SESSION")).IsFalse();
 }

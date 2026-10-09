@@ -25,6 +25,7 @@ import {
   toggleActivityButton
 } from "./dom.js";
 import { createHubClient } from "./hub-client.js";
+import { closeScreenshotViewer, refreshScreenshotViewerIfShowing } from "./screenshot-viewer.js";
 import { flashRefreshConfirmation, renderSessionList } from "./session-list.js";
 import { renderSessionDetail, selectSession } from "./session-detail.js";
 import { currentSession, setCurrentSession } from "./state.js";
@@ -48,6 +49,7 @@ hub.onCandidateDisconnected((status) => {
 
 hub.onScreenshotReceived((candidateId, timestamp) => {
   setCandidateScreenshotTimestamp(candidateId, timestamp);
+  refreshScreenshotViewerIfShowing(candidateId);
   refreshActivityIfVisible(hub);
 });
 
@@ -92,6 +94,7 @@ activityOverlay.addEventListener("click", (event) => {
 });
 
 backButton.addEventListener("click", () => {
+  closeScreenshotViewer();
   setCurrentSession(null);
   sessionDetailSection.hidden = true;
   sessionPickerSection.hidden = false;

@@ -175,6 +175,21 @@ app.MapGet("/api/sessions/{sessionCode}/export.zip",
             fileDownloadName: $"{sessionCode}.zip");
     }).RequireAuthorization();
 
+// Dernier screenshot d'un candidat, affiché à la demande depuis sa ligne dans le dashboard (<img src>,
+// rafraîchi à chaque ScreenshotReceived). no-store : l'URL reste la même d'une capture à l'autre.
+app.MapGet("/api/sessions/{sessionCode}/candidates/{candidateId}/latest-screenshot",
+    (string sessionCode, string candidateId, IScreenshotStore screenshotStore, HttpContext http) =>
+    {
+        var path = screenshotStore.FindLatestScreenshotPath(sessionCode, candidateId);
+        if (path is null)
+        {
+            return Results.NotFound();
+        }
+
+        http.Response.Headers.CacheControl = "no-store";
+        return Results.File(path, "image/webp");
+    }).RequireAuthorization();
+
 // index.html vit hors de wwwroot (Dashboard/) précisément pour ne jamais être servi par
 // UseStaticFiles sans passer par cette route protégée.
 app.MapGet("/", ServeDashboardAsync).RequireAuthorization();
